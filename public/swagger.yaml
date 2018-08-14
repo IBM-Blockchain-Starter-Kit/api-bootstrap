@@ -1,0 +1,53 @@
+swagger: '2.0'
+
+info:
+  version: "1.0.0"
+  title: REST API app
+
+consumes:
+  - text/plain
+
+produces:
+  - application/json
+
+paths:
+  /:
+    get:
+      description: Hello world path
+      responses:
+        200:
+          description: Hello World
+          schema:
+            type: string
+          examples:
+            string: "Hello World!"
+
+  /health:
+    get:
+      operationId: getHealth
+      tags:
+        - Health
+      description: Get health status of app 
+      responses:
+        200:
+          description: Health check response
+          schema:
+            $ref: "#/definitions/HealthResponse"
+          examples:
+            application/json: { "success": "true", "message": "Server is up!", "status": "UP" }
+
+
+definitions:
+  ResponseBody:
+    type: "object"
+    properties:
+      success:
+        type: "boolean"
+      message:
+        type: "string"
+  HealthResponse:
+    allOf:
+      - $ref: '#/definitions/ResponseBody'
+      - properties:
+          status:
+            type: "string"
