@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap.svg?branch=master)](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap)
+
 # REST API Scaffold for use in Blockchain Starter Kit
 
 ## Running the server
