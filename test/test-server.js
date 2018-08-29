@@ -33,10 +33,10 @@ describe('Testing Server', () => {
   });
 
   describe('/', () => {
-    it('should return 200 Hello World!', async () => {
+    it('should redirect to /api-docs', async () => {
       const res = await chai.request(url).get('/');
+      expect(res).to.redirectTo(`${url}/api-docs`);
       expect(res.status).to.equal(200);
-      expect(res.text).to.equal('Hello World!');
     });
   });
 });
