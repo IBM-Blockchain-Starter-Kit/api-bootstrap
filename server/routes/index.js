@@ -37,8 +37,8 @@ router.use('/health', health);
  * GET home page
  */
 router.get('/', (req, res) => {
-  logger.debug('GET home page');
-  res.send('Hello World!');
+  logger.debug('GET /');
+  res.redirect('/api-docs');
 });
 
 module.exports = router;
