@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "8.11.4"
+
+script:
+  - echo Testing rest api project
+  - npm run test
