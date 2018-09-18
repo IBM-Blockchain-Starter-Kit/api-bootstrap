@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap.svg?branch=master)](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap)
 
+**NOTE: This is WIP!**
+<br>This component does not have the plumbing code required to connect to a Fabric network yet. The project does not have any of the Fabric client dependencies required, but we will be adding the fabric-helper code soon to aid with that.
+
 # REST API Scaffold for use in Blockchain Starter Kit
 
 ## Running the server
