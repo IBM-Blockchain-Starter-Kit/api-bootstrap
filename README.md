@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap.svg?branch=master)](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap)
 
 **NOTE: This is WIP!**
-<br>This component does not have the plumbing code required to connect to a Fabric network yet. The project does not have any of the Fabric client dependencies required, but we will be adding the fabric-helper code soon to aid with that.
 
 # REST API Scaffold for use in Blockchain Starter Kit
 
@@ -18,6 +17,51 @@ Navigate to the Swagger UI at: http://localhost:3000/api-docs/
 ## Running tests
 ```
 $ npm run test
+```
+
+## Fabric Network Getting Started
+The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network.
+
+- Download one of your 'common connection profile' json files and copy it into the *fabric-network* directory, naming it *network-config-\<orgname>.json*. On IBM Blockchain Platform, click on the *Connection Profile* button on the *Overview* page to download your 'common connection profile'.
+
+- In *server/controllers/ping.js*, you will see a `default user and org` section. Update those values with the enrollId, enrollSecret, and org of a user that has already been registered. **Hint:** For IBM Blockchain Platform, go to the *Certificate Authority* section in the Network Monitor to register a user.
+
+- *server/controllers/ping.js* also has two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (executeTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
+<br>A few changes to call out to your specific chaincode are required. 1) Update `Health` in `const queryResponse = await contract.executeTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed 2) Update `chaincodeName` and `channelName` in *server/config/default.json* to the channel name and chaincode name on your network.
+
+After making those changes, you can `GET http://localhost:3000/ping` to see the result.
+
+### Under the covers
+You should have a good understanding of how a Hyperledger Fabric network and its SDK to interact with it works, but there are some high level concepts outlined here to understand the flow.
+
+A *FileSystemWallet* is used to manage identities for interacting with the network. More information can be found in the [Hyperledger Fabric SDK for node.js doc](https://fabric-sdk-node.github.io/FileSystemWallet.html). Look in *server/helpers/wallet.js* for some wallet helper functions.
+
+A gateway to talk to the network is established with the [*Gateway*](https://fabric-sdk-node.github.io/Gateway.html) class, by passing the common connection profile, a specified identity, and the wallet that contains that identity.
+```
+// gateway and contract connection
+await gateway.connect(ccp, {
+  identity: user,
+  wallet: walletHelper.getWallet(),
+});
+```
+
+Once the gateway is established, you connect to the channel by a [*getNetwork*](https://fabric-sdk-node.github.io/Gateway.html#getNetwork__anchor) call to the gateway.
+```
+const network = await gateway.getNetwork(config.channelName);
+```
+
+Then make a call to get the chaincode with a [*getContract*](https://fabric-sdk-node.github.io/Network.html#getContract__anchor) call.
+```
+const contract = await network.getContract(config.chaincodeName);
+```
+
+Once you have the contract object, you can start invoking and querying the chaincode!
+```
+// invoke transaction
+const invokeResponse = await contract.submitTransaction('Health');
+
+// query
+const queryResponse = await contract.executeTransaction('Health');
 ```
 
 ## Development
@@ -105,6 +149,4 @@ For full API Reference and Documentation, start the server and navigate to http:
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
 
 ## To be added...
-- fabric-helper
-  - call to ping chaincode function
 - rest api authentication

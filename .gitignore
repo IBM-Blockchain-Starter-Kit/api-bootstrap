@@ -1,3 +1,4 @@
+# npm
 node_modules/**
 
 # Tests
@@ -5,3 +6,9 @@ node_modules/**
 
 # IDE
 .vscode/**
+
+# OSX
+**/.DS_Store
+
+# fabric-network
+**/WALLETS/**
