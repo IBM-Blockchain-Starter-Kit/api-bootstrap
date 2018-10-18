@@ -18,29 +18,21 @@ const express = require('express');
 const log4js = require('log4js');
 const config = require('config');
 
-const health = require('./health');
-const ping = require('./ping');
+const pingCtrl = require('../controllers/ping');
 
 const router = express.Router();
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('routes - index');
+const logger = log4js.getLogger('routes - ping');
 logger.setLevel(config.logLevel);
+
+logger.debug('setting up /ping route');
 
 /**
  * Add routes
  */
-router.use('/health', health);
-router.use('/ping', ping);
-
-/**
- * GET home page
- */
-router.get('/', (req, res) => {
-  logger.debug('GET /');
-  res.redirect('/api-docs');
-});
+router.get('/', pingCtrl.pingCC);
 
 module.exports = router;
