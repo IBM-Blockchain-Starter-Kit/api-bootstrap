@@ -26,11 +26,6 @@ const gateway = new Gateway();
 const logger = log4js.getLogger('controllers - ping');
 logger.setLevel(config.logLevel);
 
-// default user and org
-const org = 'org1';
-const user = 'user1';
-const pw = 'userpw';
-
 /**
  * Controller object
  */
@@ -38,6 +33,11 @@ const ping = {};
 
 ping.pingCC = async (req, res) => {
   logger.debug('inside pingCC()...');
+  // default user and org - read admin from common connection profile
+  const org = 'org1';
+  const orgCA = ccp.organizations[org].certificateAuthorities[0];
+  const user = ccp.certificateAuthorities[orgCA].registrar[0].enrollId;
+  const pw = ccp.certificateAuthorities[orgCA].registrar[0].enrollSecret;
   let jsonRes;
 
   try {
@@ -57,16 +57,20 @@ ping.pingCC = async (req, res) => {
     const network = await gateway.getNetwork(config.channelName);
     const contract = await network.getContract(config.chaincodeName);
 
+    // More info on the following calls: https://fabric-sdk-node.github.io/Contract.html
+
     // invoke transaction
+    // Create transaction proposal for endorsement and sendTransaction to orderer
     const invokeResponse = await contract.submitTransaction('Health');
 
     // query
-    const queryResponse = await contract.executeTransaction('Health');
+    // simply query the ledger
+    // const queryResponse = await contract.executeTransaction('Health');
 
     jsonRes = {
       statusCode: 200,
       success: true,
-      result: queryResponse.toString(),
+      result: invokeResponse.toString(),
     };
   } catch (err) {
     jsonRes = {
