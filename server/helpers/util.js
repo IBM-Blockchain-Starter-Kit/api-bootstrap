@@ -15,6 +15,7 @@
  */
 
 const log4js = require('log4js');
+const fs = require('fs');
 const config = require('config');
 const FabricCAServices = require('fabric-ca-client');
 
@@ -55,10 +56,13 @@ util.getNetworkConfigFilePath = (org) => {
 util.userEnroll = (orgName, enrollId, enrollSecret) => {
   logger.debug(`Enrolling user ${enrollId}`);
   return new Promise(((resolve, reject) => {
-    // add network config file to fabric ca service and get orgs and CAs fields
-    FabricCAServices.addConfigFile(util.getNetworkConfigFilePath(orgName));
-    const orgs = FabricCAServices.getConfigSetting('organizations');
-    const cas = FabricCAServices.getConfigSetting('certificateAuthorities');
+    const ccpPath = util.getNetworkConfigFilePath(orgName);
+    const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
+    const ccp = JSON.parse(ccpJSON);
+
+    // get orgs and CAs fields from connection profile
+    const orgs = ccp.organizations;
+    const CAs = ccp.certificateAuthorities;
 
     if (!orgs[orgName]) {
       logger.debug(`Invalid org name: ${orgName}`);
@@ -67,15 +71,14 @@ util.userEnroll = (orgName, enrollId, enrollSecret) => {
 
     // get certificate authority for orgName
     const fabricCAKey = orgs[orgName].certificateAuthorities[0];
-    const fabricCAEndpoint = cas[fabricCAKey].url;
-    const fabricCAName = cas[fabricCAKey].caName;
+    const caURL = CAs[fabricCAKey].url;
 
     // enroll user with certificate authority for orgName
     const tlsOptions = {
       trustedRoots: [],
       verify: false,
     };
-    const caService = new FabricCAServices(fabricCAEndpoint, tlsOptions, fabricCAName);
+    const caService = new FabricCAServices(caURL, tlsOptions);
     const req = {
       enrollmentID: enrollId,
       enrollmentSecret: enrollSecret,
