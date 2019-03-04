@@ -22,12 +22,26 @@ $ npm run test
 ## Fabric Network Getting Started
 The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network.
 
-- Download one of your 'common connection profile' json files and copy it into the *fabric-network* directory, naming it *network-config-\<orgname>.json*. On IBM Blockchain Platform, click on the *Connection Profile* button on the *Overview* page to download your 'common connection profile'.
+- Download one of your 'common connection profile' json files and copy it into the *fabric-network* directory, naming it *network-config-\<orgname>.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
 
-- In *server/controllers/ping.js*, you will see a `default user and org` section. Update those values with the enrollId, enrollSecret, and org of a user that has already been registered. **Hint:** For IBM Blockchain Platform, go to the *Certificate Authority* section in the Network Monitor to register a user.
+- In *server/controllers/ping.js*, you will see a `default user and org` section. Update the org and then ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
 
-- *server/controllers/ping.js* also has two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (executeTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
-<br>A few changes to call out to your specific chaincode are required. 1) Update `Health` in `const queryResponse = await contract.executeTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed 2) Update `chaincodeName` and `channelName` in *server/config/default.json* to the channel name and chaincode name on your network.
+- *server/controllers/ping.js* also has two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
+<br>A few changes to call out to your specific chaincode are required. 1) Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed 2) Update `chaincodeName` and `channelName` in *server/config/default.json* to the channel name and chaincode name on your network.
+
+- **Important Note:** If you are taking advantage of Service Discovery, which is enabled by default on IBP 2.0, make note of updating the `discovery.enabled` field of the `gateway.connect` call in *server/controllers/ping.js* to *true*. Otherwise, you will need to add the `channels` field in your connection profile to explicitly give the peer endpoints for endorsement. For example, something like:
+
+```
+"channels": {
+  "channel1": {
+    "orderers": ["<orderer endpoint>"],
+    "peers": {
+      "<peer1 endpoint>": {},
+      "<peer2 endpoint": {}
+    }
+  }
+},
+```
 
 After making those changes, you can `GET http://localhost:3000/ping` to see the result.
 
@@ -61,7 +75,7 @@ Once you have the contract object, you can start invoking and querying the chain
 const invokeResponse = await contract.submitTransaction('Health');
 
 // query
-const queryResponse = await contract.executeTransaction('Health');
+const queryResponse = await contract.evaluateTransaction('Health');
 ```
 
 ## Development

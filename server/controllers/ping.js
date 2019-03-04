@@ -33,11 +33,10 @@ const ping = {};
 
 ping.pingCC = async (req, res) => {
   logger.debug('inside pingCC()...');
-  // default user and org - read admin from common connection profile
+  // default user and org
   const org = 'org1';
-  const orgCA = ccp.organizations[org].certificateAuthorities[0];
-  const user = ccp.certificateAuthorities[orgCA].registrar[0].enrollId;
-  const pw = ccp.certificateAuthorities[orgCA].registrar[0].enrollSecret;
+  const user = process.env.FABRIC_ENROLL_ID;
+  const pw = process.env.FABRIC_ENROLL_SECRET;
   let jsonRes;
 
   try {
@@ -52,6 +51,10 @@ ping.pingCC = async (req, res) => {
     await gateway.connect(ccp, {
       identity: user,
       wallet: walletHelper.getWallet(),
+      discovery: { // https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.Gateway.html#~DiscoveryOptions
+        enabled: false,
+        asLocalhost: false,
+      },
     });
 
     const network = await gateway.getNetwork(config.channelName);
@@ -65,7 +68,7 @@ ping.pingCC = async (req, res) => {
 
     // query
     // simply query the ledger
-    // const queryResponse = await contract.executeTransaction('Health');
+    // const queryResponse = await contract.evaluateTransaction('Health');
 
     jsonRes = {
       statusCode: 200,
