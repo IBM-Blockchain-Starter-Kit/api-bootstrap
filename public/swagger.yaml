@@ -3,8 +3,16 @@ swagger: '2.0'
 info:
   version: "1.0.0"
   title: REST API app
-host: 'localhost:3000'
+host: 'localhost'
 basePath: /api/v1
+
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: x-api-key
+    type: apiKey
+security:
+  - ApiKeyAuth: []
 
 consumes:
   - text/plain

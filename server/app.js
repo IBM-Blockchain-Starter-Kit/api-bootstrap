@@ -19,12 +19,12 @@ logger.setLevel(config.logLevel);
 const { authenticate } = require('./middlewares/authenticate');
 
 const swaggerFile = {
-  source: '../public/swagger.yaml',
+  source: './public/swagger.yaml',
   destination: './api/swagger-v1.yml',
   nodeConfig: './config/swagger-node.yml',
   json: 'swagger-v1.json',
 };
-const PORT = process.env.PORT || '3000';
+const PORT = process.env.port || '3000';
 
 const initialize = () => {
   const swaggerConfig = {
@@ -65,8 +65,9 @@ const initialize = () => {
         res.json(swaggerConfig.swagger);
       });
 
+      const port = PORT ? `:${PORT}` : '';
       app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, {
-        swaggerUrl: `http://${swaggerConfig.swagger.host}${swaggerConfig.swagger.basePath}/${swaggerFile.json}`,
+        swaggerUrl: `http://${swaggerConfig.swagger.host}${port}${swaggerConfig.swagger.basePath}/${swaggerFile.json}`,
       }));
 
 
