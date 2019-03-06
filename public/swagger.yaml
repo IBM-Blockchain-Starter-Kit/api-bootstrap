@@ -3,6 +3,8 @@ swagger: '2.0'
 info:
   version: "1.0.0"
   title: REST API app
+host: 'localhost:3000'
+basePath: /api/v1
 
 consumes:
   - text/plain
@@ -21,8 +23,8 @@ paths:
             type: string
           examples:
             string: "Hello World!"
-
   /health:
+    x-swagger-router-controller: health
     get:
       operationId: getHealth
       tags:
@@ -35,7 +37,6 @@ paths:
             $ref: "#/definitions/HealthResponse"
           examples:
             application/json: { "success": "true", "message": "Server is up!", "status": "UP" }
-
 
 definitions:
   ResponseBody:
