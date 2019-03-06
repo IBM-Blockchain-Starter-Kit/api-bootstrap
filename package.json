@@ -5,6 +5,7 @@
   "scripts": {
     "start": "NODE_CONFIG_DIR=./server/config node server/server.js",
     "dev": "NODE_CONFIG_DIR=./server/config nodemon server/server.js",
+    "dev-app": "NODE_CONFIG_DIR=./server/config nodemon server/app.js",
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
     "test": "NODE_CONFIG_DIR=./server/config nyc mocha --exit"
