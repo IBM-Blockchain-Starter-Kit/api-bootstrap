@@ -3,6 +3,16 @@ swagger: '2.0'
 info:
   version: "1.0.0"
   title: REST API app
+host: 'localhost'
+basePath: /api/v1
+
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: x-api-key
+    type: apiKey
+security:
+  - ApiKeyAuth: []
 
 consumes:
   - text/plain
@@ -21,8 +31,8 @@ paths:
             type: string
           examples:
             string: "Hello World!"
-
   /health:
+    x-swagger-router-controller: health
     get:
       operationId: getHealth
       tags:
@@ -35,7 +45,6 @@ paths:
             $ref: "#/definitions/HealthResponse"
           examples:
             application/json: { "success": "true", "message": "Server is up!", "status": "UP" }
-
 
 definitions:
   ResponseBody:

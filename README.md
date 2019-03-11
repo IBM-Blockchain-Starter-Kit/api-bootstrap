@@ -19,6 +19,72 @@ Navigate to the Swagger UI at: http://localhost:3000/api-docs/
 $ npm run test
 ```
 
+## Swagger YAML definition
+
+Defining routes in `swagger.yaml`
+
+```
+ # Routes to call a chaincode function either via invoke or query method
+
+  # ...api/v1/blockchains/invoke/bulk_charge_fees
+  /blockchains/invoke/{fname}:
+    # Folder name, blockchains, under the ./api/v1/ directory (Required)
+    x-swagger-router-controller: blockchains
+    post:
+      ...
+      # The matching function name, bcInvoke, exposed by the controller
+      operationId: bcInvoke
+      ...
+      # Required token, chaincode function, and JSON attributes
+      parameters:
+        - $ref: '#/components/parameters/X-org-api-token'
+        - $ref: '#/components/parameters/Fname'
+      requestBody:
+        $ref: '#/components/requestBodies/Body'
+
+  # api/v1/blockchains/query/get_charging_fee_by_account
+  /blockchains/query/{fname}:
+    x-swagger-router-controller: blockchains
+    post:
+      ...
+      operationId: bcQuery
+      ...
+```
+
+Implementation of an API module, blockchain
+
+1. Create a foler blockchains, under the api/v1 folder, and together with an index.js file.
+2. Put all request (req) and response (res) handling operations in the index.js file, which will serve as our controller.
+3. Expose controller functions which will be utilized by the swagger file. For example: api/v1/blockchains/index.js
+
+```
+controller.bcInvoke = (req, res) => {
+  try {
+    // Extract the parameters from the req.swagger object
+    const { value: fname } = req.swagger.params.fname;
+    const { value: attrs } = req.swagger.params.body;
+    ...
+    // Impelementation of basic logic here
+    ...
+    return res.json(response); // 201 - res.status(201), default is 200
+  } catch (error) {
+    return res.status(500).json({
+      message: `Failed to perform operation ${fn}`,
+    });
+  }
+};
+
+// Exposed methods for `operationId` in swagger file - bcInvoke, bcQuery, anotherNameOfBcInvoke
+module.exports = {
+    bcInvoke,
+    bcQuery,
+    anotherNameOfBcInvoke: bcInvoke,
+}
+```
+4. Services and middleware should be placed in the services and middleware folders, respectively. Middlewares can have request and response handlers. Services should NOT have any request and response handling.
+5. Serivces are commonly used custom library implementations. Like interacting to the blockchain, database connection, authentication/authorization, admin db or services initialization and other relevant services. These should be placed in the services folder.
+
+
 ## Fabric Network Getting Started
 The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network.
 

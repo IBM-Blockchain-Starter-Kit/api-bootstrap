@@ -5,20 +5,26 @@
   "scripts": {
     "start": "NODE_CONFIG_DIR=./server/config node server/server.js",
     "dev": "NODE_CONFIG_DIR=./server/config nodemon server/server.js",
+    "dev-app": "NODE_CONFIG_DIR=./server/config nodemon server/app.js",
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
     "test": "NODE_CONFIG_DIR=./server/config nyc mocha --exit"
   },
   "dependencies": {
+    "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "config": "^2.0.1",
+    "cors": "^2.8.5",
     "express": "~4.16.0",
     "fabric-ca-client": "1.4.0",
     "fabric-client": "1.4.0",
     "fabric-network": "1.4.0",
     "http-errors": "~1.6.2",
+    "js-yaml": "^3.12.2",
     "lodash": "^4.17.10",
     "log4js": "^1.1.1",
+    "swagger-express-mw": "^0.7.0",
+    "swagger-parser": "^6.0.5",
     "swagger-ui-express": "^3.0.10",
     "yamljs": "^0.3.0"
   },
