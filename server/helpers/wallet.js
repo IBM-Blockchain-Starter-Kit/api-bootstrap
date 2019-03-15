@@ -31,6 +31,7 @@ const wallet = {};
  * Return FileSystemWallet object
  */
 wallet.getWallet = () => {
+  logger.debug('entering >>> getWallet()');
   return fsWallet;
 };
 
@@ -39,6 +40,7 @@ wallet.getWallet = () => {
  * @param {string} id - label of id in wallet
  */
 wallet.identityExists = async (id) => {
+  logger.debug('entering >>> identityExists()');
   const exists = await fsWallet.exists(id);
   logger.debug(`${id} exists in wallet: ${exists}`);
   return exists;
@@ -52,6 +54,7 @@ wallet.identityExists = async (id) => {
  * @param {string} key - key from enrolling user
  */
 wallet.importIdentity = async (id, org, cert, key) => {
+  logger.debug('entering >>> importIdentity()');
   try {
     logger.debug(`Importing ${id} into wallet`);
     await fsWallet.import(id, X509WalletMixin.createIdentity(org, cert, key));

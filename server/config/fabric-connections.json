@@ -1,0 +1,23 @@
+{
+  "fabric-connections": {
+    "serviceDiscovery": {
+      "enabled": true,
+      "asLocalhost": false
+    },
+    "conn1": [
+      {
+        "channel": "defaultchannel",
+        "chaincodes": [
+          "pingcc"
+        ]
+      }
+    ]
+  },
+  "routes": [
+    {
+      "path": "/ping",
+      "fabric-connection": "conn1",
+      "modulePath": "routes/ping"
+    }
+  ]
+}

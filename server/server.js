@@ -14,6 +14,8 @@
  *  limitations under the License.
  */
 
+global.__basedir = __dirname;
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const log4js = require('log4js');
