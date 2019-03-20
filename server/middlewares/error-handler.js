@@ -23,7 +23,7 @@ const util = require('../helpers/util');
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('error handler');
+const logger = log4js.getLogger('middlewares - error-handler');
 logger.setLevel(config.logLevel);
 
 /**
@@ -35,7 +35,7 @@ const errorHandler = {};
  * Catch 404 Error and forward to error handler function
  */
 errorHandler.catchNotFound = (req, res, next) => {
-  logger.debug('catching 404 error...');
+  logger.debug('entering >>> catchNotFound()');
   next(createError(404, '404: Page not found'));
 };
 
@@ -43,7 +43,7 @@ errorHandler.catchNotFound = (req, res, next) => {
  * Error handler function
  */
 errorHandler.handleError = (err, req, res, next) => {
-  logger.debug('error handler...');
+  logger.debug('entering >>> handleError()');
   const jsonRes = {
     statusCode: err.status || 500,
     success: false,

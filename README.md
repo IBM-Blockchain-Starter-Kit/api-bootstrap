@@ -24,24 +24,12 @@ The app has boilerplate code to make a call out to a chaincode running on a Fabr
 
 - Download one of your 'common connection profile' json files and copy it into the *fabric-network* directory, naming it *network-config-\<orgname>.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
 
-- In *server/controllers/ping.js*, you will see a `default user and org` section. Update the org and then ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
+- In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, [see below](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware).
 
-- *server/controllers/ping.js* also has two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
-<br>A few changes to call out to your specific chaincode are required. 1) Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed 2) Update `chaincodeName` and `channelName` in *server/config/default.json* to the channel name and chaincode name on your network.
+- In *server/config/default.json*, you will need to update the `orgName` field to your org. Ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
 
-- **Important Note:** If you are taking advantage of Service Discovery, which is enabled by default on IBP 2.0, make note of updating the `discovery.enabled` field of the `gateway.connect` call in *server/controllers/ping.js* to *true*. Otherwise, you will need to add the `channels` field in your connection profile to explicitly give the peer endpoints for endorsement. For example, something like:
-
-```
-"channels": {
-  "channel1": {
-    "orderers": ["<orderer endpoint>"],
-    "peers": {
-      "<peer1 endpoint>": {},
-      "<peer2 endpoint": {}
-    }
-  }
-},
-```
+- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. More details on that can be found in [a later section](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware), but for now, set the line to `const contract = res.locals.<channel name>.<chaincode name>`. Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
+<br>There is a change required to call out to your specific chaincode: Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed.
 
 After making those changes, you can `GET http://localhost:3000/ping` to see the result.
 
@@ -77,6 +65,8 @@ const invokeResponse = await contract.submitTransaction('Health');
 // query
 const queryResponse = await contract.evaluateTransaction('Health');
 ```
+
+**NOTE:** This application uses a custom module to dynamically create and mount middleware functions that connect to a Fabric gateway. See the [Fabric Routes Custom Middleware section](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware) for more details.
 
 ## Development
 This app is built using node.js and the [express.js framework](https://expressjs.com/). The entire backend application is found within the *server* directory. The *public* directory contains the swagger.yaml used by the Swagger UI to display API definitions. Note that we use the [swagger-ui-express](https://github.com/scottie1984/swagger-ui-express) npm package to serve and render the Swagger UI, instead of directly including the ui source code.
@@ -158,6 +148,10 @@ The *middlewares* directory contains any middleware that is used in the app, suc
 The *helpers* directory contains any helper functions used in the app, such as a send response helper in *util.js* to send a request response back.
 
 For full API Reference and Documentation, start the server and navigate to http://localhost:3000/api-docs/.
+
+## Fabric Routes Custom Middleware
+
+Full documentation [here](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap/blob/master/fabric-routes.md)
 
 ## Testing
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.

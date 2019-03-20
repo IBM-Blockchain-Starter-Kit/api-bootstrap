@@ -2,5 +2,9 @@
     "extends": "airbnb-base",
     "env": {
         "mocha": true
+    },
+    "rules": {
+        "no-underscore-dangle": "off",
+        "import/no-dynamic-require": "off"
     }
 }
