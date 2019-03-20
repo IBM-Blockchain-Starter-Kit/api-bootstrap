@@ -1,8 +1,7 @@
 {
-  "channelName": "defaultchannel",
-  "chaincodeName": "pingcc",
   "logLevel": "DEBUG",
   "host": "localhost",
   "port": "3000",
-  "fsWalletPath": "./WALLETS/wallet"
+  "fsWalletPath": "./WALLETS/wallet",
+  "orgName": "org1"
 }

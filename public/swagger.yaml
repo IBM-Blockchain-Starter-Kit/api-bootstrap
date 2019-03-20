@@ -36,6 +36,18 @@ paths:
           examples:
             application/json: { "success": "true", "message": "Server is up!", "status": "UP" }
 
+  /ping:
+    get:
+      operationId: pingCC
+      tags:
+        - Ping
+      description: Ping blockchain network
+      responses:
+        200:
+          description: Ping response
+          schema:
+            $ref: "#/definitions/ResponseBody"
+
 
 definitions:
   ResponseBody:

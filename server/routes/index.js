@@ -18,8 +18,8 @@ const express = require('express');
 const log4js = require('log4js');
 const config = require('config');
 
+const { FabricRoutes } = require('../middlewares/fabric-routes');
 const health = require('./health');
-const ping = require('./ping');
 
 const router = express.Router();
 
@@ -33,7 +33,11 @@ logger.setLevel(config.logLevel);
  * Add routes
  */
 router.use('/health', health);
-router.use('/ping', ping);
+
+// Hyperledger Fabric routes
+// add specified routes and create their middleware functions to connect to the fabric network
+const fabricRoutes = new FabricRoutes(router);
+fabricRoutes.setup();
 
 /**
  * GET home page

@@ -28,7 +28,7 @@ logger.setLevel(config.logLevel);
 const health = {};
 
 health.getHealth = (req, res) => {
-  logger.debug('inside getHealth()...');
+  logger.debug('entering >>> getHealth()');
 
   const jsonRes = {
     statusCode: 200,
@@ -37,6 +37,7 @@ health.getHealth = (req, res) => {
     status: 'UP',
   };
 
+  logger.debug('exiting <<< getHealth()');
   util.sendResponse(res, jsonRes);
 };
 

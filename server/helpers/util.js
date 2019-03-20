@@ -36,6 +36,7 @@ const util = {};
  * msg: {statusCode (int), success (bool), message (string), etc}
  */
 util.sendResponse = (res, msg) => {
+  logger.debug('entering >>> sendResponse()');
   const response = msg;
   res.setHeader('Content-Type', 'application/json');
   res.statusCode = response.statusCode;
@@ -47,6 +48,7 @@ util.sendResponse = (res, msg) => {
  * Get network config file path for org
  */
 util.getNetworkConfigFilePath = (org) => {
+  logger.debug('entering >>> getNetworkConfigFilePath()');
   return `${__dirname}/../../fabric-network/network-config-${org}.json`;
 };
 
@@ -54,6 +56,7 @@ util.getNetworkConfigFilePath = (org) => {
  * Enroll given user with given org Fabric CA
  */
 util.userEnroll = (orgName, enrollId, enrollSecret) => {
+  logger.debug('entering >>> userEnroll()');
   logger.debug(`Enrolling user ${enrollId}`);
   return new Promise(((resolve, reject) => {
     const ccpPath = util.getNetworkConfigFilePath(orgName);
