@@ -153,6 +153,12 @@ For full API Reference and Documentation, start the server and navigate to http:
 
 Full documentation [here](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap/blob/master/fabric-routes.md)
 
+# Security Middleware 
+
+Included in this bootstrap is an example route `/protected ` which uses [Passport](http://www.passportjs.org) + [IBM App ID](https://cloud.ibm.com/docs/services/appid?topic=appid-about#about) API Strategy to secure the endpoint. When performing the request for this endpoint, you will need to include an Authorization token. Check the App ID docs for more information on how to attain an auth token from the service. There's also a helped `auth` that will filter through a list of `client ID's` to assure that the application calling the endpoint is authorized to do so. 
+
+>Note: Please check the `default.json` config file for the app id information you will need to include with your instance of the service. You will also need to modify the `passport.js` config to account for these changes. 
+
 ## Testing
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
 
