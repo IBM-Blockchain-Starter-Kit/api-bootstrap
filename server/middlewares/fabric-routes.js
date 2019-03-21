@@ -21,7 +21,7 @@ const { Gateway } = require('fabric-network');
 const util = require('../helpers/util');
 const walletHelper = require('../helpers/wallet');
 
-const ccp = require(util.getNetworkConfigFilePath(config.orgName)); // common connection profile
+const ccp = require(`${__dirname}/../config/fabric-connection-profile.json`); // common connection profile
 const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); // fabric connections configuration
 
 /**

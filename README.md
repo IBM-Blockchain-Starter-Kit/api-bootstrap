@@ -22,7 +22,7 @@ $ npm run test
 ## Fabric Network Getting Started
 The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network.
 
-- Download one of your 'common connection profile' json files and copy it into the *fabric-network* directory, naming it *network-config-\<orgname>.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
+- Download one of your 'common connection profile' json files and copy it into the *server/config* directory, naming it *fabric-connection-profile.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
 
 - In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, [see below](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware).
 

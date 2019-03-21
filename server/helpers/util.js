@@ -30,6 +30,8 @@ logger.setLevel(config.logLevel);
  */
 const util = {};
 
+const ccpPath = `${__dirname}/../config/fabric-connection-profile.json`;
+
 /**
  * Send http response helper
  * res: express response object
@@ -45,21 +47,12 @@ util.sendResponse = (res, msg) => {
 };
 
 /**
- * Get network config file path for org
- */
-util.getNetworkConfigFilePath = (org) => {
-  logger.debug('entering >>> getNetworkConfigFilePath()');
-  return `${__dirname}/../../fabric-network/network-config-${org}.json`;
-};
-
-/**
  * Enroll given user with given org Fabric CA
  */
 util.userEnroll = (orgName, enrollId, enrollSecret) => {
   logger.debug('entering >>> userEnroll()');
   logger.debug(`Enrolling user ${enrollId}`);
   return new Promise(((resolve, reject) => {
-    const ccpPath = util.getNetworkConfigFilePath(orgName);
     const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
     const ccp = JSON.parse(ccpJSON);
 
