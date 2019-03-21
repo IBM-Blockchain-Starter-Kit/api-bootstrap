@@ -159,6 +159,8 @@ Included in this bootstrap is an example route `/protected ` which uses [Passpor
 
 >Note: Please check the `default.json` config file for the app id information you will need to include with your instance of the service. You will also need to modify the `passport.js` config to account for these changes. 
 
+>Note: there's logic to check for NODE_ENV=production in order to instantiate the `/protected` route.
+
 ## Testing
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
 
