@@ -23,8 +23,8 @@ const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const config = require('config');
+const passport = require('passport');
 
-const routes = require('./routes');
 const errorHandler = require('./middlewares/error-handler');
 
 const app = express();
@@ -35,12 +35,43 @@ const app = express();
 const logger = log4js.getLogger('server');
 logger.setLevel(config.logLevel);
 
+/**
+ * Set up default env
+ */
+if (process.env.NODE_ENV == '' || process.env.NODE_ENV == undefined) {
+  process.env.NODE_ENV = 'local';
+}
+logger.info('process.env.NODE_ENV : ' + process.env.NODE_ENV);
+
 logger.debug('setting up app: registering routes, middleware...');
 
 /**
  * Load swagger document
  */
 const swaggerDocument = YAML.load(path.join(__dirname, '../public', 'swagger.yaml'));
+
+/**
+ * In production setup App ID API Strategy with oauthServerUrl specified in config 
+ * Initialize passport
+ * Configure passportjs with user serialization/deserialization. This is
+ * required for authenticated session persistence across HTTP requests.
+ * See passportjs docs for additional information http://passportjs.org/docs
+ */
+if (process.env.NODE_ENV == 'production') {
+  logger.debug('import passport config');
+  require('./config/passport');
+
+  app.use(passport.initialize())
+  app.use(passport.session())
+
+  passport.serializeUser((user, cb) => {
+    cb(null, user)
+  })
+
+  passport.deserializeUser((obj, cb) => {
+    cb(null, obj)
+  })
+}
 
 /**
  * Support json parsing
@@ -53,7 +84,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 /**
  * Register routes
  */
-app.use(routes);
+app.use(require('./routes'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /**

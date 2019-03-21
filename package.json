@@ -17,8 +17,10 @@
     "fabric-client": "1.4.0",
     "fabric-network": "1.4.0",
     "http-errors": "~1.6.2",
+    "ibmcloud-appid": "^5.0.0",
     "lodash": "^4.17.10",
     "log4js": "^1.1.1",
+    "passport": "^0.4.0",
     "swagger-ui-express": "^3.0.10",
     "yamljs": "^0.3.0"
   },

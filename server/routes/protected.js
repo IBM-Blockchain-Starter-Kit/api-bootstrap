@@ -13,45 +13,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 const express = require('express');
 const log4js = require('log4js');
 const config = require('config');
+const auth = require('../middlewares/auth');
+const passport = require('passport');
+const APIStrategy = require('ibmcloud-appid').APIStrategy;
 
-const { FabricRoutes } = require('../middlewares/fabric-routes');
-const health = require('./health');
+const protected = require('../controllers/protected');
 
 const router = express.Router();
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('routes - index');
+const logger = log4js.getLogger('routes - protected');
 logger.setLevel(config.logLevel);
 
-/**
- * Add routes
- */
-router.use('/health', health);
-
-// Hyperledger Fabric routes
-// add specified routes and create their middleware functions to connect to the fabric network
-const fabricRoutes = new FabricRoutes(router);
-fabricRoutes.setup();
-
-/**
- * Only include this route when running production
- */
-if(process.env.NODE_ENV == 'production'){
-  router.use('/protected', protected); //example endpoint with app id auth
+if (process.env.NODE_ENV == 'production') {
+  logger.debug('setting up /protected route');
 }
-
 /**
- * GET home page
+ * Add protected route
+ * Create an array of client ID's that are able to access this endpoint
+ * and pass the list to the filter function
  */
-router.get('/', (req, res) => {
-  logger.debug('GET /');
-  res.redirect('/api-docs');
-});
+
+router.get('/', passport.authenticate(APIStrategy.STRATEGY_NAME, {session: false}), auth.filter(['990de778-d3ad-4fea-a619-e7c9d3b900d3']), protected.getProtected);
 
 module.exports = router;
