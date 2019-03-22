@@ -17,9 +17,12 @@
     "fabric-client": "1.4.0",
     "fabric-network": "1.4.0",
     "http-errors": "~1.6.2",
+    "ibmcloud-appid": "^5.0.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.10",
     "log4js": "^1.1.1",
-    "swagger-ui-express": "^3.0.10",
+    "passport": "^0.4.0",
+    "swagger-ui-express": "^4.0.2",
     "yamljs": "^0.3.0"
   },
   "engines": {

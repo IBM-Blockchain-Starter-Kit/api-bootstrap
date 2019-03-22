@@ -24,7 +24,6 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const config = require('config');
 
-const routes = require('./routes');
 const errorHandler = require('./middlewares/error-handler');
 
 const app = express();
@@ -35,6 +34,7 @@ const app = express();
 const logger = log4js.getLogger('server');
 logger.setLevel(config.logLevel);
 
+
 logger.debug('setting up app: registering routes, middleware...');
 
 /**
@@ -42,6 +42,15 @@ logger.debug('setting up app: registering routes, middleware...');
  */
 const swaggerDocument = YAML.load(path.join(__dirname, '../public', 'swagger.yaml'));
 
+/**
+ * Setup App ID API Strategy with oauthServerUrl specified in config
+ * Initialize passport
+ * Configure passportjs with user serialization/deserialization. This is
+ * required for authenticated session persistence across HTTP requests.
+ * See passportjs docs for additional information http://passportjs.org/docs
+ */
+logger.debug('import passport config');
+require('./helpers/passport');
 /**
  * Support json parsing
  */
@@ -53,7 +62,8 @@ app.use(bodyParser.json({ limit: '50mb' }));
 /**
  * Register routes
  */
-app.use(routes);
+app.use(require('./routes'));
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /**

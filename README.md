@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap.svg?branch=master)](https://travis-ci.org/IBM-Blockchain-Starter-Kit/api-bootstrap)
 
-**NOTE: This is WIP!**
-
 # REST API Scaffold for use in Blockchain Starter Kit
 
 ## Running the server
@@ -153,8 +151,19 @@ For full API Reference and Documentation, start the server and navigate to http:
 
 Full documentation [here](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap/blob/master/fabric-routes.md)
 
+## Security Middleware - REST API Auth
+
+This api-bootstrap contains an example route `/secured ` which uses [Passport](http://www.passportjs.org) + [IBM App ID](https://cloud.ibm.com/docs/services/appid?topic=appid-about#about) (API Strategy). It's recommended to use this pattern to secure new endpoints. The following steps are required to create **your** own App ID instance:
+
+- Log onto IBM Cloud and start a new [App ID Lite service](https://cloud.ibm.com/catalog/services/app-id)
+- Once the service is up, navigate on the left and click on **Service Credentials**
+- Click on **View Credentials** in the list under the Service Credentials list. If there are no listed Service Credentials, click on **New Credential** 
+- Copy the `oauthServerUrl` into the config file 
+
+
+When performing the request for this endpoint, the client applications will need to include an Authorization token. Check the App ID docs [here](https://cloud.ibm.com/docs/services/appid?topic=appid-backend#backend) for more information on how to attain an auth token from the service. The `auth.js` middleware has a method that will filter through a list of `clientID's` to assure that the applications calling the endpoint are authorized to do so. Be sure to modify the `fabric-connections.json` for your custom route to enable the authentication. See the [Fabric Routes Custom Middleware section](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware) for more details.
+
+>Note: Please add your array whitelist of `<clientId's>` in the `fabric-connections.js`.
+
 ## Testing
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
-
-## To be added...
-- rest api authentication

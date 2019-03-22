@@ -18,6 +18,20 @@
       "path": "/ping",
       "fabric-connection": "conn1",
       "modulePath": "routes/ping"
+    },
+    {
+      "path": "/secured",
+      "fabric-connection": "conn1",
+      "modulePath": "routes/secured", 
+      "protected" : {
+        "enabled": true, 
+        "methods": [
+          "get"
+        ],
+        "whitelist": [
+          ""
+        ]
+      }
     }
   ]
 }

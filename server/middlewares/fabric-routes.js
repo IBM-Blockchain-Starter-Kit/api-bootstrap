@@ -17,12 +17,17 @@
 const log4js = require('log4js');
 const config = require('config');
 const { Gateway } = require('fabric-network');
+const passport = require('passport');
+const { APIStrategy } = require('ibmcloud-appid');
 
 const util = require('../helpers/util');
 const walletHelper = require('../helpers/wallet');
 
 const ccp = require(`${__dirname}/../config/fabric-connection-profile.json`); // common connection profile
 const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); // fabric connections configuration
+
+const auth = require('../middlewares/auth'); // whitelist of clientId's
+
 
 /**
  * Set up logging
@@ -68,6 +73,20 @@ class FabricRoutes {
     logger.debug('Mounting middleware functions to routes');
     fabricConfig.routes.forEach((route) => {
       logger.debug(`${route.path}: ${route['fabric-connection']} => route controller => disconnect`);
+
+
+      // if route is protected, add authentication middleware to each protected method
+      if (route.protected && route.protected.enabled) {
+        logger.debug(`${route.path}: ${route.protected.methods} => add auth`);
+        route.protected.methods.forEach((method) => {
+          // Add protected route
+          // pass a 'whitelist' array of clientIds read from config
+          this.router[method](route.path,
+            passport.authenticate(APIStrategy.STRATEGY_NAME, { session: false }),
+            auth.filter(route.protected.whitelist));
+        });
+      }
+
       this.router.use(route.path,
         this.middlewares[route['fabric-connection']],
         loadRouter(route.modulePath),

@@ -1,15 +1,12 @@
-swagger: '2.0'
+openapi: '3.0.0'
 
 info:
   version: "1.0.0"
   title: REST API app
-
-consumes:
-  - text/plain
-
-produces:
-  - application/json
-
+  
+servers: 
+  - url: http://localhost:3000
+  
 paths:
   /:
     get:
@@ -17,10 +14,10 @@ paths:
       responses:
         200:
           description: Hello World
-          schema:
-            type: string
-          examples:
-            string: "Hello World!"
+          content:
+            text:
+              example: 
+                text: "Hello World!"
 
   /health:
     get:
@@ -31,10 +28,12 @@ paths:
       responses:
         200:
           description: Health check response
-          schema:
-            $ref: "#/definitions/HealthResponse"
-          examples:
-            application/json: { "success": "true", "message": "Server is up!", "status": "UP" }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example: 
+                application/json: { "success": "true", "message": "Server is up!", "status": "UP" }
 
   /ping:
     get:
@@ -45,21 +44,56 @@ paths:
       responses:
         200:
           description: Ping response
-          schema:
-            $ref: "#/definitions/ResponseBody"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseBody'
+            
+  /secured:
+    get:
+      operationId: getSecured
+      tags:
+        - Secured
+      description: Get status of app after authenticating
+      security: #this is not at root level in yaml because only this route is secured/needs auth token
+      - BearerAuth: []
+      responses:
+        200:
+          description: Secured route response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecuredResponse'
 
+components:
+  securitySchemes:
+      BearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT 
+  schemas:
+    ResponseBody:
+      properties:
+        success:
+          type: boolean
+        message: 
+          type: string
+          
+    HealthResponse:
+      allOf:  
+        - $ref: '#/components/schemas/ResponseBody'
+        - type: object
+          properties:
+            success:
+              type: boolean
+            message: 
+              type: string
+              
+    SecuredResponse:
+      allOf:  
+        - $ref: '#/components/schemas/ResponseBody'
+        - type: object
+          properties:
+            status:
+              type: string
 
-definitions:
-  ResponseBody:
-    type: "object"
-    properties:
-      success:
-        type: "boolean"
-      message:
-        type: "string"
-  HealthResponse:
-    allOf:
-      - $ref: '#/definitions/ResponseBody'
-      - properties:
-          status:
-            type: "string"

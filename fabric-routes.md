@@ -43,6 +43,20 @@ The module is found at *server/middlewares/fabric-routes.js* and searches for th
       "path": "/ping",
       "fabric-connection": "conn1",
       "modulePath": "routes/ping"
+    },
+    {
+      "path": "/secured",
+      "fabric-connection": "conn1",
+      "modulePath": "routes/secured", 
+      "protected" : {
+        "enabled": true, 
+        "methods": [
+          "get"
+        ],
+        "whitelist": [
+          "<clientIds>"
+        ]
+      }
     }
   ]
 }
@@ -62,7 +76,7 @@ The *fabric-connections* JSON file has two main keys: `fabric-connections` and `
 },
 ```
 
-In the second key, `routes`, you add all the routes in your app that need to connect to the Fabric network. For each route, you specify the route path, the fabric-connection the handler for that route will need and the path to the router module where you have defined this route and its handler function. The router module path should be relative to the root of your server app, aka from within the *server* directory. For this example, we have one route defined that uses the `conn1` connection and whose router module is defined at *routes/ping.js* (read the Development section above if you need further clarification on the router). Each route can have only a single fabric-connection, but a fabric-connection can be mapped to multiple routes.
+In the second key, `routes`, you add all the routes in your app that need to connect to the Fabric network. For each route, you specify the route path, the fabric-connection the handler for that route will need and the path to the router module where you have defined this route and its handler function. The router module path should be relative to the root of your server app, aka from within the *server* directory. For this example, we have one route defined that uses the `conn1` connection and whose router module is defined at *routes/ping.js* (read the Development section above if you need further clarification on the router). Each route can have only a single fabric-connection, but a fabric-connection can be mapped to multiple routes. Inside of `routes` you have the ability to enable authentication with [IBM App ID](https://cloud.ibm.com/docs/services/appid?topic=appid-about#about) by providing the `protected` object with the array of REST `methods` secured for that route, and the `whitelist` array of client id's that are allowed to access the endpoint. See the `secured` route example in the snippet above. 
 
 
 ## What does this configuration give you?
