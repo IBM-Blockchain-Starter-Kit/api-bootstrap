@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2018 IBM Corp. All Rights Reserved.
  *
@@ -14,12 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-const passport = require('passport');
-const { APIStrategy } = require('ibmcloud-appid');
+const express = require('express');
+const log4js = require('log4js');
 const config = require('config');
 
-// const LocalStrategy = require('passport-local');
+const secured = require('../controllers/securedPing');
 
+const router = express.Router();
 
-passport.use(new APIStrategy({ oauthServerUrl: config.appid.oauthServerUrl }));
+/**
+ * Set up logging
+ */
+const logger = log4js.getLogger('routes - securedPing');
+logger.setLevel(config.logLevel);
+
+/**
+ * Add protected route
+ */
+
+router.get('/', secured.getSecured);
+
+module.exports = router;

@@ -92,23 +92,4 @@ util.userEnroll = (orgName, enrollId, enrollSecret) => {
   }));
 };
 
-/**
- * Helper to grab auth header from request
- */
-util.getAccessToken = (req, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    logger.debug('Authorization header not found');
-    return next(new Error('Authorization header not found'));
-  }
-
-  // Check for Bearer type in header component
-  const authHeaderComponents = authHeader.split(' ');
-  if (authHeaderComponents[0].indexOf('Bearer') !== 0) {
-    logger.debug('Malformed authorization header');
-    return next(new Error('Malformed authorization header'));
-  }
-  return authHeaderComponents[1];
-};
-
 module.exports = util;

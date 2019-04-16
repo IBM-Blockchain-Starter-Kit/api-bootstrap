@@ -20,15 +20,12 @@
       "modulePath": "routes/ping"
     },
     {
-      "path": "/secured",
+      "path": "/securedPing",
       "fabric-connection": "conn1",
-      "modulePath": "routes/secured", 
+      "modulePath": "routes/securedPing", 
       "protected" : {
         "enabled": true, 
-        "methods": [
-          "get"
-        ],
-        "whitelist": [
+        "allowedClients": [
           ""
         ]
       }

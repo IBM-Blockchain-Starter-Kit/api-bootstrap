@@ -22,18 +22,22 @@ const { APIStrategy } = require('ibmcloud-appid');
 
 const util = require('../helpers/util');
 const walletHelper = require('../helpers/wallet');
+const auth = require('../helpers/auth');
 
 const ccp = require(`${__dirname}/../config/fabric-connection-profile.json`); // common connection profile
 const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); // fabric connections configuration
-
-const auth = require('../middlewares/auth'); // whitelist of clientId's
-
 
 /**
  * Set up logging
  */
 const logger = log4js.getLogger('middlewares - fabric-routes');
 logger.setLevel(config.logLevel);
+
+/**
+ * Define the list of HTTP Methods to secure
+ */
+const HTTPMethods = ['post', 'get', 'put', 'patch', 'delete'];
+
 
 /**
  * Load the exported router at the path given
@@ -77,13 +81,15 @@ class FabricRoutes {
 
       // if route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
-        logger.debug(`${route.path}: ${route.protected.methods} => add auth`);
-        route.protected.methods.forEach((method) => {
+        logger.debug(`${route.path} => add auth`);
+        // change this line when switching passport strategy
+        passport.use(new APIStrategy({ oauthServerUrl: config.appid.oauthServerUrl }));
+        HTTPMethods.forEach((method) => {
           // Add protected route
-          // pass a 'whitelist' array of clientIds read from config
+          // pass a 'allowedClients' array of clientIds read from config
           this.router[method](route.path,
             passport.authenticate(APIStrategy.STRATEGY_NAME, { session: false }),
-            auth.filter(route.protected.whitelist));
+            auth.filter(route.protected.allowedClients));
         });
       }
 

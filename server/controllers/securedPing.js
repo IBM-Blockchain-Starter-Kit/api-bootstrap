@@ -18,15 +18,15 @@ const log4js = require('log4js');
 const config = require('config');
 const util = require('../helpers/util');
 
-const logger = log4js.getLogger('controllers - secured');
+const logger = log4js.getLogger('controllers - securedPing');
 logger.setLevel(config.logLevel);
 
 /**
  * Controller object
  */
-const secured = {};
+const securedPing = {};
 
-secured.getSecured = async (req, res, next) => {
+securedPing.getSecured = async (req, res, next) => {
   logger.debug('inside getSecured()...');
 
   let jsonRes;
@@ -59,4 +59,4 @@ secured.getSecured = async (req, res, next) => {
   next(); // middleware call to disconnect from gateway
 };
 
-module.exports = secured;
+module.exports = securedPing;
