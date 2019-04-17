@@ -76,7 +76,7 @@ class FabricRoutes {
       // if route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
         logger.debug(`${route.path} => add auth`);
-        // change this line when switching passport strategy
+        // if there is indeed a need to change passport strategy, change line below
         passport.use(new APIStrategy({ oauthServerUrl: config.appid.oauthServerUrl }));
         // Add protected route
         // pass a 'allowedClients' array of clientIds read from config
