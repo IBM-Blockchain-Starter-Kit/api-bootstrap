@@ -16,7 +16,6 @@
 const jwt = require('jsonwebtoken');
 const log4js = require('log4js');
 const config = require('config');
-const util = require('../helpers/util');
 
 /**
  * Set up logging

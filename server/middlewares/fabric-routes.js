@@ -33,10 +33,10 @@ const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); 
 const logger = log4js.getLogger('middlewares - fabric-routes');
 logger.setLevel(config.logLevel);
 
-/**
- * Define the list of HTTP Methods to secure
- */
-const HTTPMethods = ['post', 'get', 'put', 'patch', 'delete'];
+// /**
+//  * Define the list of HTTP Methods to secure
+//  */
+// const HTTPMethods = ['post', 'get', 'put', 'patch', 'delete'];
 
 
 /**
@@ -84,13 +84,11 @@ class FabricRoutes {
         logger.debug(`${route.path} => add auth`);
         // change this line when switching passport strategy
         passport.use(new APIStrategy({ oauthServerUrl: config.appid.oauthServerUrl }));
-        HTTPMethods.forEach((method) => {
-          // Add protected route
-          // pass a 'allowedClients' array of clientIds read from config
-          this.router[method](route.path,
-            passport.authenticate(APIStrategy.STRATEGY_NAME, { session: false }),
-            auth.filter(route.protected.allowedClients));
-        });
+        // Add protected route
+        // pass a 'allowedClients' array of clientIds read from config
+        this.router.use(route.path,
+          passport.authenticate(APIStrategy.STRATEGY_NAME, { session: false }),
+          auth.filter(route.protected.allowedClients));
       }
 
       this.router.use(route.path,
