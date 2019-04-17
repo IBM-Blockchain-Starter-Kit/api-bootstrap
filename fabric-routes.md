@@ -43,6 +43,17 @@ The module is found at *server/middlewares/fabric-routes.js* and searches for th
       "path": "/ping",
       "fabric-connection": "conn1",
       "modulePath": "routes/ping"
+    },
+    {
+      "path": "/securedPing",
+      "fabric-connection": "conn1",
+      "modulePath": "routes/securedPing", 
+      "protected" : {
+        "enabled": true, 
+        "allowedClients": [
+          "<clientIds>"
+        ]
+      }
     }
   ]
 }
@@ -62,14 +73,14 @@ The *fabric-connections* JSON file has two main keys: `fabric-connections` and `
 },
 ```
 
-In the second key, `routes`, you add all the routes in your app that need to connect to the Fabric network. For each route, you specify the route path, the fabric-connection the handler for that route will need and the path to the router module where you have defined this route and its handler function. The router module path should be relative to the root of your server app, aka from within the *server* directory. For this example, we have one route defined that uses the `conn1` connection and whose router module is defined at *routes/ping.js* (read the Development section above if you need further clarification on the router). Each route can have only a single fabric-connection, but a fabric-connection can be mapped to multiple routes.
+In the second key, `routes`, you add all the routes in your app that need to connect to the Fabric network. For each route, you specify the route path, the fabric-connection the handler for that route will need and the path to the router module where you have defined this route and its handler function. The router module path should be relative to the root of your server app, aka from within the *server* directory. For this example, we have one route defined that uses the `conn1` connection and whose router module is defined at *routes/ping.js* (read the Development section above if you need further clarification on the router). Each route can have only a single fabric-connection, but a fabric-connection can be mapped to multiple routes. Inside of `routes` you have the ability to enable authentication with [IBM App ID](https://cloud.ibm.com/docs/services/appid?topic=appid-about#about) by providing the `protected` object with the `allowedClients` array of client id's that are allowed to access the endpoint. See the `securedPing` route example in the snippet above. 
 
 
 ## What does this configuration give you?
 Following the example file, when it comes time to implement our ping route handler, we already have a ready-to-use fabric-network Gateway instance where we can invoke and query the chaincode(s) we need. To invoke or query the chaincode(s) defined in the fabric-connection for this route, you simply need to do the following call: `await res.locals.<channelName>.<chaincode>.submitTransaction()` or `await res.locals.<channelName>.<chaincode>.evaluateTransaction()`.
 
 ## How does it all come together?
-Everything is configued and defined, but how does it all come together and how is it all registered to our Express app? In order to register these routes and mount their dynamically created fabric-connection middleware functions, you have to add the following in the *routes/index.js* file:
+Everything is configured and defined, but how does it all come together and how is it all registered to our Express app? In order to register these routes and mount their dynamically created fabric-connection middleware functions, you have to add the following in the *routes/index.js* file:
 
 ```
 const { FabricRoutes } = require('../middlewares/fabric-routes');

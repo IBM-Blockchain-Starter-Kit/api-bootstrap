@@ -18,6 +18,17 @@
       "path": "/ping",
       "fabric-connection": "conn1",
       "modulePath": "routes/ping"
+    },
+    {
+      "path": "/securedPing",
+      "fabric-connection": "conn1",
+      "modulePath": "routes/securedPing", 
+      "protected" : {
+        "enabled": true, 
+        "allowedClients": [
+          "<clientId>"
+        ]
+      }
     }
   ]
 }

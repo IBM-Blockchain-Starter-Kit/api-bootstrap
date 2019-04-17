@@ -4,6 +4,7 @@ const chaiHttp = require('chai-http');
 const config = require('config');
 
 const server = require('../server/server');
+const should = chai.should();
 
 chai.use(chaiHttp);
 
@@ -29,6 +30,14 @@ describe('Testing Server', () => {
       expect(res.status).to.equal(404);
       expect(res.body).to.be.a('object');
       expect(res.body.success).to.equal(false);
+    });
+  });
+
+  describe('/securedPing', () => {
+    it('should return 401', async () => {
+      const res = await chai.request(url).get('/securedPing');
+      expect(res.status).to.equal(401);
+      res.text.should.be.equal('Unauthorized');
     });
   });
 
