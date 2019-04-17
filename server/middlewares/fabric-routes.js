@@ -33,12 +33,6 @@ const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); 
 const logger = log4js.getLogger('middlewares - fabric-routes');
 logger.setLevel(config.logLevel);
 
-// /**
-//  * Define the list of HTTP Methods to secure
-//  */
-// const HTTPMethods = ['post', 'get', 'put', 'patch', 'delete'];
-
-
 /**
  * Load the exported router at the path given
  */
