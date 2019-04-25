@@ -187,8 +187,10 @@ The [mocha framework](https://mochajs.org/) along with the [chai library](http:/
 
 4.  Once the required file(s) have been changed for the Kubernetes or Cloud Foundry deployment, the toolchain will detect the change and the delivery service will deploy the application appropriately.
 
+## Troubleshooting
+
 ### Fix for possible Kubernetes deployment filure
-When deploying the application on the Kubernetes cluster, the toolchain might fail after running a few times.  The reson for this can be due to the fact that Kubernetes cluster has run out of resources when storing the application image.  To fix the problem, follow the steps below to delete the oldest deloyed image by updating the  Kubernetes deployment `build` stage. 
+1.  When deploying the application on the Kubernetes cluster, the toolchain might fail after running a few times.  The reson for this can be due to the fact that Kubernetes cluster has run out of resources when storing the application image.  To fix the problem, follow the steps below to delete the oldest deloyed image by updating the  Kubernetes deployment `build` stage. 
 
 Go to toolchain Delivery Pipline >> Build stage >> Configure stage >> Jobs(tab).  Locate and edit the build script section
 and insert the following lines just before `echo "source the container_build script to run in current shell"`.
@@ -197,3 +199,6 @@ and insert the following lines just before `echo "source the container_build scr
 image2Remove=$(echo $(ibmcloud cr image-list -q) | awk '{print $ 1}' )
 ibmcloud cr image-rm $image2Remove 
 ``` 
+
+2.  In the final `PROD` stage, `Deploy Helm Chart` job might fail with the following error:
+`Error: UPGRADE FAILED: "<APPNAME>" has no deployed releases`.  To resolve this error delete the deployed Helm chart for this application by running the following command: `helm del --purge <APPNAME>`.  Restart the delivery pipeline from the beginning.
