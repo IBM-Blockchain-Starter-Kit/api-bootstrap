@@ -1,9 +1,9 @@
 {
-  "fabric-connections": {
-    "serviceDiscovery": {
-      "enabled": true,
-      "asLocalhost": false
-    },
+  "serviceDiscovery": {
+    "enabled": true,
+    "asLocalhost": false
+  },
+  "fabricConnections": {
     "conn1": [
       {
         "channel": "defaultchannel",
@@ -16,12 +16,12 @@
   "routes": [
     {
       "path": "/ping",
-      "fabric-connection": "conn1",
+      "fabricConnection": "conn1",
       "modulePath": "routes/ping"
     },
     {
       "path": "/securedPing",
-      "fabric-connection": "conn1",
+      "fabricConnection": "conn1",
       "modulePath": "routes/securedPing", 
       "protected" : {
         "enabled": true, 

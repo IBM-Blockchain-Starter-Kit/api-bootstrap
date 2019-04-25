@@ -22,29 +22,36 @@ const { FabricRoutes } = require('../middlewares/fabric-routes');
 const health = require('./health');
 
 const router = express.Router();
-
-/**
- * Set up logging
- */
 const logger = log4js.getLogger('routes - index');
 logger.setLevel(config.logLevel);
 
 /**
- * Add routes
+ * Add all the specified routes and return the router object
  */
-router.use('/health', health);
+async function setupRoutes() {
+  logger.debug('entering >>> setupRoutes');
 
-// Hyperledger Fabric routes
-// add specified routes and create their middleware functions to connect to the fabric network
-const fabricRoutes = new FabricRoutes(router);
-fabricRoutes.setup();
+  try {
+    // Add routes
+    router.use('/health', health);
 
-/**
- * GET home page
- */
-router.get('/', (req, res) => {
-  logger.debug('GET /');
-  res.redirect('/api-docs');
-});
+    // Hyperledger Fabric routes
+    // add specified routes and create their middleware functions to connect to the fabric network
+    const fabricRoutes = new FabricRoutes(router);
+    await fabricRoutes.setup();
 
-module.exports = router;
+    // GET home page
+    router.get('/', (req, res) => {
+      logger.debug('GET /');
+      res.redirect('/api-docs');
+    });
+
+    logger.debug('exiting <<< setupRoutes');
+    return router;
+  } catch (err) {
+    logger.error(err.message);
+    throw new Error(err.message);
+  }
+}
+
+module.exports = setupRoutes;

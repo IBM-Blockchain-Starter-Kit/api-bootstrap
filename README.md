@@ -20,7 +20,7 @@ $ npm run test
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
 
 ## Fabric Network Getting Started
-The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network.
+The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network. **NOTE:** Currently, only one Blockchain identity is supported in this application.
 
 - Download one of your 'common connection profile' json files and copy it into the *server/config* directory, naming it *fabric-connection-profile.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
 
