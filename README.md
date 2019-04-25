@@ -165,3 +165,35 @@ When performing the request for this endpoint, the client applications will need
 
 ## Testing
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
+
+## Deploy application on IBM Cloud
+
+### Create a new Toolchain
+
+1.  Create a new Devops toolchain:
+    1.  Go to the Dashboard >> DevOps >> `Create a Toolchain`
+    2.  If deplyoing a Kubernetes based application create a toolchain by selecting `Develop a Kubernetes app with Helm`.
+    3.  If deplyoing a Cloud Foundry based application create a toolchain by selecting `Develop a Cloud Foundry app`.
+    4.  Follow prompts and provide the required information such as toolchain name, git repository, api key, etc..
+
+### Edit the required files and deploy
+2.  Running as a Kubernetes based application:
+    1.  Rename the directory from `App-nameXYZ` under the **./chart** directory to the correct name of the application.
+    2.  Edit the `Chart.yaml` file under `chart\<renamed application directory name>` from step 1 and change the value of the `name` field to the same name as specified in step 1.
+    3.  Edit the `values.yaml` file under `chart\<renamed application directory name>` from step 1 and change the value of the `repository` field placeholder from `<registry.ng.bluemix.net>/<namespace>/App-nameXYZ` to the appropriate values including the application name from step 1.
+
+3.  Running as a Cloud Foundry application:    
+    * Update the `name` field in `manifest.yml` file to reflect the correct **name** of the application that will be deployed.
+
+4.  Once the required file(s) have been changed for the Kubernetes or Cloud Foundry deployment, the toolchain will detect the change and the delivery service will deploy the application appropriately.
+
+### Fix for possible Kubernetes deployment filure
+When deploying the application on the Kubernetes cluster, the toolchain might fail after running a few times.  The reson for this can be due to the fact that Kubernetes cluster has run out of resources when storing the application image.  To fix the problem, follow the steps below to delete the oldest deloyed image by updating the  Kubernetes deployment `build` stage. 
+
+Go to toolchain Delivery Pipline >> Build stage >> Configure stage >> Jobs(tab).  Locate and edit the build script section
+and insert the following lines just before `echo "source the container_build script to run in current shell"`.
+
+```
+image2Remove=$(echo $(ibmcloud cr image-list -q) | awk '{print $ 1}' )
+ibmcloud cr image-rm $image2Remove 
+``` 
