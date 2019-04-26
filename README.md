@@ -170,26 +170,26 @@ The [mocha framework](https://mochajs.org/) along with the [chai library](http:/
 
 ### Create a new Toolchain
 
-1.  Create a new Devops toolchain:
-    1.  Go to the Dashboard >> DevOps >> `Create a Toolchain`
-    2.  If deplyoing a Kubernetes based application create a toolchain by selecting `Develop a Kubernetes app with Helm`.
-    3.  If deplyoing a Cloud Foundry based application create a toolchain by selecting `Develop a Cloud Foundry app`.
+*  Create a new Devops toolchain:
+    1.  Go to the Dashboard >> DevOps and click on `Create a Toolchain`.
+    2.  If deplyoing a **Kubernetes** based application create a toolchain by selecting `Develop a Kubernetes app with Helm`.
+    3.  If deplyoing a **Cloud Foundry** based application create a toolchain by selecting `Develop a Cloud Foundry app`.
     4.  Follow prompts and provide the required information such as toolchain name, git repository, api key, etc..
 
-### Edit the required files and deploy
-2.  Running as a Kubernetes based application:
+### Edit the required source files and deploy
+*  Running as a Kubernetes based application:
     1.  Rename the directory from `App-nameXYZ` under the **./chart** directory to the correct name of the application.
     2.  Edit the `Chart.yaml` file under `chart\<renamed application directory name>` from step 1 and change the value of the `name` field to the same name as specified in step 1.
     3.  Edit the `values.yaml` file under `chart\<renamed application directory name>` from step 1 and change the value of the `repository` field placeholder from `<registry.ng.bluemix.net>/<namespace>/App-nameXYZ` to the appropriate values including the application name from step 1.
 
-3.  Running as a Cloud Foundry application:    
+*  Running as a Cloud Foundry application:    
     * Update the `name` field in `manifest.yml` file to reflect the correct **name** of the application that will be deployed.
 
-4.  Once the required file(s) have been changed for the Kubernetes or Cloud Foundry deployment, the toolchain will detect the change and the delivery service will deploy the application appropriately.
+*  Once the required file(s) have been changed for the Kubernetes or Cloud Foundry deployment, the toolchain will detect the change and the delivery service will deploy the application appropriately.
 
 ## Troubleshooting
 
-### Fix for possible Kubernetes deployment filure
+### Fix for possible Kubernetes deployment failure(s)
 1.  When deploying the application on the Kubernetes cluster, the toolchain might fail after running a few times.  The reson for this can be due to the fact that Kubernetes cluster has run out of resources when storing the application image.  To fix the problem, follow the steps below to delete the oldest deloyed image by updating the  Kubernetes deployment `build` stage. 
 
 Go to toolchain Delivery Pipline >> Build stage >> Configure stage >> Jobs(tab).  Locate and edit the build script section
@@ -201,4 +201,8 @@ ibmcloud cr image-rm $image2Remove
 ``` 
 
 2.  In the final `PROD` stage, `Deploy Helm Chart` job might fail with the following error:
-`Error: UPGRADE FAILED: "<APPNAME>" has no deployed releases`.  To resolve this error delete the deployed Helm chart for this application by running the following command: `helm del --purge <APPNAME>`.  Restart the delivery pipeline from the beginning.
+`Error: UPGRADE FAILED: "<APPNAME>" has no deployed releases`.  To resolve this error check the status of the deployed application and then delete it.
+
+    1.  Get a list of all the deployed applications by running the command : `helm init`.
+    2.  Delete the deployed Helm chart for this application by running the command : `helm del --purge <APPNAME>`.  
+    3.  Restart the delivery pipeline from the very beginning.
