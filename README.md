@@ -178,31 +178,34 @@ The [mocha framework](https://mochajs.org/) along with the [chai library](http:/
 
 ### Edit the required source files and deploy
 *  Running as a Kubernetes based application:
-    1.  Rename the directory from `App-nameXYZ` under the **./chart** directory to the correct name of the application.
-    2.  Edit the `Chart.yaml` file under `chart\<renamed application directory name>` from step 1 and change the value of the `name` field to the same name as specified in step 1.
-    3.  Edit the `values.yaml` file under `chart\<renamed application directory name>` from step 1 and change the value of the `repository` field placeholder from `<registry.ng.bluemix.net>/<namespace>/App-nameXYZ` to the appropriate values including the application name from step 1.
+    1.  Rename the directory from `app-name` under the **./chart** directory to the correct name of the application.
+    2.  Edit the `Chart.yaml` file under `chart\<app-name>` and update the value of the `name` field to the application name (as specified in step 1).
+    3.  Edit the `values.yaml` file under `chart\<app-name>` and update the value of the `repository` field accordingly (update domain, namespace and application name).
 
 *  Running as a Cloud Foundry application:    
-    * Update the `name` field in `manifest.yml` file to reflect the correct **name** of the application that will be deployed.
+    1. Update the `name` field in `manifest.yml` file to reflect the correct **name** of the application that will be deployed.
 
 *  Once the required file(s) have been changed for the Kubernetes or Cloud Foundry deployment, the toolchain will detect the change and the delivery service will deploy the application appropriately.
 
 ## Troubleshooting
 
 ### Fix for possible Kubernetes deployment failure(s)
-1.  When deploying the application on the Kubernetes cluster, the toolchain might fail after running a few times.  The reson for this can be due to the fact that Kubernetes cluster has run out of resources when storing the application image.  To fix the problem, follow the steps below to delete the oldest deloyed image by updating the  Kubernetes deployment `build` stage. 
+1.  Depending on the resources available under your Kubernetes cluster, you may see the following error `Status: denied: You have exceeded your storage quota. Delete one or more images, or review your storage quota and pricing plan`.  To work around this limitation, delete the oldest deployed image by updating the Kubernetes deployment `build` stage:
 
-Go to toolchain Delivery Pipline >> Build stage >> Configure stage >> Jobs(tab).  Locate and edit the build script section
-and insert the following lines just before `echo "source the container_build script to run in current shell"`.
+    Go to toolchain Delivery Pipline >> Build stage >> Configure stage >> Jobs(tab) >> Pre-build check.  Locate and edit the build script section and uncomment the lines beginning with the following:
+    ```
+    # echo "=========================================================="
+    # KEEP=1
+    # echo -e "PURGING REGISTRY, only keeping last ${KEEP} image(s) based on image digests"
+    # COUNT=0 
 
-```
-image2Remove=$(echo $(ibmcloud cr image-list -q) | awk '{print $ 1}' )
-ibmcloud cr image-rm $image2Remove 
-``` 
+    ...
 
-2.  In the final `PROD` stage, `Deploy Helm Chart` job might fail with the following error:
-`Error: UPGRADE FAILED: "<APPNAME>" has no deployed releases`.  To resolve this error check the status of the deployed application and then delete it.
+    #fi
+    ```
 
-    1.  Get a list of all the deployed applications by running the command : `helm init`.
-    2.  Delete the deployed Helm chart for this application by running the command : `helm del --purge <APPNAME>`.  
-    3.  Restart the delivery pipeline from the very beginning.
+2.  If the `Deploy Helm Chart` job in the final `PROD` stage fails with the `Error: UPGRADE FAILED: "<app-name>" has no deployed releases` error, follow the steps below:
+
+    1.  Delete the deployed Helm chart for this application by running the command: `helm del --purge <app-name>`.  
+    1.  Restart the delivery pipeline from the very beginning.
+

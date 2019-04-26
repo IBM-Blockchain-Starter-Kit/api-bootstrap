@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: <registry.ng.bluemix.net>/<namespace>/App-nameXYZ
+  repository: <domain>/<namespace>/<app-name>
   tag: v1.0.0
   pullPolicy: Always
   resources:
@@ -30,7 +30,7 @@ base:
   enabled: false
   replicaCount: 1
   image:
-    tag : v0.9.9
+    tag: v0.9.9
   weight: 100
 istio:
   enabled: false
