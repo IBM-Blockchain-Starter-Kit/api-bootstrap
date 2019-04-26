@@ -17,16 +17,18 @@ Navigate to the Swagger UI at: http://localhost:3000/api-docs/
 $ npm run test
 ```
 
+The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
+
 ## Fabric Network Getting Started
 The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network.
 
 - Download one of your 'common connection profile' json files and copy it into the *server/config* directory, naming it *fabric-connection-profile.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
 
-- In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, [see below](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware).
+- In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, [see below](#fabric-routes-custom-middleware).
 
 - In *server/config/default.json*, you will need to update the `orgName` field to your org. Ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
 
-- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. More details on that can be found in [a later section](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware), but for now, set the line to `const contract = res.locals.<channel name>.<chaincode name>`. Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
+- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. More details on that can be found in [a later section](#fabric-routes-custom-middleware), but for now, set the line to `const contract = res.locals.<channel name>.<chaincode name>`. Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
 <br>There is a change required to call out to your specific chaincode: Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed.
 
 After making those changes, you can `GET http://localhost:3000/ping` to see the result.
@@ -64,10 +66,10 @@ const invokeResponse = await contract.submitTransaction('Health');
 const queryResponse = await contract.evaluateTransaction('Health');
 ```
 
-**NOTE:** This application uses a custom module to dynamically create and mount middleware functions that connect to a Fabric gateway. See the [Fabric Routes Custom Middleware section](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware) for more details.
+**NOTE:** This application uses a custom module to dynamically create and mount middleware functions that connect to a Fabric gateway. See the [Fabric Routes Custom Middleware](#fabric-routes-custom-middleware) section for more details.
 
 ## Development
-This app is built using node.js and the [express.js framework](https://expressjs.com/). The entire backend application is found within the *server* directory. The *public* directory contains the swagger.yaml used by the Swagger UI to display API definitions. Note that we use the [swagger-ui-express](https://github.com/scottie1984/swagger-ui-express) npm package to serve and render the Swagger UI, instead of directly including the ui source code.
+This app is built using Node.js and the [express.js framework](https://expressjs.com/). The entire backend application is found within the *server* directory. The *public* directory contains the swagger.yaml used by the Swagger UI to display API definitions. Note that we use the [swagger-ui-express](https://github.com/scottie1984/swagger-ui-express) npm package to serve and render the Swagger UI, instead of directly including the ui source code.
 
 To start the server in development mode, run `npm run dev`. This will start the server with [nodemon](https://github.com/remy/nodemon), which automatically restarts the node app when you make file changes. It simplifies testing when making changes and adding functionality.
 
@@ -149,63 +151,12 @@ For full API Reference and Documentation, start the server and navigate to http:
 
 ## Fabric Routes Custom Middleware
 
-Full documentation [here](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap/blob/master/fabric-routes.md)
+Please see [Fabric Routes Custom Middleware](docs/fabric-routes.md) for details.
 
-## Security Middleware - REST API Auth
+## Securing the endpoints
 
-This api-bootstrap contains an example route `/securedPing ` that leverages [IBM App ID](https://cloud.ibm.com/docs/services/appid?topic=appid-about#about) (API Strategy). It's recommended to use this pattern to secure new endpoints. The following steps are required to create **your** own App ID instance on the IBM Cloud:
+Please see [Securing the endpoints](docs/security.md) for details.
 
-- Log onto IBM Cloud and start a new [App ID Lite service](https://cloud.ibm.com/catalog/services/app-id)
-- Once the service is up, navigate on the left and click on `Service credential`
-- Click on `View credentials` in the list under the `Service credentials` list. If there are none listed under `Service credentials`, click on `New credential`
-- Copy the `oauthServerUrl` into the `default.json` configuration file (which is found in the `server/config` directory)
+## Deploy application to the IBM Cloud
 
-
-When performing the request for this endpoint, the client applications will need to include an authorization token. Check the App ID docs [here](https://cloud.ibm.com/docs/services/appid?topic=appid-backend#backend) for more information on how to attain an auth token from the service. The `auth.js` helper has a method that will filter through a list of `clientID's` to assure that the applications calling the endpoint are authorized to do so. Be sure to modify the `fabric-connections.json` for your custom route to enable the authentication. Please see the [Fabric Routes Custom Middleware section](https://github.com/IBM-Blockchain-Starter-Kit/api-bootstrap#fabric-routes-custom-middleware) for more details (there you will find instructions on how to specify the client IDs that should be allowed to access your secured endpoints).
-
-## Testing
-The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
-
-## Deploy application on IBM Cloud
-
-### Create a new Toolchain
-
-*  Create a new Devops toolchain:
-    1.  Go to the Dashboard >> DevOps and click on `Create a Toolchain`.
-    2.  If deplyoing a **Kubernetes** based application create a toolchain by selecting `Develop a Kubernetes app with Helm`.
-    3.  If deplyoing a **Cloud Foundry** based application create a toolchain by selecting `Develop a Cloud Foundry app`.
-    4.  Follow prompts and provide the required information such as toolchain name, git repository, api key, etc..
-
-### Edit the required source files and deploy
-*  Running as a Kubernetes based application:
-    1.  Rename the directory from `app-name` under the **./chart** directory to the correct name of the application.
-    2.  Edit the `Chart.yaml` file under `chart\<app-name>` and update the value of the `name` field to the application name (as specified in step 1).
-    3.  Edit the `values.yaml` file under `chart\<app-name>` and update the value of the `repository` field accordingly (update domain, namespace and application name).
-
-*  Running as a Cloud Foundry application:    
-    1. Update the `name` field in `manifest.yml` file to reflect the correct **name** of the application that will be deployed.
-
-*  Once the required file(s) have been changed for the Kubernetes or Cloud Foundry deployment, the toolchain will detect the change and the delivery service will deploy the application appropriately.
-
-## Troubleshooting
-
-### Fix for possible Kubernetes deployment failure(s)
-1.  Depending on the resources available under your Kubernetes cluster, you may see the following error `Status: denied: You have exceeded your storage quota. Delete one or more images, or review your storage quota and pricing plan`.  To work around this limitation, delete the oldest deployed image by updating the Kubernetes deployment `build` stage:
-
-    Go to toolchain Delivery Pipline >> Build stage >> Configure stage >> Jobs(tab) >> Pre-build check.  Locate and edit the build script section and uncomment the lines beginning with the following:
-    ```
-    # echo "=========================================================="
-    # KEEP=1
-    # echo -e "PURGING REGISTRY, only keeping last ${KEEP} image(s) based on image digests"
-    # COUNT=0 
-
-    ...
-
-    #fi
-    ```
-
-2.  If the `Deploy Helm Chart` job in the final `PROD` stage fails with the `Error: UPGRADE FAILED: "<app-name>" has no deployed releases` error, follow the steps below:
-
-    1.  Delete the deployed Helm chart for this application by running the command: `helm del --purge <app-name>`.  
-    1.  Restart the delivery pipeline from the very beginning.
-
+Please see [Deploy application to the IBM Cloud](docs/deployment.md) for details.
