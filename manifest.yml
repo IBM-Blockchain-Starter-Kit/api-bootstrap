@@ -1,0 +1,10 @@
+---
+applications:
+- instances: 1
+  timeout: 180
+  name: <app-name>
+  buildpack: sdk-for-nodejs
+  command: npm start
+  memory: 256M
+  health-check-type: http
+  health-check-http-endpoint: /health
