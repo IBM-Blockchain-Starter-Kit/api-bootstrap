@@ -26,7 +26,7 @@ logger.setLevel(config.logLevel);
  */
 const securedPing = {};
 
-securedPing.getSecured = async (req, res, next) => {
+securedPing.getSecured = async (req, res) => {
   logger.debug('inside getSecured()...');
 
   let jsonRes;
@@ -56,7 +56,6 @@ securedPing.getSecured = async (req, res, next) => {
 
   logger.debug('exiting <<< getSecured()');
   util.sendResponse(res, jsonRes);
-  next(); // middleware call to disconnect from gateway
 };
 
 module.exports = securedPing;

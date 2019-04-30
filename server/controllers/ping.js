@@ -27,7 +27,7 @@ logger.setLevel(config.logLevel);
  */
 const ping = {};
 
-ping.pingCC = async (req, res, next) => {
+ping.pingCC = async (req, res) => {
   logger.debug('entering >>> pingCC()');
 
   let jsonRes;
@@ -60,7 +60,6 @@ ping.pingCC = async (req, res, next) => {
 
   logger.debug('exiting <<< pingCC()');
   util.sendResponse(res, jsonRes);
-  next(); // middleware call to disconnect from gateway
 };
 
 module.exports = ping;

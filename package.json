@@ -30,7 +30,9 @@
     "npm": "5.6.x"
   },
   "devDependencies": {
+    "bluebird": "3.5.4",
     "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "chai-http": "^4.0.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
@@ -38,6 +40,22 @@
     "eslint-plugin-import": "^2.13.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.3",
-    "nyc": "^12.0.2"
+    "nyc": "^12.0.2",
+    "proxyquire": "^2.1.0",
+    "rewire": "^4.0.1",
+    "sinon": "^5.0.7"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "test/**"
+    ],
+    "reporter": [
+      "lcov",
+      "json",
+      "text",
+      "text-summary",
+      "cobertura"
+    ]
   }
 }

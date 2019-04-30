@@ -24,7 +24,7 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const config = require('config');
 
-const routes = require('./routes');
+const setupRoutes = require('./routes/index');
 const errorHandler = require('./middlewares/error-handler');
 
 const app = express();
@@ -53,22 +53,26 @@ app.use(bodyParser.json({ limit: '50mb' }));
 /**
  * Register routes
  */
-app.use(routes);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+setupRoutes().then((router) => {
+  app.use(router);
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-/**
- * Error handler
- */
-app.use(errorHandler.catchNotFound);
-app.use(errorHandler.handleError);
+  /**
+   * Error handler
+   */
+  app.use(errorHandler.catchNotFound);
+  app.use(errorHandler.handleError);
 
-/**
- * Start server
- */
-const host = process.env.HOST || config.host;
-const port = process.env.PORT || config.port;
-app.listen(port, () => {
-  logger.info(`app listening on http://${host}:${port}`);
+  /**
+   * Start server
+   */
+  const host = process.env.HOST || config.host;
+  const port = process.env.PORT || config.port;
+  app.listen(port, () => {
+    logger.info(`app listening on http://${host}:${port}`);
 
-  logger.info(`Swagger UI is available at http://${host}:${port}/api-docs`);
+    logger.info(`Swagger UI is available at http://${host}:${port}/api-docs`);
+  });
+}).catch((err) => {
+  logger.error(err.message);
 });

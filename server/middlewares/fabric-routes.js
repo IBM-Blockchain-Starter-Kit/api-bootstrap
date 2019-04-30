@@ -54,24 +54,26 @@ class FabricRoutes {
   constructor(router) {
     this.router = router;
     this.middlewares = {};
+    this.gateway = new Gateway();
   }
 
   /**
-   * After creating the middlewares, it will create the routes with the
-   * connection middleware, the existing router with controllers and other midddlwares,
-   * and the disconnect middleware
+   * Connect the gateway instance. After creating the middlewares, it will create the routes with
+   * the connection middleware and the existing router with controllers and other midddlwares
    */
-  setup() {
+  async setup() {
     logger.debug('entering >>> setup()');
+
+    // create and connect gateway
+    await this.setupGateway();
 
     // parse json file and create middleware functions
     this.createMiddlewares();
 
-    // iterate through routes and set corresponding fabric-connection specified
+    // iterate through routes and set corresponding fabric connection specified
     logger.debug('Mounting middleware functions to routes');
     fabricConfig.routes.forEach((route) => {
-      logger.debug(`${route.path}: ${route['fabric-connection']} => route controller => disconnect`);
-
+      logger.debug(`${route.path}: ${route.fabricConnection} => route controller`);
 
       // if route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
@@ -86,69 +88,79 @@ class FabricRoutes {
       }
 
       this.router.use(route.path,
-        this.middlewares[route['fabric-connection']],
-        loadRouter(route.modulePath),
-        this.middlewares.disconnect);
+        this.middlewares[route.fabricConnection],
+        loadRouter(route.modulePath));
     });
 
     logger.debug('exiting <<< setup()');
   }
 
   /**
+   * Connect the gateway instance
+   */
+  async setupGateway() {
+    logger.debug('entering >>> setupGateway()');
+
+    try {
+      const org = config.orgName;
+      const user = process.env.FABRIC_ENROLL_ID;
+      const pw = process.env.FABRIC_ENROLL_SECRET;
+      const { serviceDiscovery } = fabricConfig;
+
+      // user enroll and import if identity not found in wallet
+      const idExists = await walletHelper.identityExists(user);
+      if (!idExists) {
+        logger.debug(`Enrolling and importing ${user} into wallet`);
+        const enrollInfo = await util.userEnroll(org, user, pw);
+        await walletHelper.importIdentity(user, org, enrollInfo.certificate, enrollInfo.key);
+      }
+
+      // gateway and contract connection
+      logger.debug('Connecting to gateway');
+      await this.gateway.connect(ccp, {
+        identity: user,
+        wallet: walletHelper.getWallet(),
+        discovery: { // https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.Gateway.html#~DiscoveryOptions
+          enabled: serviceDiscovery.enabled,
+          asLocalhost: serviceDiscovery.asLocalhost,
+        },
+      });
+      logger.debug('Connected to gateway');
+    } catch (err) {
+      logger.error(err.message);
+      throw new Error(err.message);
+    }
+
+    logger.debug('exiting <<< setupGateway()');
+  }
+
+  /**
    * Parse fabric-connections json file to create the middleware function for each
-   * fabric-connection. Each fabric connection will be a middleware function where
-   * a fabric-network gateway instance is created. The gateway instance is connected
-   * and all of the channels and chaincodes specified in this fabric connection are
-   * retrieved and stored in a map for use in the route controllers.
-   *
-   * Add the gateway instance disconnect middleware.
+   * fabric connection. Each fabric connection will be a middleware function where
+   * the gateway and all of the channels and chaincodes specified in this fabric
+   * connection are retrieved and stored in a map for use in the route controllers.
    */
   createMiddlewares() {
     logger.debug('entering >>> createMiddlewares()');
 
     // iterate through connections in config file and create middleware function for each
     logger.debug('Creating fabric connection middleware functions');
-    const connections = fabricConfig['fabric-connections'];
+    const connections = fabricConfig.fabricConnections;
     Object.entries(connections).forEach(([conn, networkConfigs]) => {
       logger.debug(`Creating ${conn} middleware`);
       // create the middleware function to be mounted
       this.middlewares[conn] = async (req, res, next) => {
         logger.debug(`${conn} middleware function to connect to gateway`);
-        const org = config.orgName;
-        const user = process.env.FABRIC_ENROLL_ID;
-        const pw = process.env.FABRIC_ENROLL_SECRET;
-        const gateway = new Gateway();
-
         try {
-          // user enroll and import if identity not found in wallet
-          const idExists = await walletHelper.identityExists(user);
-          if (!idExists) {
-            logger.debug(`Enrolling and importing ${user} into wallet`);
-            const enrollInfo = await util.userEnroll(org, user, pw);
-            await walletHelper.importIdentity(user, org, enrollInfo.certificate, enrollInfo.key);
-          }
-
-          // gateway and contract connection
-          logger.debug('Connecting to gateway');
-          await gateway.connect(ccp, {
-            identity: user,
-            wallet: walletHelper.getWallet(),
-            discovery: { // https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.Gateway.html#~DiscoveryOptions
-              enabled: connections.serviceDiscovery.enabled,
-              asLocalhost: connections.serviceDiscovery.asLocalhost,
-            },
-          });
-          logger.debug('Connected to gateway');
-
           // store gateway in res.locals for use in next function on the stack
           // see: https://stackoverflow.com/questions/18875292/passing-variables-to-the-next-middleware-using-next-in-express-js
-          res.locals.gateway = gateway;
+          res.locals.gateway = this.gateway;
 
           // get each specified channel/network instance in connection and store in res.locals
           await Promise.all(networkConfigs.map(async (networkConfig) => {
             logger.debug(`Getting network: ${networkConfig.channel}`);
             res.locals[networkConfig.channel] = {};
-            const network = await gateway.getNetwork(networkConfig.channel);
+            const network = await this.gateway.getNetwork(networkConfig.channel);
             res.locals[networkConfig.channel].network = network;
 
             // get each specified chaincode/contract instance in channel and store in res.locals
@@ -162,7 +174,6 @@ class FabricRoutes {
           next();
         } catch (err) {
           logger.error(err.message);
-          gateway.disconnect();
           const jsonRes = {
             statusCode: 500,
             success: false,
@@ -174,15 +185,6 @@ class FabricRoutes {
       logger.debug(`Done creating ${conn} middleware`);
     });
     logger.debug('Done creating fabric connection middleware functions');
-
-    // the gateway disconnect middleware
-    logger.debug('Creating fabric disconnect middleware function');
-    this.middlewares.disconnect = (req, res) => {
-      logger.debug('Disconnecting from gateway');
-      res.locals.gateway.disconnect();
-      logger.debug('Disconnected from gateway');
-    };
-    logger.debug('Done creating fabric disconnect middleware function');
 
     logger.debug('exiting <<< createMiddlewares()');
   }
