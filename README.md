@@ -2,6 +2,30 @@
 
 # REST API Scaffold for use in Blockchain Starter Kit
 
+This repository provides the scaffolding code for a Fabric client application that uses Node.js as its runtime. Development teams are encouraged to fork/clone this repository and use it as the starting codebase for their own blockchain projects. Please note that this application uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Changes to default config files and values need to be made in order to hook up to **your** Fabric network to this application.
+
+## Table of contents
+
+1. [Configuration](#configuration)
+1. [Running the server](#running-the-server)
+1. [Running tests](#running-tests)
+1. [Under the covers](#under-the-covers)
+1. [Development](#development)
+1. [Deployment to the IBM Cloud](docs/deployment.md)
+
+## Configuration
+
+- Download one of your 'common connection profile' JSON files and copy it into the *server/config* directory, naming it *fabric-connection-profile.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
+
+- In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, see [Fabric routes custom middleware](docs/fabric-routes.md).
+
+- In *server/config/default.json*, you will need to update the `orgName` field to your org. Ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
+
+- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. You should update the line to `const contract = res.locals.<channel name>.<chaincode name>` (see [Fabric routes custom middleware](docs/fabric-routes.md) for details). Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
+<br>There is a change required to call out to your specific chaincode: Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed.
+
+After making those changes, you can `GET http://localhost:3000/ping` to see the result.
+
 ## Running the server
 ```
 $ npm install
@@ -19,21 +43,7 @@ $ npm run test
 
 The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
 
-## Fabric Network Getting Started
-The app has boilerplate code to make a call out to a chaincode running on a Fabric network. It uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Some changes to default config files and values need to be made in order to hook up to **your** Fabric network.
-
-- Download one of your 'common connection profile' json files and copy it into the *server/config* directory, naming it *fabric-connection-profile.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
-
-- In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, [see below](#fabric-routes-custom-middleware).
-
-- In *server/config/default.json*, you will need to update the `orgName` field to your org. Ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
-
-- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. More details on that can be found in [a later section](#fabric-routes-custom-middleware), but for now, set the line to `const contract = res.locals.<channel name>.<chaincode name>`. Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
-<br>There is a change required to call out to your specific chaincode: Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed.
-
-After making those changes, you can `GET http://localhost:3000/ping` to see the result.
-
-### Under the covers
+## Under the covers
 You should have a good understanding of how a Hyperledger Fabric network and its SDK to interact with it works, but there are some high level concepts outlined here to understand the flow.
 
 A *FileSystemWallet* is used to manage identities for interacting with the network. More information can be found in the [Hyperledger Fabric SDK for node.js doc](https://fabric-sdk-node.github.io/FileSystemWallet.html). Look in *server/helpers/wallet.js* for some wallet helper functions.
@@ -66,7 +76,7 @@ const invokeResponse = await contract.submitTransaction('Health');
 const queryResponse = await contract.evaluateTransaction('Health');
 ```
 
-**NOTE:** This application uses a custom module to dynamically create and mount middleware functions that connect to a Fabric gateway. See the [Fabric Routes Custom Middleware](#fabric-routes-custom-middleware) section for more details.
+**NOTE:** This application uses a custom module to dynamically create and mount middleware functions that connect to a Fabric gateway. See the [Fabric Routes Custom Middleware](docs/fabric-routes.md) section for more details.
 
 ## Development
 This app is built using Node.js and the [express.js framework](https://expressjs.com/). The entire backend application is found within the *server* directory. The *public* directory contains the swagger.yaml used by the Swagger UI to display API definitions. Note that we use the [swagger-ui-express](https://github.com/scottie1984/swagger-ui-express) npm package to serve and render the Swagger UI, instead of directly including the ui source code.
@@ -147,16 +157,7 @@ The *middlewares* directory contains any middleware that is used in the app, suc
 
 The *helpers* directory contains any helper functions used in the app, such as a send response helper in *util.js* to send a request response back.
 
-For full API Reference and Documentation, start the server and navigate to http://localhost:3000/api-docs/.
+For full API Reference and Documentation, start the server and navigate to http://localhost:3000/api-docs/.  Also, please see:
 
-## Fabric Routes Custom Middleware
-
-Please see [Fabric Routes Custom Middleware](docs/fabric-routes.md) for details.
-
-## Securing the endpoints
-
-Please see [Securing the endpoints](docs/security.md) for details.
-
-## Deploy application to the IBM Cloud
-
-Please see [Deploy application to the IBM Cloud](docs/deployment.md) for details.
+* [Fabric routes custom middleware](docs/fabric-routes.md)
+* [Securing the endpoints](docs/security.md)
