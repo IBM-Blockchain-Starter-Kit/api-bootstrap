@@ -17,11 +17,11 @@ This repository provides the scaffolding code for a Fabric client application th
 
 - Download one of your 'common connection profile' JSON files and copy it into the *server/config* directory, naming it *fabric-connection-profile.json*. For instructions on how to do that on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-profile).
 
-- In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, [see below](#fabric-routes-custom-middleware).
+- In *server/config/fabric-connections.json*, you will need to update your channel names and chaincode names configuration. For more details on how to configure this file for your needs, see [Fabric routes custom middleware](docs/fabric-routes.md).
 
 - In *server/config/default.json*, you will need to update the `orgName` field to your org. Ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
 
-- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. More details on that can be found in [a later section](#fabric-routes-custom-middleware), but for now, set the line to `const contract = res.locals.<channel name>.<chaincode name>`. Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
+- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. You should update the line to `const contract = res.locals.<channel name>.<chaincode name>` (see [Fabric routes custom middleware](docs/fabric-routes.md) for details). Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
 <br>There is a change required to call out to your specific chaincode: Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed.
 
 After making those changes, you can `GET http://localhost:3000/ping` to see the result.
@@ -157,7 +157,7 @@ The *middlewares* directory contains any middleware that is used in the app, suc
 
 The *helpers* directory contains any helper functions used in the app, such as a send response helper in *util.js* to send a request response back.
 
-For full API Reference and Documentation, start the server and navigate to http://localhost:3000/api-docs/. Also, please see:
+For full API Reference and Documentation, start the server and navigate to http://localhost:3000/api-docs/.  Also, please see:
 
 * [Fabric routes custom middleware](docs/fabric-routes.md)
 * [Securing the endpoints](docs/security.md)
