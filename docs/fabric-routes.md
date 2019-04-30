@@ -1,4 +1,4 @@
-# Fabric Routes Custom Middleware
+# Fabric routes custom middleware
 
 As mentioned in some sections above, this application uses a custom module that will dynamically create and mount middleware functions that connect to a Fabric gateway. It is used for any routes in your application that need to connect to the Fabric network. In a nutshell, this module allows you to specify in a config file which routes in your application need to connect to which channels and chaincodes in your Fabric network. The module then parses that file, creates a gateway instance and connects to it, and dynamically creates middleware functions that get and store the gateway and the specified channel and chaincode instances for use in the route handler function. The middleware functions are then mounted to the routes specified in the config file.
 

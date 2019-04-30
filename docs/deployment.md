@@ -1,4 +1,4 @@
-# Deploy application to the IBM Cloud
+# Deployment to the IBM Cloud
 
 ## Create a new toolchain
 
