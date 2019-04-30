@@ -2,7 +2,7 @@
 
 # REST API Scaffold for use in Blockchain Starter Kit
 
-This repository provides the scaffolding code for a Fabric client application that uses Node.js as its runtime. Development teams are encouraged to fork/clone this repository as use it as the starting codebase for their own blockchain projects. Please note that this application uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Changes to default config files and values need to be made in order to hook up to **your** Fabric network to this application.
+This repository provides the scaffolding code for a Fabric client application that uses Node.js as its runtime. Development teams are encouraged to fork/clone this repository and use it as the starting codebase for their own blockchain projects. Please note that this application uses the new [fabric-network](https://www.npmjs.com/package/fabric-network) package. Changes to default config files and values need to be made in order to hook up to **your** Fabric network to this application.
 
 ## Table of contents
 
