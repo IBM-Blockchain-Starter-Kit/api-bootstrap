@@ -17,9 +17,8 @@
 const Promise = require('bluebird');
 const sinon = require('sinon');
 const chai = require('chai');
-const expect = require('chai').expect;
 const chaiHttp = require('chai-http');
-const proxyquire = require('proxyquire');
+const proxyquire = require('proxyquire').noPreserveCache();
 const express = require('express');
 const config = require('config');
 
@@ -27,6 +26,7 @@ const host = process.env.HOST || config.host;
 const port = process.env.PORT || config.port;
 const url = `http://${host}:${port}`;
 
+const expect = chai.expect;
 chai.use(chaiHttp);
 
 // set up fake router to return for setupRoutes()
@@ -34,25 +34,37 @@ const router = express.Router();
 router.get('/', (req, res) => {
   res.redirect('/api-docs');
 });
-const server = proxyquire('../server/server', {
-  './routes/index': sinon.stub().returns(Promise.resolve(router))
-});
 
 describe('server start up', () => {
-  describe('/doesnotexist', () => {
-    it('should return 404', async () => {
-      const res = await chai.request(url).get('/doesnotexist');
-      expect(res.status).to.equal(404);
-      expect(res.body).to.be.a('object');
-      expect(res.body.success).to.equal(false);
+
+  describe('startup fail', () => {
+    it('should gracefully handle error', () => {
+      const server = proxyquire('../server/server', {
+        './routes/index': sinon.stub().returns(Promise.reject(new Error('failed to set up routes')))
+      });
     });
   });
 
-  describe('/', () => {
-    it('should redirect to /api-docs', async () => {
-      const res = await chai.request(url).get('/');
-      expect(res).to.redirectTo(`${url}/api-docs`);
-      expect(res.status).to.equal(200);
+  describe('startup success', () => {
+    const server = proxyquire('../server/server', {
+      './routes/index': sinon.stub().returns(Promise.resolve(router))
+    });
+
+    describe('/doesnotexist', () => {
+      it('should return 404', async () => {
+        const res = await chai.request(url).get('/doesnotexist');
+        expect(res.status).to.equal(404);
+        expect(res.body).to.be.a('object');
+        expect(res.body.success).to.equal(false);
+      });
+    });
+  
+    describe('/', () => {
+      it('should redirect to /api-docs', async () => {
+        const res = await chai.request(url).get('/');
+        expect(res).to.redirectTo(`${url}/api-docs`);
+        expect(res.status).to.equal(200);
+      });
     });
   });
 });

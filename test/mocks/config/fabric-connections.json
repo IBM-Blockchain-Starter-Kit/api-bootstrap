@@ -1,0 +1,34 @@
+{
+  "serviceDiscovery": {
+    "enabled": true,
+    "asLocalhost": false
+  },
+  "fabricConnections": {
+    "conn1": [
+      {
+        "channel": "defaultchannel",
+        "chaincodes": [
+          "pingcc"
+        ]
+      }
+    ]
+  },
+  "routes": [
+    {
+      "path": "/ping",
+      "fabricConnection": "conn1",
+      "modulePath": "routes/ping"
+    },
+    {
+      "path": "/securedPing",
+      "fabricConnection": "conn1",
+      "modulePath": "routes/securedPing", 
+      "protected" : {
+        "enabled": true, 
+        "allowedClients": [
+          "<clientId>"
+        ]
+      }
+    }
+  ]
+}
