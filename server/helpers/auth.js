@@ -45,7 +45,8 @@ auth.filter = whitelist => (req, res, next) => {
     next();
   } else {
     logger.debug('token does not have the appropriate access rights (aud)');
-    res.status(401).send({ error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)' });
+    res.statusCode = 401;
+    res.json({ error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)' });
   }
 };
 

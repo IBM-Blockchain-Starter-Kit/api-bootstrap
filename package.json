@@ -7,7 +7,7 @@
     "dev": "NODE_CONFIG_DIR=./server/config nodemon server/server.js",
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
-    "test": "NODE_CONFIG_DIR=./server/config nyc mocha --exit"
+    "test": "FABRIC_ENROLL_ID=test FABRIC_ENROLL_SECRET=testpw NODE_CONFIG_DIR=./test/mocks/config nyc mocha --recursive --exit"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
@@ -43,7 +43,9 @@
     "nyc": "^12.0.2",
     "proxyquire": "^2.1.0",
     "rewire": "^4.0.1",
-    "sinon": "^5.0.7"
+    "rimraf": "^2.6.3",
+    "sinon": "^5.0.7",
+    "supertest": "^4.0.2"
   },
   "nyc": {
     "exclude": [
@@ -56,6 +58,7 @@
       "text",
       "text-summary",
       "cobertura"
-    ]
+    ],
+    "all": true
   }
 }
