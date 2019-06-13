@@ -4,7 +4,7 @@ replicaCount: 1
 revisionHistoryLimit: 1
 image:
   repository: <domain>/<namespace>/<app-name>
-  tag: v1.0.0
+  tag: 1.0.0
   pullPolicy: Always
   resources:
     requests:
