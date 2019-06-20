@@ -37,6 +37,8 @@ const { FabricRoutes } = FabricRoutesMod;
 // fake cert and key for enrollment
 const cert = fs.readFileSync(`${__dirname}/../mocks/cert`, 'utf8');
 const key = fs.readFileSync(`${__dirname}/../mocks/key`, 'utf8');
+const { orgName } = config;
+const { mspid } = ccp.organizations[orgName];
 
 const { expect } = chai;
 const should = chai.should();
@@ -57,7 +59,7 @@ describe('middleware - fabric-routes', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     // set fake util.userEnroll call for fabricRoutes.setup()
-    const fakeUserEnroll = sandbox.stub().returns(Promise.resolve({certificate: cert, key: key}));
+    const fakeUserEnroll = sandbox.stub().returns(Promise.resolve({certificate: cert, key, mspid}));
     const fakeSendResponse = sandbox.stub();
     fakeUtilReset = FabricRoutesMod.__set__('util', {
       sendResponse: fakeSendResponse,

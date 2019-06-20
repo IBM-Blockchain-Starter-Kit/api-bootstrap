@@ -69,6 +69,9 @@ util.userEnroll = (orgName, enrollId, enrollSecret) => {
     const fabricCAKey = orgs[orgName].certificateAuthorities[0];
     const caURL = CAs[fabricCAKey].url;
 
+    // get mspid for orgName
+    const { mspid } = orgs[orgName];
+
     // enroll user with certificate authority for orgName
     const tlsOptions = {
       trustedRoots: [],
@@ -82,6 +85,7 @@ util.userEnroll = (orgName, enrollId, enrollSecret) => {
     caService.enroll(req).then(
       (enrollment) => {
         enrollment.key = enrollment.key.toBytes();
+        enrollment.mspid = mspid;
         return resolve(enrollment);
       },
       (err) => {
