@@ -112,7 +112,8 @@ class FabricRoutes {
       if (!idExists) {
         logger.debug(`Enrolling and importing ${user} into wallet`);
         const enrollInfo = await util.userEnroll(org, user, pw);
-        await walletHelper.importIdentity(user, org, enrollInfo.certificate, enrollInfo.key);
+        await walletHelper.importIdentity(user, enrollInfo.mspid,
+          enrollInfo.certificate, enrollInfo.key);
       }
 
       // gateway and contract connection

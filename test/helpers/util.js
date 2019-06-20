@@ -69,14 +69,14 @@ describe('helpers - util', () => {
     it('should throw error when fabric ca enroll fails', async () => {
       sandbox.stub(FabricCAServices.prototype, 'enroll').callsFake(() => Promise.reject(new Error('error from fabric ca'))); // mock out call to FabricCA
 
-      return util.userEnroll('org1msp', 'app1', 'app1pw').should.be.rejectedWith(Error);
+      return util.userEnroll('org1', 'app1', 'app1pw').should.be.rejectedWith(Error);
     });
 
     it('should successfully enroll user and return credentials', async () => {
       const keyStub = sandbox.createStubInstance(ECDSAKey);
       sandbox.stub(FabricCAServices.prototype, 'enroll').callsFake(() => Promise.resolve({certificate: 'cert', key: keyStub})); // mock out call to FabricCA
 
-      const response = await util.userEnroll('org1msp', 'app1', 'app1pw');
+      const response = await util.userEnroll('org1', 'app1', 'app1pw');
       expect(response.certificate).to.be.equal('cert');
     });
   });
