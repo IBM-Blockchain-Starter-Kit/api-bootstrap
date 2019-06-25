@@ -33,6 +33,6 @@ logger.debug('setting up /ping route');
 /**
  * Add routes
  */
-router.get('/', pingCtrl.pingCC);
+router.get('/', pingCtrl.default);
 
 export default router;
