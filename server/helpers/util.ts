@@ -14,30 +14,25 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const fs = require('fs');
-const config = require('config');
-const FabricCAServices = require('fabric-ca-client');
+import { getLogger } from 'log4js';
+import * as fs from 'fs';
+import * as config from 'config';
+import * as FabricCAServices from 'fabric-ca-client';
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('helpers - util');
-logger.setLevel(config.logLevel);
-
-/**
- * Util object
- */
-const util = {};
+const logger = getLogger('helpers - util');
+logger.level = config.get('logLevel');
 
 const ccpPath = `${__dirname}/../config/fabric-connection-profile.json`;
 
 /**
  * Send http response helper
  * res: express response object
- * msg: {statusCode (int), success (bool), message (string), etc}
+ * msg: {statusCode (int), success (bool), message (string), et
  */
-util.sendResponse = (res, msg) => {
+export const sendResponse = (res, msg) => {
   logger.debug('entering >>> sendResponse()');
   const response = msg;
   res.setHeader('Content-Type', 'application/json');
@@ -49,7 +44,7 @@ util.sendResponse = (res, msg) => {
 /**
  * Enroll given user with given org Fabric CA
  */
-util.userEnroll = (orgName, enrollId, enrollSecret) => {
+export const userEnroll = (orgName, enrollId, enrollSecret) => {
   logger.debug('entering >>> userEnroll()');
   logger.debug(`Enrolling user ${enrollId}`);
   return new Promise(((resolve, reject) => {
@@ -69,9 +64,12 @@ util.userEnroll = (orgName, enrollId, enrollSecret) => {
     const fabricCAKey = orgs[orgName].certificateAuthorities[0];
     const caURL = CAs[fabricCAKey].url;
 
+    // get mspid for orgName
+    const { mspid } = orgs[orgName];
+
     // enroll user with certificate authority for orgName
-    const tlsOptions = {
-      trustedRoots: [],
+    const tlsOptions: FabricCAServices.TLSOptions = {
+      trustedRoots: Buffer.from(''),
       verify: false,
     };
     const caService = new FabricCAServices(caURL, tlsOptions);
@@ -81,8 +79,12 @@ util.userEnroll = (orgName, enrollId, enrollSecret) => {
     };
     caService.enroll(req).then(
       (enrollment) => {
-        enrollment.key = enrollment.key.toBytes();
-        return resolve(enrollment);
+        let enrollmentModified;
+        // eslint-disable-next-line prefer-const
+        enrollmentModified = enrollment;
+        enrollmentModified.key = enrollment.key.toBytes();
+        enrollmentModified.mspid = mspid;
+        return resolve(enrollmentModified);
       },
       (err) => {
         logger.debug(err);
@@ -91,5 +93,3 @@ util.userEnroll = (orgName, enrollId, enrollSecret) => {
     );
   }));
 };
-
-module.exports = util;

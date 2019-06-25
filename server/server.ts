@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 IBM Corp. All Rights Reserved.
+ * Copyright 2019 IBM Corp. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+import * as bodyParser from 'body-parser';
+import * as express from 'express';
+import { getLogger } from 'log4js';
+import * as path from 'path';
+import * as swaggerUi from 'swagger-ui-express';
+import * as YAML from 'yamljs';
+import * as config from 'config';
 
-global.__basedir = __dirname;
+import setupRoutes from './routes/index';
+import * as errorHandler from './middlewares/error-handler';
 
-const bodyParser = require('body-parser');
-const express = require('express');
-const log4js = require('log4js');
-const path = require('path');
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const config = require('config');
-
-const setupRoutes = require('./routes/index');
-const errorHandler = require('./middlewares/error-handler');
-
-const app = express();
+const app: express.Application = express();
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('server');
-logger.setLevel(config.logLevel);
+const logger = getLogger('server');
+logger.level = config.get('logLevel');
 
 logger.debug('setting up app: registering routes, middleware...');
 
@@ -66,8 +63,8 @@ setupRoutes().then((router) => {
   /**
    * Start server
    */
-  const host = process.env.HOST || config.host;
-  const port = process.env.PORT || config.port;
+  const host = process.env.HOST || config.get('host');
+  const port = process.env.PORT || config.get('port');
   app.listen(port, () => {
     logger.info(`app listening on http://${host}:${port}`);
 

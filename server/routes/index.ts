@@ -14,21 +14,21 @@
  *  limitations under the License.
  */
 
-const express = require('express');
-const log4js = require('log4js');
-const config = require('config');
+import * as express from 'express';
+import { getLogger } from 'log4js';
+import * as config from 'config';
 
-const { FabricRoutes } = require('../middlewares/fabric-routes');
-const health = require('./health');
+import FabricRoutes from '../middlewares/fabric-routes';
+import health from './health';
 
 const router = express.Router();
-const logger = log4js.getLogger('routes - index');
-logger.setLevel(config.logLevel);
+const logger = getLogger('routes - index');
+logger.level = config.get('logLevel');
 
 /**
  * Add all the specified routes and return the router object
  */
-async function setupRoutes() {
+export default async function setupRoutes() {
   logger.debug('entering >>> setupRoutes');
 
   try {
@@ -53,5 +53,3 @@ async function setupRoutes() {
     throw new Error(err.message);
   }
 }
-
-module.exports = setupRoutes;

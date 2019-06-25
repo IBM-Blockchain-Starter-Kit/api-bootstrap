@@ -14,30 +14,36 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
-const { Gateway } = require('fabric-network');
-const passport = require('passport');
-const { APIStrategy } = require('ibmcloud-appid');
+import { getLogger } from 'log4js';
+import * as config from 'config';
+import { Gateway } from 'fabric-network';
+import * as passport from 'passport';
+import { APIStrategy } from 'ibmcloud-appid';
 
-const util = require('../helpers/util');
-const walletHelper = require('../helpers/wallet');
-const auth = require('../helpers/auth');
+// eslint-disable-next-line no-unused-vars
+import { Router } from 'express';
+import * as util from '../helpers/util';
+import * as walletHelper from '../helpers/wallet';
+import * as auth from '../helpers/auth';
 
-const ccp = require(`${__dirname}/../config/fabric-connection-profile.json`); // common connection profile
-const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); // fabric connections configuration
+import * as ccp from '../config/fabric-connection-profile.json'; // common connection profile;
+import * as fabricConfig from '../config/fabric-connections.json'; // fabric connections configuration
+
+let __basedir: string;
+// eslint-disable-next-line prefer-const
+__basedir = `${__dirname}`;
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('middlewares - fabric-routes');
-logger.setLevel(config.logLevel);
+const logger = getLogger('middlewares - fabric-routes');
+logger.level = config.get('logLevel');
 
 /**
  * Load the exported router at the path given
  */
-function loadRouter(routerPath) {
-  return require(`${__basedir}/${routerPath}`);
+function loadRouter(routerPath: string) {
+  import(`${__basedir}/../${routerPath}`).then((r: Router) => r);
 }
 
 /**
@@ -47,10 +53,18 @@ function loadRouter(routerPath) {
  * to the specified channels and smart contracts - removing the logic from the route
  * controllers.
  */
-class FabricRoutes {
+export default class FabricRoutes {
   /**
    * @param {*} router: Router object to add the routes to
+   * @param {*} gateway: Hyperledger class
+   * @param {*} middlewares: Middlewares object
    */
+  middlewares: object;
+
+  gateway: Gateway;
+
+  router: Router;
+
   constructor(router) {
     this.router = router;
     this.middlewares = {};
@@ -79,7 +93,7 @@ class FabricRoutes {
       if (route.protected && route.protected.enabled) {
         logger.debug(`${route.path} => add auth`);
         // if there is indeed a need to change passport strategy, change line below
-        passport.use(new APIStrategy({ oauthServerUrl: config.appid.oauthServerUrl }));
+        passport.use(new APIStrategy({ oauthServerUrl: config.get('appid.oauthServerUrl') }));
         // Add protected route
         // pass a 'allowedClients' array of clientIds read from config
         this.router.use(route.path,
@@ -87,9 +101,10 @@ class FabricRoutes {
           auth.filter(route.protected.allowedClients));
       }
 
+      const routeController = loadRouter(route.modulePath);
       this.router.use(route.path,
         this.middlewares[route.fabricConnection],
-        loadRouter(route.modulePath));
+        routeController);
     });
 
     logger.debug('exiting <<< setup()');
@@ -102,17 +117,18 @@ class FabricRoutes {
     logger.debug('entering >>> setupGateway()');
 
     try {
-      const org = config.orgName;
-      const user = process.env.FABRIC_ENROLL_ID;
-      const pw = process.env.FABRIC_ENROLL_SECRET;
+      const org: string = config.get('orgName');
+      const user: string = process.env.FABRIC_ENROLL_ID;
+      const pw: string = process.env.FABRIC_ENROLL_SECRET;
       const { serviceDiscovery } = fabricConfig;
 
       // user enroll and import if identity not found in wallet
       const idExists = await walletHelper.identityExists(user);
       if (!idExists) {
         logger.debug(`Enrolling and importing ${user} into wallet`);
-        const enrollInfo = await util.userEnroll(org, user, pw);
-        await walletHelper.importIdentity(user, org, enrollInfo.certificate, enrollInfo.key);
+        const enrollInfo: any = await util.userEnroll(org, user, pw);
+        await walletHelper.importIdentity(user, enrollInfo.mspid,
+          enrollInfo.certificate, enrollInfo.key);
       }
 
       // gateway and contract connection
@@ -148,6 +164,7 @@ class FabricRoutes {
     const connections = fabricConfig.fabricConnections;
     Object.entries(connections).forEach(([conn, networkConfigs]) => {
       logger.debug(`Creating ${conn} middleware`);
+      const configs: any = networkConfigs;
       // create the middleware function to be mounted
       this.middlewares[conn] = async (req, res, next) => {
         logger.debug(`${conn} middleware function to connect to gateway`);
@@ -157,7 +174,7 @@ class FabricRoutes {
           res.locals.gateway = this.gateway;
 
           // get each specified channel/network instance in connection and store in res.locals
-          await Promise.all(networkConfigs.map(async (networkConfig) => {
+          await Promise.all(configs.map(async (networkConfig) => {
             logger.debug(`Getting network: ${networkConfig.channel}`);
             res.locals[networkConfig.channel] = {};
             const network = await this.gateway.getNetwork(networkConfig.channel);
@@ -189,5 +206,3 @@ class FabricRoutes {
     logger.debug('exiting <<< createMiddlewares()');
   }
 }
-
-module.exports.FabricRoutes = FabricRoutes;

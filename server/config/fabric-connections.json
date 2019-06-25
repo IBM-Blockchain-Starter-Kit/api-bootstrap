@@ -6,9 +6,9 @@
   "fabricConnections": {
     "conn1": [
       {
-        "channel": "defaultchannel",
+        "channel": "channel1",
         "chaincodes": [
-          "pingcc"
+          "ping"
         ]
       }
     ]

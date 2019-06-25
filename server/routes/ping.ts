@@ -14,31 +14,25 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
+import * as express from 'express';
+import { getLogger } from 'log4js';
+import * as config from 'config';
 
-const util = require('../helpers/util');
+import * as pingCtrl from '../controllers/ping';
 
-const logger = log4js.getLogger('controllers - health');
-logger.setLevel(config.logLevel);
+const router = express.Router();
 
 /**
- * Controller object
+ * Set up logging
  */
-const health = {};
+const logger = getLogger('routes - ping');
+logger.level = config.get('logLevel');
 
-health.getHealth = (req, res) => {
-  logger.debug('entering >>> getHealth()');
+logger.debug('setting up /ping route');
 
-  const jsonRes = {
-    statusCode: 200,
-    success: true,
-    message: 'Server is up!',
-    status: 'UP',
-  };
+/**
+ * Add routes
+ */
+router.get('/', pingCtrl.pingCC);
 
-  logger.debug('exiting <<< getHealth()');
-  util.sendResponse(res, jsonRes);
-};
-
-module.exports = health;
+export default router;

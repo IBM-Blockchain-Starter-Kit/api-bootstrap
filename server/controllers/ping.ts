@@ -14,20 +14,16 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
+import { getLogger } from 'log4js';
+import * as config from 'config';
 
 const util = require('../helpers/util');
 
-const logger = log4js.getLogger('controllers - ping');
-logger.setLevel(config.logLevel);
+const logger = getLogger('controllers - ping');
+logger.level = config.get('logLevel');
 
-/**
- * Controller object
- */
-const ping = {};
 
-ping.pingCC = async (req, res) => {
+const pingCC = async (req, res) => {
   logger.debug('entering >>> pingCC()');
 
   let jsonRes;
@@ -35,7 +31,7 @@ ping.pingCC = async (req, res) => {
     // More info on the following calls: https://fabric-sdk-node.github.io/Contract.html
 
     // get contract instance retrieved in fabric-routes middleware
-    const contract = res.locals.defaultchannel.pingcc;
+    const contract = res.locals.channel1.ping;
 
     // invoke transaction
     // Create transaction proposal for endorsement and sendTransaction to orderer
@@ -62,4 +58,4 @@ ping.pingCC = async (req, res) => {
   util.sendResponse(res, jsonRes);
 };
 
-module.exports = ping;
+export { pingCC as default };

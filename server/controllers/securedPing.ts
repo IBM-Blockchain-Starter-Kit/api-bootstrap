@@ -14,19 +14,14 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
-const util = require('../helpers/util');
+import { getLogger } from 'log4js';
+import * as config from 'config';
+import * as util from '../helpers/util';
 
-const logger = log4js.getLogger('controllers - securedPing');
-logger.setLevel(config.logLevel);
+const logger = getLogger('controllers - securedPing');
+logger.level = config.get('logLevel');
 
-/**
- * Controller object
- */
-const securedPing = {};
-
-securedPing.getSecured = async (req, res) => {
+const getSecured = async (req, res) => {
   logger.debug('inside getSecured()...');
 
   let jsonRes;
@@ -58,4 +53,4 @@ securedPing.getSecured = async (req, res) => {
   util.sendResponse(res, jsonRes);
 };
 
-module.exports = securedPing;
+export { getSecured as default };
