@@ -13,16 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+import * as config from 'config';
 import * as jwt from 'jsonwebtoken';
 import { getLogger } from 'log4js';
-import * as config from 'config';
 
 /**
  * Set up logging
  */
 const logger = getLogger('helpers - auth');
 logger.level = config.get('logLevel');
-
 
 logger.debug('importing app id config');
 
@@ -63,8 +62,10 @@ export const getAccessToken = (req, next) => {
 };
 
 /**
-* filter audience, or list of client ID's, that can access this
-*/
+ * Filter audience, or list of client ID's, that can access this
+ * @param whitelist list of client
+ */
+// tslint:disable-next-line: arrow-parens
 export const filter = whitelist => (req, res, next) => {
   const accessTokenString = getAccessToken(req, next);
   const accessTokenPayload = jwt.decode(accessTokenString);

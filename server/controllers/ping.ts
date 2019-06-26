@@ -14,14 +14,13 @@
  *  limitations under the License.
  */
 
-import { getLogger } from 'log4js';
 import * as config from 'config';
+import { getLogger } from 'log4js';
 
-const util = require('../helpers/util');
+import util = require('../helpers/util');
 
 const logger = getLogger('controllers - ping');
 logger.level = config.get('logLevel');
-
 
 const pingCC = async (req, res) => {
   logger.debug('entering >>> pingCC()');
@@ -42,15 +41,15 @@ const pingCC = async (req, res) => {
     // const queryResponse = await contract.evaluateTransaction('Health');
 
     jsonRes = {
+      result: invokeResponse.toString(),
       statusCode: 200,
       success: true,
-      result: invokeResponse.toString(),
     };
   } catch (err) {
     jsonRes = {
+      message: `${err.message}`,
       statusCode: 500,
       success: false,
-      message: `${err.message}`,
     };
   }
 

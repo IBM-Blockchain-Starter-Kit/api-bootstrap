@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
+import * as config from 'config';
 import * as express from 'express';
 import { getLogger } from 'log4js';
-import * as config from 'config';
 
 import * as pingCtrl from '../controllers/ping';
 

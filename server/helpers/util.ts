@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 
-import { getLogger } from 'log4js';
-import * as fs from 'fs';
 import * as config from 'config';
 import * as FabricCAServices from 'fabric-ca-client';
+import * as fs from 'fs';
+import { getLogger } from 'log4js';
 
 /**
  * Set up logging

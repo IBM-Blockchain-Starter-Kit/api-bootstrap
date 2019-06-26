@@ -13,9 +13,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+import * as config from 'config';
 import * as express from 'express';
 import { getLogger } from 'log4js';
-import * as config from 'config';
 
 import * as secured from '../controllers/securedPing';
 

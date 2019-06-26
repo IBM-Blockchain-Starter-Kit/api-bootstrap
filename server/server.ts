@@ -14,15 +14,15 @@
  *  limitations under the License.
  */
 import * as bodyParser from 'body-parser';
+import * as config from 'config';
 import * as express from 'express';
 import { getLogger } from 'log4js';
 import * as path from 'path';
 import * as swaggerUi from 'swagger-ui-express';
 import * as YAML from 'yamljs';
-import * as config from 'config';
 
-import setupRoutes from './routes/index';
 import * as errorHandler from './middlewares/error-handler';
+import setupRoutes from './routes/index';
 
 const app: express.Application = express();
 

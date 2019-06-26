@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-import { getLogger } from 'log4js';
 import * as config from 'config';
 import { FileSystemWallet, X509WalletMixin } from 'fabric-network';
+import { getLogger } from 'log4js';
 
 const fsWallet = new FileSystemWallet(config.get('fsWalletPath'));
 

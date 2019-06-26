@@ -16,7 +16,8 @@
 	],
 	"rules": {
 		"no-underscore-dangle": "off",
-		"import/no-dynamic-require": "off"
+		"import/no-dynamic-require": "off",
+		"no-unsafe-any": true
 	},
 	"settings": {
 		"import/resolver": {

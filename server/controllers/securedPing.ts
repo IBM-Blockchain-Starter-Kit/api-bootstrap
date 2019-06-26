@@ -14,8 +14,8 @@
  *  limitations under the License.
  */
 
-import { getLogger } from 'log4js';
 import * as config from 'config';
+import { getLogger } from 'log4js';
 import * as util from '../helpers/util';
 
 const logger = getLogger('controllers - securedPing');
@@ -36,16 +36,16 @@ const getSecured = async (req, res) => {
     const invokeResponse = await contract.submitTransaction('Health');
 
     jsonRes = {
-      statusCode: 200,
-      success: true,
       message: 'Inside protected route!',
       result: invokeResponse.toString(),
+      statusCode: 200,
+      success: true,
     };
   } catch (err) {
     jsonRes = {
+      message: `${err.message}`,
       statusCode: 500,
       success: false,
-      message: `${err.message}`,
     };
   }
 

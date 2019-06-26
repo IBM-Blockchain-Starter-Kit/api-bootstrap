@@ -2,9 +2,13 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./server",
-        "allowJs": true,
-        "target": "es5",
+        "target": "es2017",
         "module": "commonjs",
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "declaration": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "sourceMap": true,
         "resolveJsonModule": true
     },

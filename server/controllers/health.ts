@@ -13,8 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { getLogger } from 'log4js';
 import * as config from 'config';
+import { getLogger } from 'log4js';
 
 import * as util from '../helpers/util';
 
@@ -25,10 +25,10 @@ const getHealth = (req, res) => {
   logger.debug('entering >>> getHealth()');
 
   const jsonRes = {
-    statusCode: 200,
-    success: true,
     message: 'Server is up!',
     status: 'UP',
+    statusCode: 200,
+    success: true,
   };
 
   logger.debug('exiting <<< getHealth()');

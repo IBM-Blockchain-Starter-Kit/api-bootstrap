@@ -14,17 +14,17 @@
  *  limitations under the License.
  */
 
-import { getLogger } from 'log4js';
-import * as config from 'config';
+import { get } from 'config';
 import { Gateway } from 'fabric-network';
-import * as passport from 'passport';
 import { APIStrategy } from 'ibmcloud-appid';
+import { getLogger } from 'log4js';
+import * as passport from 'passport';
 
 // eslint-disable-next-line no-unused-vars
 import { Router } from 'express';
+import * as auth from '../helpers/auth';
 import * as util from '../helpers/util';
 import * as walletHelper from '../helpers/wallet';
-import * as auth from '../helpers/auth';
 
 import * as ccp from '../config/fabric-connection-profile.json'; // common connection profile;
 import * as fabricConfig from '../config/fabric-connections.json'; // fabric connections configuration
@@ -37,14 +37,15 @@ __basedir = `${__dirname}`;
  * Set up logging
  */
 const logger = getLogger('middlewares - fabric-routes');
-logger.level = config.get('logLevel');
+logger.level = get('logLevel');
 
 /**
  * Load the exported router at the path given
  */
-function loadRouter(routerPath: string) {
-  import(`${__basedir}/../${routerPath}`).then((r: Router) => r);
-}
+// async function loadRouter(router: Router, route: object): Promise<Router> {
+//   const routerCtrl = await import(`${__basedir}/../${route.modulePath}`);
+//   return router;
+// }
 
 /**
  * FabricRoutes class that handles creating routes that need to connect to the
@@ -59,11 +60,11 @@ export default class FabricRoutes {
    * @param {*} gateway: Hyperledger class
    * @param {*} middlewares: Middlewares object
    */
-  middlewares: object;
+  public middlewares: object;
 
-  gateway: Gateway;
+  public gateway: Gateway;
 
-  router: Router;
+  public router: Router;
 
   constructor(router) {
     this.router = router;
@@ -75,7 +76,7 @@ export default class FabricRoutes {
    * Connect the gateway instance. After creating the middlewares, it will create the routes with
    * the connection middleware and the existing router with controllers and other midddlwares
    */
-  async setup() {
+  public async setup(): Promise<void> {
     logger.debug('entering >>> setup()');
 
     // create and connect gateway
@@ -86,26 +87,34 @@ export default class FabricRoutes {
 
     // iterate through routes and set corresponding fabric connection specified
     logger.debug('Mounting middleware functions to routes');
+    const routerPromises: Array<Promise<void>> = [];
     fabricConfig.routes.forEach((route) => {
       logger.debug(`${route.path}: ${route.fabricConnection} => route controller`);
-
+      this.router.use(route.path, this.middlewares[route.fabricConnection]);
       // if route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
         logger.debug(`${route.path} => add auth`);
-        // if there is indeed a need to change passport strategy, change line below
-        passport.use(new APIStrategy({ oauthServerUrl: config.get('appid.oauthServerUrl') }));
+        passport.use(new APIStrategy({ oauthServerUrl: get('appid.oauthServerUrl') })); // to change passport strategy, modify this line
         // Add protected route
         // pass a 'allowedClients' array of clientIds read from config
         this.router.use(route.path,
           passport.authenticate(APIStrategy.STRATEGY_NAME, { session: false }),
           auth.filter(route.protected.allowedClients));
       }
+      // const routerPromise = loadRouter(this.router, route);
 
-      const routeController = loadRouter(route.modulePath);
-      this.router.use(route.path,
-        this.middlewares[route.fabricConnection],
-        routeController);
+      const t = async (): Promise<void> => {
+        const routerCtrl: Router = await import(`${__basedir}/../${route.modulePath}`);
+        console.log('test');
+        this.router.use(route.path,
+          this.middlewares[route.fabricConnection],
+          routerCtrl);
+      };
+      const retVal = t();
+      routerPromises.push(retVal);
     });
+
+    await Promise.all(routerPromises);
 
     logger.debug('exiting <<< setup()');
   }
@@ -113,11 +122,11 @@ export default class FabricRoutes {
   /**
    * Connect the gateway instance
    */
-  async setupGateway() {
+  public async setupGateway(): Promise<void> {
     logger.debug('entering >>> setupGateway()');
 
     try {
-      const org: string = config.get('orgName');
+      const org: string = get('orgName');
       const user: string = process.env.FABRIC_ENROLL_ID;
       const pw: string = process.env.FABRIC_ENROLL_SECRET;
       const { serviceDiscovery } = fabricConfig;
@@ -134,12 +143,12 @@ export default class FabricRoutes {
       // gateway and contract connection
       logger.debug('Connecting to gateway');
       await this.gateway.connect(ccp, {
+        discovery: { // https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.Gateway.html#~DiscoveryOptions
+          asLocalhost: serviceDiscovery.asLocalhost,
+          enabled: serviceDiscovery.enabled,
+        },
         identity: user,
         wallet: walletHelper.getWallet(),
-        discovery: { // https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.Gateway.html#~DiscoveryOptions
-          enabled: serviceDiscovery.enabled,
-          asLocalhost: serviceDiscovery.asLocalhost,
-        },
       });
       logger.debug('Connected to gateway');
     } catch (err) {
@@ -156,7 +165,7 @@ export default class FabricRoutes {
    * the gateway and all of the channels and chaincodes specified in this fabric
    * connection are retrieved and stored in a map for use in the route controllers.
    */
-  createMiddlewares() {
+  public createMiddlewares(): void {
     logger.debug('entering >>> createMiddlewares()');
 
     // iterate through connections in config file and create middleware function for each
@@ -192,9 +201,9 @@ export default class FabricRoutes {
         } catch (err) {
           logger.error(err.message);
           const jsonRes = {
+            message: `${err.message}`,
             statusCode: 500,
             success: false,
-            message: `${err.message}`,
           };
           util.sendResponse(res, jsonRes);
         }

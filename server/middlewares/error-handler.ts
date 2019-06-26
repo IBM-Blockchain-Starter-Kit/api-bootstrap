@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-import { getLogger } from 'log4js';
-import * as createError from 'http-errors';
 import * as config from 'config';
+import * as createError from 'http-errors';
+import { getLogger } from 'log4js';
 
 import * as util from '../helpers/util';
 
@@ -40,9 +40,9 @@ export const catchNotFound = (req, res, next) => {
 export const handleError = (err, req, res) => {
   logger.debug('entering >>> handleError()');
   const jsonRes = {
+    message: err.message,
     statusCode: err.status || 500,
     success: false,
-    message: err.message,
   };
   util.sendResponse(res, jsonRes);
 };
