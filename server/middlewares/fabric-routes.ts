@@ -36,14 +36,6 @@ const logger = getLogger('middlewares - fabric-routes');
 logger.level = get('logLevel');
 
 /**
- * Load the exported router at the path given
- */
-// async function loadRouter(routerPath: string): Promise<Router> {
-//   const routerCtrl = await import(`${__dirname}/../${routerPath}`);
-//   return routerCtrl;
-// }
-
-/**
  * FabricRoutes class that handles creating routes that need to connect to the
  * fabric network. Parses the fabric-connections.json file to create the routes
  * with the appropriate middleware to connect to the fabric network and get access
@@ -83,7 +75,7 @@ export default class FabricRoutes {
 
     // iterate through routes and set corresponding fabric connection specified
     logger.debug('Mounting middleware functions to routes');
-    const routerPromises: Array<Promise<void>> = [];
+    const configPromises: Array<Promise<void>> = [];
     fabricConfig.routes.forEach((route) => {
       logger.debug(`${route.path}: ${route.fabricConnection} => route controller`);
 
@@ -98,21 +90,16 @@ export default class FabricRoutes {
           auth.filter(route.protected.allowedClients));
       }
 
-      // this.router.use(route.path,
-      //   this.middlewares[route.fabricConnection],
-      //   loadRouter(route.modulePath));
-
-      const t = async (): Promise<void> => {
-        const routerCtrl: Router = await import(`${__dirname}/../${route.modulePath}`);
-        this.router.use(route.path,
-          this.middlewares[route.fabricConnection],
-          routerCtrl);
-      };
-      const retVal = t();
-      routerPromises.push(retVal);
+      configPromises.push((async (): Promise<void> => {
+        // Load the router for module at the path given
+        const moduleRouter: Router = await import(`${__dirname}/../${route.modulePath}`);
+        // Configure overall router
+        this.router.use(route.path, this.middlewares[route.fabricConnection], moduleRouter);
+      })());
     });
 
-    await Promise.all(routerPromises);
+    // Wait until all configuration promises are resolved
+    await Promise.all(configPromises);
 
     logger.debug('exiting <<< setup()');
   }
