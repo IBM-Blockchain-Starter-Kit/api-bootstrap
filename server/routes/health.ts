@@ -36,4 +36,4 @@ export = (() => {
      */
     router.get('/', healthCtrl.default);
     return router;
-});
+})();
