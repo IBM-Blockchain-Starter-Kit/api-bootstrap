@@ -19,7 +19,8 @@ import { getLogger } from 'log4js';
 
 import { Router } from 'express';
 import FabricRoutes from '../middlewares/fabric-routes';
-import health from './health';
+
+import health = require('./health');
 
 const router = Router();
 const logger = getLogger('routes - index');

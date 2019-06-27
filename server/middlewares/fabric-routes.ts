@@ -29,10 +29,6 @@ import * as walletHelper from '../helpers/wallet';
 import * as ccp from '../config/fabric-connection-profile.json'; // common connection profile;
 import * as fabricConfig from '../config/fabric-connections.json'; // fabric connections configuration
 
-let __basedir: string;
-// eslint-disable-next-line prefer-const
-__basedir = `${__dirname}`;
-
 /**
  * Set up logging
  */
@@ -42,9 +38,9 @@ logger.level = get('logLevel');
 /**
  * Load the exported router at the path given
  */
-// async function loadRouter(router: Router, route: object): Promise<Router> {
-//   const routerCtrl = await import(`${__basedir}/../${route.modulePath}`);
-//   return router;
+// async function loadRouter(routerPath: string): Promise<Router> {
+//   const routerCtrl = await import(`${__dirname}/../${routerPath}`);
+//   return routerCtrl;
 // }
 
 /**
@@ -90,7 +86,7 @@ export default class FabricRoutes {
     const routerPromises: Array<Promise<void>> = [];
     fabricConfig.routes.forEach((route) => {
       logger.debug(`${route.path}: ${route.fabricConnection} => route controller`);
-      this.router.use(route.path, this.middlewares[route.fabricConnection]);
+
       // if route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
         logger.debug(`${route.path} => add auth`);
@@ -101,11 +97,13 @@ export default class FabricRoutes {
           passport.authenticate(APIStrategy.STRATEGY_NAME, { session: false }),
           auth.filter(route.protected.allowedClients));
       }
-      // const routerPromise = loadRouter(this.router, route);
+
+      // this.router.use(route.path,
+      //   this.middlewares[route.fabricConnection],
+      //   loadRouter(route.modulePath));
 
       const t = async (): Promise<void> => {
-        const routerCtrl: Router = await import(`${__basedir}/../${route.modulePath}`);
-        console.log('test');
+        const routerCtrl: Router = await import(`${__dirname}/../${route.modulePath}`);
         this.router.use(route.path,
           this.middlewares[route.fabricConnection],
           routerCtrl);

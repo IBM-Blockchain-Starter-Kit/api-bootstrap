@@ -28,11 +28,12 @@ const router = express.Router();
 const logger = getLogger('routes - health');
 logger.level = config.get('logLevel');
 
-logger.debug('setting up /health route');
+export = (() => {
+    logger.debug('setting up /health route');
 
-/**
- * Add routes
- */
-router.get('/', healthCtrl.default);
-
-export default router;
+    /**
+     * Add routes
+     */
+    router.get('/', healthCtrl.default);
+    return router;
+});

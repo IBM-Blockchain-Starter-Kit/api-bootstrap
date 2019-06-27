@@ -35,4 +35,4 @@ logger.debug('setting up /ping route');
  */
 router.get('/', pingCtrl.default);
 
-export default router;
+module.exports = router;

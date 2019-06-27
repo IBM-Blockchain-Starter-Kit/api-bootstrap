@@ -17,7 +17,7 @@
 import * as config from 'config';
 import { getLogger } from 'log4js';
 
-import util = require('../helpers/util');
+import * as util from '../helpers/util';
 
 const logger = getLogger('controllers - ping');
 logger.level = config.get('logLevel');
@@ -30,7 +30,7 @@ const pingCC = async (req, res) => {
     // More info on the following calls: https://fabric-sdk-node.github.io/Contract.html
 
     // get contract instance retrieved in fabric-routes middleware
-    const contract = res.locals.channel1.ping;
+    const contract = res.locals.defaultchannel.pingcc;
 
     // invoke transaction
     // Create transaction proposal for endorsement and sendTransaction to orderer
