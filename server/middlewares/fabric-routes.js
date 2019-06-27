@@ -169,6 +169,13 @@ class FabricRoutes {
               logger.debug(`Getting contract: ${chaincode}`);
               const contract = await network.getContract(chaincode);
               res.locals[networkConfig.channel][chaincode] = contract;
+
+              // get each specified contract instance in chaincode and store in res.locals
+              await Promise.all(networkConfig.chaincode.map(async (sContract) => {
+                logger.debug(`Getting contract: ${sContract}`);
+                const smartContract = await network.getContract(sContract);
+                res.locals[networkConfig.channel][chaincode].contact = smartContract;
+              }));
             }));
           }));
 

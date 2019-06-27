@@ -7,9 +7,11 @@
     "conn1": [
       {
         "channel": "defaultchannel",
-        "chaincodes": [
-          "pingcc"
-        ]
+        "chaincodes": {
+          "pingcc": [
+            "mycontract"
+          ]
+        }
       }
     ]
   },
@@ -22,9 +24,9 @@
     {
       "path": "/securedPing",
       "fabricConnection": "conn1",
-      "modulePath": "routes/securedPing", 
-      "protected" : {
-        "enabled": true, 
+      "modulePath": "routes/securedPing",
+      "protected": {
+        "enabled": true,
         "allowedClients": [
           "<clientId>"
         ]
