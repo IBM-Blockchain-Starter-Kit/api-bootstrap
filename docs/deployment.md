@@ -22,21 +22,7 @@
 ## Troubleshooting
 
 ## Fix for possible Kubernetes deployment failure(s)
-1.  Depending on the resources available under your Kubernetes cluster, you may see the following error `Status: denied: You have exceeded your storage quota. Delete one or more images, or review your storage quota and pricing plan`.  To work around this limitation, delete the oldest deployed image by updating the Kubernetes deployment `build` stage:
-
-    Go to toolchain Delivery Pipeline >> Build stage >> Configure stage >> Jobs(tab) >> Pre-build check.  Locate and edit the build script section and uncomment the lines beginning with the following:
-    ```
-    # echo "=========================================================="
-    # KEEP=1
-    # echo -e "PURGING REGISTRY, only keeping last ${KEEP} image(s) based on image digests"
-    # COUNT=0 
-
-    ...
-
-    #fi
-    ```
-
-2.  If the `Deploy Helm Chart` job in the final `PROD` stage fails with the `Error: UPGRADE FAILED: "<app-name>" has no deployed releases` error, follow the steps below:
+1.  If the `Deploy Helm Chart` job in the final `PROD` stage fails with the `Error: UPGRADE FAILED: "<app-name>" has no deployed releases` error, follow the steps below:
 
     1.  Delete the deployed Helm chart for this application by running the command: `helm del --purge <app-name>`.  
     1.  Restart the delivery pipeline from the very beginning.
