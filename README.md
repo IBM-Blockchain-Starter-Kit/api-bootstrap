@@ -64,8 +64,9 @@ const network = await gateway.getNetwork(config.channelName);
 
 Then make a call to get the chaincode with a [*getContract*](https://fabric-sdk-node.github.io/Network.html#getContract__anchor) call.
 ```
-const contract = await network.getContract(config.chaincodeName);
+const contract = await network.getContract(config.chaincodeName, config.chaincodeName.contractName);
 ```
+> `contractName` is optional param.
 
 Once you have the contract object, you can start invoking and querying the chaincode!
 ```
