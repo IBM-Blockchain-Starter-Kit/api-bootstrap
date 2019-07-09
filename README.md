@@ -66,7 +66,7 @@ Then make a call to get the chaincode with a [*getContract*](https://fabric-sdk-
 ```
 const contract = await network.getContract(config.chaincodeName, config.chaincodeName.contractName);
 ```
-> `contractName` is optional param.
+> `contractName` is optional parameter (if you don't have multiple contracts).
 
 Once you have the contract object, you can start invoking and querying the chaincode!
 ```
