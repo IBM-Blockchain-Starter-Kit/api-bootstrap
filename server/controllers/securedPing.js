@@ -34,7 +34,7 @@ securedPing.getSecured = async (req, res) => {
     // More info on the following calls: https://fabric-sdk-node.github.io/Contract.html
 
     // get contract instance retrieved in fabric-routes middleware
-    const contract = res.locals.defaultchannel.pingcc.mycontract;
+    const contract = res.locals.defaultchannel.pingcc;
 
     // invoke transaction
     // Create transaction proposal for endorsement and sendTransaction to orderer

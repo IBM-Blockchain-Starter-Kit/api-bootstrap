@@ -43,19 +43,19 @@ describe('controllers - ping', () => {
     sandbox.restore();
   });
 
-  it('should successfully invoke transaction Health', async () => {
+  it('should successfully invoke transaction Health', async() => {
     const fakePingCC = sandbox.stub().returns(Promise.resolve('successfully pinged chaincode'));
     res = { locals: { defaultchannel: { pingcc: { submitTransaction: fakePingCC } } } };
     await pingCtrl.pingCC(req, res);
 
-    sinon.assert.calledWith(FakeUtil.sendResponse, res, { statusCode: 200, success: true, result: 'successfully pinged chaincode' });
+    sinon.assert.calledWith(FakeUtil.sendResponse, res, {statusCode: 200, success: true, result: 'successfully pinged chaincode'});
   });
 
-  it('should catch Health tx error and return error', async () => {
+  it('should catch Health tx error and return error', async() => {
     const fakePingCC = sandbox.stub().returns(Promise.reject(new Error('error in Health chaincode')));
     res = { locals: { defaultchannel: { pingcc: { submitTransaction: fakePingCC } } } };
     await pingCtrl.pingCC(req, res);
 
-    sinon.assert.calledWith(FakeUtil.sendResponse, res, { statusCode: 500, success: false, message: 'error in Health chaincode' });
+    sinon.assert.calledWith(FakeUtil.sendResponse, res, {statusCode: 500, success: false, message: 'error in Health chaincode'});
   });
 });
