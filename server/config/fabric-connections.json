@@ -8,9 +8,7 @@
       {
         "channel": "defaultchannel",
         "chaincodes": {
-          "pingcc": [
-            "contract1"
-          ]
+          "pingcc": []
         }
       }
     ]
