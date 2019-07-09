@@ -71,7 +71,7 @@ The module is found at *server/middlewares/fabric-routes.js* and searches for th
 ```
 
 The *fabric-connections* JSON file has three main keys: `serviceDiscovery`, `fabricConnections` and `routes`. The `fabricConnections` object defines the different Fabric connections you will need in your application. For example, in the example you see two connections specified: `conn1` and `conn2`. `conn1` is the simplest connection you can define; you connect to 1 channel and 1 chaincode with no contracts specified.
->It's important to note here that if you **do not** specify contracts in the array, fabric-routes will pass just the chaincode name to the Contract API. This will always be true for Go Chaincode as it doesn't have official support under v1.4.
+>It's important to note here that if you **do not** specify contracts in the array, fabric-routes will pass just the chaincode name to the Contract API. This will always be true for Go Chaincode as multiple contacts are not yet support in v1.4.
 
  `conn2` shows something a little more complex; you connect to 2 different channels and 2 different chaincodes (with various contracts) on each channel. Each connection defines what you will need in order to do your invokes and queries in a specific route handler. `serviceDiscovery` has configuration for enabling Service Discovery, which is the default in IBM Blockchain Platform 2.0. For Service Discovery, you must add anchor peers to your channel. Without Service Discovery enabled, you will need to add the `channels` field in your connection profile to explicitly give the peer endpoints for endorsement. For example, something like:
 
