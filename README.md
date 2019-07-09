@@ -158,7 +158,7 @@ The *middlewares* directory contains any middleware that is used in the app, suc
 
 The *helpers* directory contains any helper functions used in the app, such as a send response helper in *util.js* to send a request response back.
 
-For full API Reference and Documentation, start the server and navigate to http://localhost:3000/api-docs/.  Also, please see:
+For full API reference and documentation, start the server and navigate to http://localhost:3000/api-docs/.  Also, please see:
 
 * [Fabric routes custom middleware](docs/fabric-routes.md)
 * [Securing the endpoints](docs/security.md)
