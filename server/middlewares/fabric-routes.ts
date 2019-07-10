@@ -175,10 +175,21 @@ export default class FabricRoutes {
             res.locals[networkConfig.channel].network = network;
 
             // get each specified chaincode/contract instance in channel and store in res.locals
-            await Promise.all(networkConfig.chaincodes.map(async (chaincode) => {
-              logger.debug(`Getting contract: ${chaincode}`);
-              const contract = await network.getContract(chaincode);
-              res.locals[networkConfig.channel][chaincode] = contract;
+            await Promise.all(Object.entries(networkConfig.chaincodes).map(async (chaincode: [string, string[]]) => {
+              const chaincodeName: string = chaincode[0];
+              const smartContracts: string[] = chaincode[1];
+              logger.debug(`Getting chaincode: ${chaincodeName}`);
+              if (smartContracts.length === 0) { // if the chaincode array contains no contracts
+                const contract = await network.getContract(chaincodeName);
+                res.locals[networkConfig.channel][chaincodeName] = contract;
+              } else {
+                res.locals[networkConfig.channel][chaincodeName] = {};
+                chaincode[1].forEach(async (smartContract) => {
+                  logger.debug(`Getting contract: ${smartContract}`);
+                  const contract = await network.getContract(chaincodeName, smartContract);
+                  res.locals[networkConfig.channel][chaincodeName][smartContract] = contract;
+                });
+              }
             }));
           }));
 
