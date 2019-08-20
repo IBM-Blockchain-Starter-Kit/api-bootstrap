@@ -25,7 +25,7 @@ import { getLogger } from 'log4js';
 const logger = getLogger('helpers - util');
 logger.level = config.get('logLevel');
 
-const ccpPath = `${__dirname}/../config/fabric-connection-profile.json`;
+export const ccpPath = `${__dirname}/../config/fabric-connection-profile.json`;
 
 /**
  * Send http response helper
