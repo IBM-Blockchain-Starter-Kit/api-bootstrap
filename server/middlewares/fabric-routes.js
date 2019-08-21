@@ -31,7 +31,7 @@ const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); 
  * Set up logging
  */
 const logger = log4js.getLogger('middlewares - fabric-routes');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 /**
  * Load the exported router at the path given

@@ -26,7 +26,7 @@ const router = express.Router();
  * Set up logging
  */
 const logger = log4js.getLogger('routes - health');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 logger.debug('setting up /health route');
 

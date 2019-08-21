@@ -21,7 +21,7 @@ const config = require('config');
  * Set up logging
  */
 const logger = log4js.getLogger('helpers - auth');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 
 logger.debug('importing up app id config');

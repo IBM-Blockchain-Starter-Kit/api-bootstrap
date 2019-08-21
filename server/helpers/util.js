@@ -23,7 +23,7 @@ const FabricCAServices = require('fabric-ca-client');
  * Set up logging
  */
 const logger = log4js.getLogger('helpers - util');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 /**
  * Util object
