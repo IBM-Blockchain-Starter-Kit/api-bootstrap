@@ -8,7 +8,7 @@
     "build": "NODE_CONFIG_DIR=./server/config tsc -p ./tsconfig.json",
     "start": "NODE_CONFIG_DIR=./server/config node dist/server.js",
     "dev": "FABRIC_ENROLL_ID=admin FABRIC_ENROLL_SECRET=adminpw NODE_CONFIG_DIR=./server/config ts-node-dev -P ./tsconfig.json server/server.ts",
-    "test": "FABRIC_ENROLL_ID=test FABRIC_ENROLL_SECRET=testpw NODE_CONFIG_DIR=./test/mocks/config jest --coverage --no-cache --watch"
+    "test": "FABRIC_ENROLL_ID=test FABRIC_ENROLL_SECRET=testpw NODE_CONFIG_DIR=./test/mocks/config jest --coverage --no-cache --verbose --runInBand"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
@@ -20,7 +20,7 @@
     "http-errors": "~1.6.2",
     "ibmcloud-appid": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
-    "log4js": "^4.3.1",
+    "log4js": "^5.0.0",
     "passport": "^0.4.0",
     "swagger-ui-express": "^4.0.2",
     "typescript": "^3.5.3",
@@ -45,10 +45,8 @@
     "bluebird": "3.5.4",
     "i": "^0.3.6",
     "jest": "^24.8.0",
-    "nyc": "^14.1.1",
     "proxyquire": "^2.1.0",
     "rimraf": "^2.6.3",
-    "sinon": "^5.0.7",
     "source-map-support": "^0.5.12",
     "supertest": "^4.0.2",
     "ts-jest": "^24.0.2",
