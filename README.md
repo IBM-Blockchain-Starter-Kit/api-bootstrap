@@ -100,7 +100,7 @@ const router = express.Router(); // create new router
  * Set up logging
  */
 const logger = log4js.getLogger('routes - ping');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 logger.debug('setting up /ping route');
 
@@ -128,7 +128,7 @@ const config = require('config');
 const util = require('../helpers/util');
 
 const logger = log4js.getLogger('controllers - ping');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 /**
  * Controller object

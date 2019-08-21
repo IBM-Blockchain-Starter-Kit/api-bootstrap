@@ -25,7 +25,7 @@ const router = express.Router();
  * Set up logging
  */
 const logger = log4js.getLogger('routes - securedPing');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 /**
  * Add protected route

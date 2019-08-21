@@ -26,7 +26,7 @@ const router = express.Router();
  * Set up logging
  */
 const logger = log4js.getLogger('routes - ping');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 logger.debug('setting up /ping route');
 

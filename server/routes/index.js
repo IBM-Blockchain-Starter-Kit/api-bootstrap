@@ -23,7 +23,7 @@ const health = require('./health');
 
 const router = express.Router();
 const logger = log4js.getLogger('routes - index');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 /**
  * Add all the specified routes and return the router object

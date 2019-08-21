@@ -19,7 +19,7 @@ const config = require('config');
 const util = require('../helpers/util');
 
 const logger = log4js.getLogger('controllers - securedPing');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 /**
  * Controller object

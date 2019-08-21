@@ -33,7 +33,7 @@ const app = express();
  * Set up logging
  */
 const logger = log4js.getLogger('server');
-logger.setLevel(config.logLevel);
+logger.level = config.logLevel;
 
 logger.debug('setting up app: registering routes, middleware...');
 
