@@ -14,14 +14,15 @@
  *  limitations under the License.
  */
 
-const express = require('express');
-const request = require('supertest');
+import * as express from 'express';
+import * as request from 'supertest';
 
+// tslint:disable-next-line: no-var-requires
 const health = require('../../server/routes/health');
 
 describe('routes - health', () => {
 
-  it('should add health route successfully', async() => {
+  test('should add health route successfully', async () => {
     // test actual router with supertest server
     const app = express();
     app.use(health);
