@@ -15,24 +15,22 @@
  */
 
 import * as express from 'express';
-const request = require('supertest');
-const proxyquire = require('proxyquire').noPreserveCache();
+import * as request from 'supertest';
 
 describe('routes - ping', () => {
 
   // mock route handler since it requires a call out to blockchain network
   const FakePingCtrl = {
-    pingCC: (req, res) => {
+    default: (req, res) => {
       res.statusCode = 200;
       res.json({success: true, result: 'Success'});
-    }
+    },
   };
-  
-  const ping = proxyquire('../../server/routes/ping', {
-    '../controllers/ping': FakePingCtrl
-  });
 
-  it('should add ping route successfully', async() => {
+  jest.mock('../../server/controllers/ping', () => (FakePingCtrl));
+  const ping = require('../../server/routes/ping');
+
+  test('should add ping route successfully', async () => {
     // test actual router with supertest server
     const app = express();
     app.use(ping);
