@@ -17,7 +17,6 @@
 // tslint:disable-next-line
 Promise = require('bluebird');
 import * as FabricCAServices from 'fabric-ca-client';
-import ECDSA_KEY from 'fabric-client/lib/impl/ecdsa/key';
 import * as path from 'path';
 import * as util from '../../server/helpers/util';
 
@@ -33,11 +32,12 @@ describe('helpers - util', () => {
       statusCode: 200,
       success: true,
     };
-    it('should parse message and send appropriate response', () => {
+    test('should parse message and send appropriate response', () => {
       const resSpy = jest.spyOn(util, 'sendResponse');
-      util.sendResponse(res, msg);
-      expect(resSpy).toHaveBeenCalledWith(res, msg);
 
+      util.sendResponse(res, msg);
+
+      expect(resSpy).toHaveBeenCalledWith(res, msg);
     });
   });
 
@@ -52,12 +52,17 @@ describe('helpers - util', () => {
     });
 
   test('should successfully enroll user and return credentials', async () => {
-      const keyStub: any = jest.fn(ECDSA_KEY);
-      jest.fn(FabricCAServices.prototype.enroll).mockImplementation(() => Promise.resolve({certificate: 'cert', key: keyStub, rootCertificate: 'rCert'})); // mock out call to FabricCA
+      require('fabric-client/lib/impl/ecdsa/key');
+      const keyStub = jest.mock('fabric-client/lib/impl/ecdsa/key');
+
+      const spyEnroll = jest.spyOn(util, 'userEnroll');
+      spyEnroll.mockReturnValueOnce(Promise.resolve({certificate: 'cert', key: keyStub, rootCertificate: 'rCert'}));
 
       let ccpPath: string = '';
+
       Object.defineProperty(util, 'ccpPath', { get: () => ccpPath });
       ccpPath = path.join(`${__dirname}`, '/../mocks/config/fabric-connection-profile.json');
+
       const response: any = await util.userEnroll('org1', 'app1', 'app1pw');
 
       expect(response.certificate).toBe('cert');
