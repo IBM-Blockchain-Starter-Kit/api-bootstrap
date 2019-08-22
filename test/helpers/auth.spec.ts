@@ -16,17 +16,12 @@
 
 // tslint:disable-next-line
 Promise = require('bluebird');
-import * as FabricCAServices from 'fabric-ca-client';
 import * as jwt from 'jsonwebtoken';
-import * as path from 'path';
-
-import * as auth from '../../server/helpers/auth'
-import * as util from '../../server/helpers/util';
-
+import * as auth from '../../server/helpers/auth';
 
 describe('helpers - auth', () => {
   let next;
-  let res
+  let res;
   let req: { headers: { authorization: string; } | { authorization: string; } | { authorization: string; } | { authorization: string; } | {} | { authorization: string; }; };
   let token: string;
   let whitelist: string[];
@@ -36,32 +31,37 @@ describe('helpers - auth', () => {
       whitelist = ['client1'];
       token = jwt.sign({ aud: 'client2' }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
-      res = jest.fn(() => ({json: (response) => {}}));
+      res = {
+        json: (response) => {}
+      };
 
       const filterSpy = jest.spyOn(auth, 'filter');
       auth.filter(whitelist)(req, res, next);
 
-      expect(filterSpy).toBeCalledWith(res.json, {error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)'});
+      expect(filterSpy).toBeCalledWith(whitelist);
+      expect(Promise.resolve(res.json)).resolves.toBe({error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)'});
     });
 
     test('should find client (array) in whitelist and call next middleware', () => {
       whitelist = ['client1'];
       token = jwt.sign({ aud: ['client1'] }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
+      next = jest.fn();
 
       auth.filter(whitelist)(req, res, next);
 
-      expect(next.calledWithExactly()).toBe(true);
+      expect(next).toBeCalled();
     });
 
     it('should find client (string) in whitelist and call next middleware', () => {
       whitelist = ['client1'];
       token = jwt.sign({ aud: 'client1' }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
+      next = jest.fn();
 
       auth.filter(whitelist)(req, res, next);
 
-      expect(next.calledWithExactly().to.equal(true));
+      expect(next).toBeCalled();
     });
   });
 
@@ -69,20 +69,22 @@ describe('helpers - auth', () => {
     test('should fail with malformed auth header', () => {
       token = jwt.sign({ aud: 'client1' }, 'secret');
       req = { headers: { authorization: `${token}` } };
+      next = jest.fn();
 
       const spyGetAccessToken = jest.spyOn(auth, 'getAccessToken');
       auth.getAccessToken(req, next);
-      expect(next.calledOnce).toBe(true);
-      expect(spyGetAccessToken).toBeCalledWith(next, Error);
-      spyGetAccessToken.mockRestore();
+      expect(next).toBeCalled();
+      expect(spyGetAccessToken).toThrowError(Error);
     });
 
     test('should fail with no auth header', () => {
       req = { headers: { } };
+      next = jest.fn();
+
       const spyGetAccessToken = jest.spyOn(auth, 'getAccessToken');
       auth.getAccessToken(req, next);
-      expect(next.calledOnce).toBe(true);
-      expect(spyGetAccessToken).toBeCalledWith(next, Error);
+      expect(next).toBeCalled();
+      expect(spyGetAccessToken).toThrowError(Error);
     });
 
     test('should get token successfully', () => {
