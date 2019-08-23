@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-import { get } from 'config';
+import * as config from 'config';
 import { Gateway } from 'fabric-network';
 import { APIStrategy } from 'ibmcloud-appid';
 import { getLogger } from 'log4js';
@@ -33,7 +33,7 @@ import * as fabricConfig from '../config/fabric-connections.json'; // fabric con
  * Set up logging
  */
 const logger = getLogger('middlewares - fabric-routes');
-logger.level = get('logLevel');
+logger.level = config.get('logLevel');
 
 /**
  * FabricRoutes class that handles creating routes that need to connect to the
@@ -82,7 +82,7 @@ export default class FabricRoutes {
       // if route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
         logger.debug(`${route.path} => add auth`);
-        passport.use(new APIStrategy({ oauthServerUrl: get('appid.oauthServerUrl') })); // to change passport strategy, modify this line
+        passport.use(new APIStrategy({ oauthServerUrl: config.get('appid.oauthServerUrl') })); // to change passport strategy, modify this line
         // Add protected route
         // pass a 'allowedClients' array of clientIds read from config
         this.router.use(route.path,
@@ -111,7 +111,7 @@ export default class FabricRoutes {
     logger.debug('entering >>> setupGateway()');
 
     try {
-      const org: string = get('orgName');
+      const org: string = config.get('orgName');
       const user: string = process.env.FABRIC_ENROLL_ID;
       const pw: string = process.env.FABRIC_ENROLL_SECRET;
       const { serviceDiscovery } = fabricConfig;

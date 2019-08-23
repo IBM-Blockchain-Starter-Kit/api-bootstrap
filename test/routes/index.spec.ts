@@ -14,50 +14,38 @@
  *  limitations under the License.
  */
 
-const Promise = require('bluebird');
-const sinon = require('sinon');
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-const rewire = require('rewire');
-const express = require('express');
-const request = require('supertest');
+// tslint:disable-next-line
+Promise = require('bluebird');
+import * as express from 'express';
+import * as request from 'supertest';
+import setupRoutes from '../../server/routes/index';
+import FabricRoutes from '../../server/middlewares/fabric-routes';
 
-const setUpRoutes = rewire('../../server/routes/index');
-
-const expect = chai.expect;
-const should = chai.should();
-chai.use(chaiAsPromised);
-
-// mock out calls to FabricRoutes
-const FabricRoutes = setUpRoutes.__get__('FabricRoutes');
 
 describe('routes - index', () => {
 
-  beforeEach(() => {
-    sandbox = sinon.createSandbox();
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
   describe('setupRoutes', () => {
-    it('should set up routes successfully', async() => {
-      sandbox.stub(FabricRoutes.prototype, 'setup').returns(Promise.resolve());
-      const router = await setUpRoutes();
-      expect(Object.getPrototypeOf(router) === express.Router).to.equal(true);
+    test('should set up routes successfully', async () => {
+      (FabricRoutes.prototype.setup) = jest.fn(() => {
+        return Promise.resolve();
+      });
+
+      const router = await setupRoutes();
+      expect(Object.getPrototypeOf(router) === express.Router).toBe(true);
 
       // test actual router with supertest server
       const app = express();
       app.use(router);
       await request(app)
         .get('/')
-        .expect(302); //test redirect route
+        .expect(302); // test redirect route
     });
 
-    it('should fail to setup routes', async() => {
-      sandbox.stub(FabricRoutes.prototype, 'setup').returns(Promise.reject(new Error('error setting up routes')));
-      return setUpRoutes().should.be.rejectedWith(Error);
+    test('should fail to setup routes', async () => {
+      (FabricRoutes.prototype.setup) = jest.fn(() => {
+        return Promise.reject(new Error('error setting up routes'));
+      });
+      expect(setupRoutes()).rejects.toThrowError(Error);
     });
   });
 });
