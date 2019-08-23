@@ -34,12 +34,10 @@ describe('helpers - auth', () => {
       res = {
         json: (response) => {}
       };
-
-      const filterSpy = jest.spyOn(auth, 'filter');
+      const resSpy = jest.spyOn(res, 'json');
       auth.filter(whitelist)(req, res, next);
 
-      expect(filterSpy).toBeCalledWith(whitelist);
-      expect(Promise.resolve(res.json)).resolves.toBe({error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)'});
+      expect(resSpy).toBeCalledWith({error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)'});
     });
 
     test('should find client (array) in whitelist and call next middleware', () => {

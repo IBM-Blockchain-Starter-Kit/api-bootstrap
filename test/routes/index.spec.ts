@@ -18,8 +18,8 @@
 Promise = require('bluebird');
 import * as express from 'express';
 import * as request from 'supertest';
-import setupRoutes from '../../server/routes/index';
 import FabricRoutes from '../../server/middlewares/fabric-routes';
+import setupRoutes from '../../server/routes/index';
 
 
 describe('routes - index', () => {

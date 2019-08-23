@@ -16,6 +16,7 @@
 import * as config from 'config';
 import * as express from 'express';
 import * as request from 'supertest';
+
 // tslint:disable-next-line
 Promise = require('bluebird');
 
@@ -33,25 +34,30 @@ describe('server start up', () => {
 
   describe('startup fail', () => {
     test('should gracefully handle error', () => {
-    jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.reject(new Error('failed to set up routes')))}));
+      jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.reject(new Error('failed to set up routes'))) }));
     });
   });
   describe('startup success', () => {
-    jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.resolve(router))}));
+    jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.resolve(router)) }));
     require('../server/server');
     describe('/doesnotexist', () => {
       test('should return 404', async () => {
-        const res = await request(url).get('/doesnotexist').set('Content-Type',  'application/json');
-        expect(res.status).toBe(404);
+        const res = await request(url)
+          .get('/doesnotexist')
+          .set('Accept', 'application/json; charset=utf-8')
+          .set('Content-Type', 'application/json; charset=utf-8');
+        expect(res.status).toBe(404)
         expect(typeof res.body).toBe('object');
+
+        console.log(res.header);
         //expect(res.body.success).toBe(false);
       });
     });
 
     describe('/', () => {
       test('should redirect to /api-docs', async () => {
-        const res = await request(url).get('/').set('Content-Type',  'application/json');
-        //expect(res).toHaveProperty(`${url}/api-docs`);
+        const res = await request(url).get('/').set('Content-Type', 'application/json');
+        expect(res.header.location).toBe(`/api-docs`);
         expect(res.status).toBe(302);
       });
     });

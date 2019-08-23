@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 IBM Corp. All Rights Reserved.
+ * Copyright 2019 IBM All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -14,42 +14,42 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const createError = require('http-errors');
-const config = require('config');
+import * as bodyParser from 'body-parser';
+import * as express from 'express';
+import * as request from 'supertest';
 
-const util = require('../helpers/util');
+import * as errorHandler from '../../server/middlewares/error-handler';
 
-/**
- * Set up logging
- */
-const logger = log4js.getLogger('middlewares - error-handler');
-logger.setLevel(config.logLevel);
+describe('middleware - error-handler', () => {
 
-/**
- * Error Handler object
- */
-const errorHandler = {};
+  // set up fake router with route that returns error
+  const router = express.Router();
+  router.get('/error', (req, res) => {
+    throw new Error('error in route');
+  });
 
-/**
- * Catch 404 Error and forward to error handler function
- */
-errorHandler.catchNotFound = (req, res, next) => {
-  logger.debug('entering >>> catchNotFound()');
-  next(createError(404, '404: Page not found'));
-};
+  const app = express();
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(router);
+  app.use(errorHandler.catchNotFound);
+  app.use(errorHandler.handleError);
 
-/**
- * Error handler function
- */
-errorHandler.handleError = (err, req, res, next) => {
-  logger.debug('entering >>> handleError()');
-  const jsonRes = {
-    statusCode: err.status || 500,
-    success: false,
-    message: err.message,
-  };
-  util.sendResponse(res, jsonRes);
-};
+  test('should catch not found', async () => {
+    // test actual router with supertest server
+    const res = await request(app)
+      .get('/doesnotexist')
+      .set('Accept', 'application/json')
+      // .send({})
+      //.expect(404, {success: false, message: '404: Page not found'});
+      // .expect('Content-Type', /json/)
+      // .expect(JSON.parse(res.text)});
+    console.log(JSON.parse(res.text));
+  });
 
-module.exports = errorHandler;
+  test('should catch thrown error', async () => {
+    await request(app)
+      .get('/error')
+      .expect(500, { success: false, message: 'error in route' });
+  });
+});
