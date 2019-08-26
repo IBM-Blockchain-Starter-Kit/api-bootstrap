@@ -46,11 +46,8 @@ describe('server start up', () => {
           .get('/doesnotexist')
           .set('Accept', 'application/json; charset=utf-8')
           .set('Content-Type', 'application/json; charset=utf-8');
-        expect(res.status).toBe(404)
+        expect(res.status).toBe(404);
         expect(typeof res.body).toBe('object');
-
-        console.log(res.header);
-        //expect(res.body.success).toBe(false);
       });
     });
 
