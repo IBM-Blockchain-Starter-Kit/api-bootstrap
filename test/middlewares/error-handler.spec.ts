@@ -34,9 +34,8 @@ describe('middleware - error-handler', () => {
 
   test('should catch not found', async () => {
     // test actual router with supertest server
-    const res = request(app)
+    const res = await request(app)
       .get('/doesnotexist')
-      .set('Accept', 'application/json')
       .expect(404); // TO DO: Issue with supertest not returning the body, just checking status
   });
 
