@@ -8,7 +8,7 @@
     "build": "NODE_CONFIG_DIR=./server/config tsc -p ./tsconfig.json",
     "start": "NODE_CONFIG_DIR=./server/config node dist/server.js",
     "dev": "FABRIC_ENROLL_ID=admin FABRIC_ENROLL_SECRET=adminpw NODE_CONFIG_DIR=./server/config ts-node-dev -P ./tsconfig.json server/server.ts",
-    "test": "FABRIC_ENROLL_ID=test FABRIC_ENROLL_SECRET=testpw NODE_CONFIG_DIR=./test/mocks/config jest --coverage --no-cache --watch --verbose --runInBand"
+    "test": "FABRIC_ENROLL_ID=test FABRIC_ENROLL_SECRET=testpw NODE_CONFIG_DIR=./test/mocks/config jest --coverage --no-cache --detectOpenHandles --verbose --runInBand"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
