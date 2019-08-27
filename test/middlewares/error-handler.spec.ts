@@ -14,7 +14,6 @@
  *  limitations under the License.
  */
 
-import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as request from 'supertest';
 
@@ -28,13 +27,14 @@ describe('middleware - error-handler', () => {
     throw new Error('error in route');
   });
 
-  const app: express.Application = express();
+  const app = express();
   app.use(errorHandler.catchNotFound);
   app.use(errorHandler.handleError);
+  app.use(router);
 
   test('should catch not found', async () => {
     // test actual router with supertest server
-    const res = await request(app)
+    await request(app)
       .get('/doesnotexist')
       .expect(404); // TO DO: Issue with supertest not returning the body, just checking status
   });
@@ -42,6 +42,6 @@ describe('middleware - error-handler', () => {
   test('should catch thrown error', async () => {
     await request(app)
       .get('/error')
-      .expect(404); // TO DO: Issue with supertest not returning the body, just checking status
+      .expect(404);
   });
 });

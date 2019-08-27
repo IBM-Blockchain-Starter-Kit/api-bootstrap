@@ -24,8 +24,8 @@ describe('helpers - util', () => {
 
   describe('#sendResponse', () => {
     const res = {
-      setHeader: (name, value) => {},
-      json: (response) => {},
+      setHeader: (name, value) => { },
+      json: (response) => { },
     };
     const msg = {
       result: 'success',
@@ -42,21 +42,21 @@ describe('helpers - util', () => {
   });
 
   describe('#userEnroll', () => {
-  test('should fail to enroll with invalid org name', async () => {
+    test('should fail to enroll with invalid org name', async () => {
       return expect(util.userEnroll('invalidorg', 'app1', 'app1pw')).rejects.toThrow(Error);
     });
 
-  test('should throw error when fabric ca enroll fails', async () => {
-      jest.fn(FabricCAServices.prototype.enroll).mockImplementation(() => Promise.reject(new Error ('error from fabric ca'))); // mock call to FabricCA)
+    test('should throw error when fabric ca enroll fails', async () => {
+      jest.fn(FabricCAServices.prototype.enroll).mockImplementation(() => Promise.reject(new Error('error from fabric ca'))); // mock call to FabricCA)
       return expect(util.userEnroll('org1', 'app1', 'app1pw')).rejects.toThrow(Error);
     });
 
-  test('should successfully enroll user and return credentials', async () => {
+    test('should successfully enroll user and return credentials', async () => {
       require('fabric-client/lib/impl/ecdsa/key');
       const keyStub = jest.mock('fabric-client/lib/impl/ecdsa/key');
 
       const spyEnroll = jest.spyOn(util, 'userEnroll');
-      spyEnroll.mockReturnValueOnce(Promise.resolve({certificate: 'cert', key: keyStub, rootCertificate: 'rCert'}));
+      spyEnroll.mockReturnValueOnce(Promise.resolve({ certificate: 'cert', key: keyStub, rootCertificate: 'rCert' }));
 
       let ccpPath: string = '';
 
