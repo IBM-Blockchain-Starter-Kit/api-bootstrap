@@ -32,6 +32,15 @@ router.get('/', (req, res) => {
 
 describe('server start up', () => {
 
+  let server;
+  beforeEach(() => {
+    server = require('../server/server');
+  });
+
+  afterAll(() => {
+    server.close();
+  });
+
   describe('startup fail', () => {
     test('should gracefully handle error', () => {
       jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.reject(new Error('failed to set up routes'))) }));
@@ -39,7 +48,6 @@ describe('server start up', () => {
   });
   describe('startup success', () => {
     jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.resolve(router)) }));
-    require('../server/server');
     describe('/doesnotexist', () => {
       test('should return 404', async () => {
         const res = await request(url)
