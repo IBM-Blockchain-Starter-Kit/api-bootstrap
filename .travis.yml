@@ -9,4 +9,4 @@ script:
   - npm run build
 
 env:
-  - HOST=localhost
+  - PORT=8000
