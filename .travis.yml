@@ -7,6 +7,4 @@ script:
   - npm run lint
   - npm run test
   - npm run build
-
-env:
-  - PORT=8000
+  
