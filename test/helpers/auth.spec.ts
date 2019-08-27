@@ -51,7 +51,7 @@ describe('helpers - auth', () => {
       expect(next).toBeCalled();
     });
 
-    it('should find client (string) in whitelist and call next middleware', () => {
+    test('should find client (string) in whitelist and call next middleware', () => {
       whitelist = ['client1'];
       token = jwt.sign({ aud: 'client1' }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
