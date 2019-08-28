@@ -37,7 +37,7 @@ export const catchNotFound = (req, res, next) => {
 /**
  * Error handler function
  */
-export const handleError = (err, req, res) => {
+export const handleError = (err, req, res, next) => {
   logger.debug('entering >>> handleError()');
   const jsonRes = {
     message: err.message,

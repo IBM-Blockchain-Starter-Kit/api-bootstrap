@@ -21,27 +21,29 @@ import * as errorHandler from '../../server/middlewares/error-handler';
 
 describe('middleware - error-handler', () => {
 
+
   // set up fake router with route that returns error
   const router = express.Router();
   router.get('/error', (req, res) => {
-    throw new Error('error in route');
+     throw new Error('error in route');
   });
 
   const app = express();
+
+  app.use(router);
   app.use(errorHandler.catchNotFound);
   app.use(errorHandler.handleError);
-  app.use(router);
 
   test('should catch not found', async () => {
     // test actual router with supertest server
-    await request(app)
-      .get('/doesnotexist')
-      .expect(404); // TO DO: Issue with supertest not returning the body, just checking status
+   await request(app)
+   .get('/doesnotexist')
+   .expect(404, {success: false, message: '404: Page not found'});
   });
 
   test('should catch thrown error', async () => {
     await request(app)
       .get('/error')
-      .expect(404);
+      .expect(500, {success: false, message: 'error in route'});
   });
 });
