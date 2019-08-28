@@ -1,5 +1,5 @@
 {
-    "logLevel": "DEBUG",
+    "logLevel": "OFF",
     "host": "localhost",
     "port": "3000",
     "fsWalletPath": "./test/mocks/WALLETS/wallet",

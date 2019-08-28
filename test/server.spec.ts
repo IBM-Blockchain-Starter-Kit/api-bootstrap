@@ -50,12 +50,10 @@ describe('server start up', () => {
     jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.resolve(router)) }));
     describe('/doesnotexist', () => {
       test('should return 404', async () => {
-        const res = await request(url)
-          .get('/doesnotexist')
-          .set('Accept', 'application/json; charset=utf-8')
-          .set('Content-Type', 'application/json; charset=utf-8');
+        const res = await request(url).get('/doesnotexist')
         expect(res.status).toBe(404);
         expect(typeof res.body).toBe('object');
+        expect(res.body.success).toBe(false);
       });
     });
 
