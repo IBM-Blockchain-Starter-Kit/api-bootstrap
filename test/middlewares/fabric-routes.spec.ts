@@ -70,8 +70,8 @@ describe('middleware - fabric-routes', () => {
   test('should fail to get channel that does not exist', async () => {
 
     // stub Gateway calls
-    jest.spyOn(Gateway.prototype, 'connect' as any).mockReturnValue(Promise.resolve('ok!'));
-    jest.spyOn(Gateway.prototype, 'getNetwork' as any).mockReturnValue(Promise.reject(new Error('network does not exist')));
+    (Gateway.prototype.connect as any) = jest.fn(() => Promise.resolve('ok!'));
+    (Gateway.prototype.getNetwork) = jest.fn(() => Promise.reject(new Error('network does not exist')));
 
     await fabricRoutes.setup();
     fakeUtilReset(); // reset util so util.sendResponse is called properly

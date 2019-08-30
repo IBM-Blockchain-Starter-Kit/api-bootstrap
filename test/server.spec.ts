@@ -32,25 +32,29 @@ router.get('/', (req, res) => {
 
 describe('server start up', () => {
 
-  let server;
-  beforeEach(() => {
-    server = require('../server/server');
-  });
+   let server;
 
-  afterAll(() => {
+   afterAll(() => {
     server.close();
   });
 
-  describe('startup fail', () => {
+   describe('startup fail', () => {
     test('should gracefully handle error', () => {
-      jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.reject(new Error('failed to set up routes'))) }));
+      jest.mock('../server/routes/index', () => ({ default: jest.fn().mockRejectedValue(new Error('failed to set up routes')) }));
+
+      try {
+        server = require('../server/server');
+      } catch (e) {
+        expect(e).toMatch('failed to set up routes');
+      }
     });
   });
-  describe('startup success', () => {
+   describe('startup success', () => {
     jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.resolve(router)) }));
+    server = require('../server/server');
     describe('/doesnotexist', () => {
       test('should return 404', async () => {
-        const res = await request(url).get('/doesnotexist')
+        const res = await request(url).get('/doesnotexist');
         expect(res.status).toBe(404);
         expect(typeof res.body).toBe('object');
         expect(res.body.success).toBe(false);
