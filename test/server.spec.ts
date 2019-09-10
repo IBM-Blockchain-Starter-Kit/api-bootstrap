@@ -52,7 +52,6 @@ describe('server start up', () => {
    describe('startup success', () => {
     jest.mock('../server/routes/index', () => ({ default: jest.fn( async () => router) }));
     server = require('../server/server');
-
     describe('/doesnotexist', () => {
       test('should return 404', async () => {
         const res = await request(url).get('/doesnotexist');
@@ -69,6 +68,5 @@ describe('server start up', () => {
         expect(res.status).toBe(302);
       });
     });
-
   });
 });
