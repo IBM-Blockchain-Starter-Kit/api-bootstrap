@@ -50,10 +50,6 @@ describe('server start up', () => {
     });
   });
    describe('startup success new', () => {
-     /* const routerFn = async () => router;
-    const jestFn = jest.fn( routerFn );
-    jest.mock('../server/routes/index', () => ({ default: jestFn }));
-    server = require('../server/server'); */
     jest.mock('../server/routes/index', () => ({ default: jest.fn( async () => router) }));
     server = require('../server/server');
 
