@@ -64,6 +64,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SecuredResponse'
+                
+  /data:
+    post:
+      operationId: postData
+      tags:
+        - Data
+      description: Post data to blockchain network
+      requestBody:
+        description: Add data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Data'
+      responses:
+        200:
+          description: Post data response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseBody'
 
 components:
   securitySchemes:
@@ -96,4 +117,17 @@ components:
           properties:
             status:
               type: string
-
+    Data:
+      properties:
+        id:
+          type: string
+        stringValue: 
+          type: string
+        numValue:
+          type: number
+        date:
+          type: string
+          format: date-time
+        email:
+          type: string
+          format: email
