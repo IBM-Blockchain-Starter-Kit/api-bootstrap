@@ -49,9 +49,14 @@ describe('server start up', () => {
       }
     });
   });
-   describe('startup success', () => {
-    jest.mock('../server/routes/index', () => ({ default: jest.fn(() => Promise.resolve(router)) }));
+   describe('startup success new', () => {
+     /* const routerFn = async () => router;
+    const jestFn = jest.fn( routerFn );
+    jest.mock('../server/routes/index', () => ({ default: jestFn }));
+    server = require('../server/server'); */
+    jest.mock('../server/routes/index', () => ({ default: jest.fn( async () => router) }));
     server = require('../server/server');
+
     describe('/doesnotexist', () => {
       test('should return 404', async () => {
         const res = await request(url).get('/doesnotexist');
@@ -68,5 +73,6 @@ describe('server start up', () => {
         expect(res.status).toBe(302);
       });
     });
+
   });
 });
