@@ -49,7 +49,7 @@ describe('server start up', () => {
       }
     });
   });
-   describe('startup success new', () => {
+   describe('startup success', () => {
     jest.mock('../server/routes/index', () => ({ default: jest.fn( async () => router) }));
     server = require('../server/server');
 
