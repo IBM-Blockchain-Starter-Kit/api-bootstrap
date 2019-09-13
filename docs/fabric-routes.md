@@ -5,7 +5,7 @@ As mentioned in some sections above, this application uses a custom module that 
 Let's go through the config file in detail to fully understand what happens under the covers and to fully understand how to configure our file.
 
 ## Config File
-The module is found at *server/middlewares/fabric-routes.js* and searches for the config file at *server/config/fabric-connections.json*. There is already an example file there. Below is an example to follow along with as you read through the rest of this section.
+The module is found at *server/middlewares/fabric-routes.ts* and searches for the config file at *server/config/fabric-connections.json*. There is already an example file there. Below is an example to follow along with as you read through the rest of this section.
 
 ```
 {
@@ -73,17 +73,17 @@ The *fabric-connections* JSON file has three main keys: `serviceDiscovery`, `fab
 },
 ```
 
-In the third key, `routes`, you add all the routes in your app that need to connect to the Fabric network. For each route, you specify the route path, the fabric connection the handler for that route will need and the path to the router module where you have defined this route and its handler function. The router module path should be relative to the root of your server app, aka from within the *server* directory. For this example, we have one route defined that uses the `conn1` connection and whose router module is defined at *routes/ping.js* (read the Development section above if you need further clarification on the router). Each route can have only a single fabric connection, but a fabric connection can be mapped to multiple routes. Inside of `routes` you have the ability to enable authentication with [IBM App ID](https://cloud.ibm.com/docs/services/appid?topic=appid-about#about) by providing the `protected` object with the `allowedClients` array of client id's that are allowed to access the endpoint. See the `securedPing` route example in the snippet above.
+In the third key, `routes`, you add all the routes in your app that need to connect to the Fabric network. For each route, you specify the route path, the fabric connection the handler for that route will need and the path to the router module where you have defined this route and its handler function. The router module path should be relative to the root of your server app, aka from within the *server* directory. For this example, we have one route defined that uses the `conn1` connection and whose router module is defined at *routes/ping.ts* (read the Development section above if you need further clarification on the router). Each route can have only a single fabric connection, but a fabric connection can be mapped to multiple routes. Inside of `routes` you have the ability to enable authentication with [IBM App ID](https://cloud.ibm.com/docs/services/appid?topic=appid-about#about) by providing the `protected` object with the `allowedClients` array of client id's that are allowed to access the endpoint. See the `securedPing` route example in the snippet above.
 
 
 ## What does this configuration give you?
 Following the example file, when it comes time to implement our ping route handler, we already have a ready-to-use fabric-network Gateway instance where we can invoke and query the chaincode(s) we need. To invoke or query the chaincode(s) defined in the fabric connection for this route, you simply need to do the following call: `await res.locals.<channelName>.<chaincode>.submitTransaction()` or `await res.locals.<channelName>.<chaincode>.evaluateTransaction()`.
 
 ## How does it all come together?
-Everything is configured and defined, but how does it all come together and how is it all registered to our Express app? In order to register these routes and mount their dynamically created fabric connection middleware functions, you have to add the following in the *routes/index.js* file:
+Everything is configured and defined, but how does it all come together and how is it all registered to our Express app? In order to register these routes and mount their dynamically created fabric connection middleware functions, you have to add the following in the *routes/index.ts* file:
 
 ```
-const { FabricRoutes } = require('../middlewares/fabric-routes');
+import FabricRoutes from '../middlewares/fabric-routes';
 
 // Hyperledger Fabric routes
 // add specified routes and create their middleware functions to connect to the fabric network
@@ -102,6 +102,6 @@ This will connect the Gateway instance and wrap all of our routes in our config 
      * Gets the Contract instance for each chaincode specified in the channel. Stores the contract instance at `res.local.<channelName>.<chaincodeName>`
 2) For each route, the middleware to connect to Fabric is mounted and then the router module for that path is registered. The final flow of the route is: Fabric gateway middleware -> other middleware specified in the router module -> route handler.
 
-To deep dive into this module, take a look at the source code and its comments: *server/middlewares/fabric-routes.js*
+To deep dive into this module, take a look at the source code and its comments: *server/middlewares/fabric-routes.ts*
 
 **NOTE:** The gateway instance is created and connected only once, then stored in memory for reuse across every request. Currently, this application supports the use of only one Blockchain identity.
