@@ -36,7 +36,6 @@ describe('helpers - util', () => {
       statusCode: 200,
       success: true,
     };
-
     test('should parse message and send appropriate response', () => {
       const resSpy = jest.spyOn(util, 'sendResponse');
 
