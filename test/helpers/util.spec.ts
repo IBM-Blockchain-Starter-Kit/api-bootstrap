@@ -20,12 +20,16 @@ import * as FabricCAServices from 'fabric-ca-client';
 import * as path from 'path';
 import * as util from '../../server/helpers/util';
 
+let ccpPath: string = '';
+ccpPath = path.join(`${__dirname}`, '/../mocks/config/fabric-connection-profile.json');
+Object.defineProperty(util, 'ccpPath', { get: () => ccpPath });
+
 describe('helpers - util', () => {
 
   describe('#sendResponse', () => {
     const res = {
-      setHeader: (name, value) => { },
       json: (response) => { },
+      setHeader: (name, value) => { },
     };
     const msg = {
       result: 'success',
@@ -47,21 +51,24 @@ describe('helpers - util', () => {
     });
 
     test('should throw error when fabric ca enroll fails', async () => {
-      jest.fn(FabricCAServices.prototype.enroll).mockImplementation(() => Promise.reject(new Error('error from fabric ca'))); // mock call to FabricCA)
+      (FabricCAServices.prototype.enroll as any) = jest.fn(() => Promise.reject(new Error('error from fabric ca')));
       return expect(util.userEnroll('org1', 'app1', 'app1pw')).rejects.toThrow(Error);
     });
 
     test('should successfully enroll user and return credentials', async () => {
-      require('fabric-client/lib/impl/ecdsa/key');
-      const keyStub = jest.mock('fabric-client/lib/impl/ecdsa/key');
 
-      const spyEnroll = jest.spyOn(util, 'userEnroll');
-      spyEnroll.mockReturnValueOnce(Promise.resolve({ certificate: 'cert', key: keyStub, rootCertificate: 'rCert' }));
+      class fakeKey {
+        toBytes() {
+          return null;
+        }
+      }
+      const keyStub: any = new fakeKey();
 
-      let ccpPath: string = '';
-
-      Object.defineProperty(util, 'ccpPath', { get: () => ccpPath });
-      ccpPath = path.join(`${__dirname}`, '/../mocks/config/fabric-connection-profile.json');
+      (FabricCAServices.prototype.enroll as any) = jest.fn(() => Promise.resolve({
+        certificate: 'cert',
+        key: keyStub,
+        rootCertificate: 'rCert',
+      }));
 
       const response: any = await util.userEnroll('org1', 'app1', 'app1pw');
 
