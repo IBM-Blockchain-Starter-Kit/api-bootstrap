@@ -184,11 +184,11 @@ export default class FabricRoutes {
                 res.locals[networkConfig.channel][chaincodeName] = contract;
               } else {
                 res.locals[networkConfig.channel][chaincodeName] = {};
-                chaincode[1].forEach(async (smartContract) => {
+                for (const smartContract of smartContracts) {
                   logger.debug(`Getting contract: ${smartContract}`);
                   const contract = await network.getContract(chaincodeName, smartContract);
                   res.locals[networkConfig.channel][chaincodeName][smartContract] = contract;
-                });
+                }
               }
             }));
           }));
