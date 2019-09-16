@@ -21,7 +21,6 @@ import * as request from 'supertest';
 import FabricRoutes from '../../server/middlewares/fabric-routes';
 import setupRoutes from '../../server/routes/index';
 
-
 describe('routes - index', () => {
 
   describe('setupRoutes', () => {
@@ -45,7 +44,11 @@ describe('routes - index', () => {
       (FabricRoutes.prototype.setup) = jest.fn(() => {
         return Promise.reject(new Error('error setting up routes'));
       });
-      expect(setupRoutes()).rejects.toThrowError(Error);
+      try {
+        await setupRoutes();
+      } catch (e) {
+        expect(e.message).toMatch('error setting up routes');
+      }
     });
   });
 });
