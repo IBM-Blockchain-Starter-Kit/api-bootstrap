@@ -14,31 +14,26 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
-const { Gateway } = require('fabric-network');
-const passport = require('passport');
-const { APIStrategy } = require('ibmcloud-appid');
+import * as config from 'config';
+import { Gateway } from 'fabric-network';
+import { APIStrategy } from 'ibmcloud-appid';
+import { getLogger } from 'log4js';
+import * as passport from 'passport';
 
-const util = require('../helpers/util');
-const walletHelper = require('../helpers/wallet');
-const auth = require('../helpers/auth');
+// eslint-disable-next-line no-unused-vars
+import { Router } from 'express';
+import * as auth from '../helpers/auth';
+import * as util from '../helpers/util';
+import * as walletHelper from '../helpers/wallet';
 
-const ccp = require(`${__dirname}/../config/fabric-connection-profile.json`); // common connection profile
-const fabricConfig = require(`${__dirname}/../config/fabric-connections.json`); // fabric connections configuration
+import * as ccp from '../config/fabric-connection-profile.json'; // common connection profile;
+import * as fabricConfig from '../config/fabric-connections.json'; // fabric connections configuration
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('middlewares - fabric-routes');
-logger.level = config.logLevel;
-
-/**
- * Load the exported router at the path given
- */
-function loadRouter(routerPath) {
-  return require(`${__basedir}/${routerPath}`);
-}
+const logger = getLogger('middlewares - fabric-routes');
+logger.level = config.get('logLevel');
 
 /**
  * FabricRoutes class that handles creating routes that need to connect to the
@@ -47,10 +42,18 @@ function loadRouter(routerPath) {
  * to the specified channels and smart contracts - removing the logic from the route
  * controllers.
  */
-class FabricRoutes {
+export default class FabricRoutes {
   /**
    * @param {*} router: Router object to add the routes to
+   * @param {*} gateway: Hyperledger class
+   * @param {*} middlewares: Middlewares object
    */
+  public middlewares: object;
+
+  public gateway: Gateway;
+
+  public router: Router;
+
   constructor(router) {
     this.router = router;
     this.middlewares = {};
@@ -61,7 +64,7 @@ class FabricRoutes {
    * Connect the gateway instance. After creating the middlewares, it will create the routes with
    * the connection middleware and the existing router with controllers and other midddlwares
    */
-  async setup() {
+  public async setup(): Promise<void> {
     logger.debug('entering >>> setup()');
 
     // create and connect gateway
@@ -72,14 +75,14 @@ class FabricRoutes {
 
     // iterate through routes and set corresponding fabric connection specified
     logger.debug('Mounting middleware functions to routes');
+    const configPromises: Array<Promise<void>> = [];
     fabricConfig.routes.forEach((route) => {
       logger.debug(`${route.path}: ${route.fabricConnection} => route controller`);
 
       // if route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
         logger.debug(`${route.path} => add auth`);
-        // if there is indeed a need to change passport strategy, change line below
-        passport.use(new APIStrategy({ oauthServerUrl: config.appid.oauthServerUrl }));
+        passport.use(new APIStrategy({ oauthServerUrl: config.get('appid.oauthServerUrl') })); // to change passport strategy, modify this line
         // Add protected route
         // pass a 'allowedClients' array of clientIds read from config
         this.router.use(route.path,
@@ -87,10 +90,16 @@ class FabricRoutes {
           auth.filter(route.protected.allowedClients));
       }
 
-      this.router.use(route.path,
-        this.middlewares[route.fabricConnection],
-        loadRouter(route.modulePath));
+      configPromises.push((async (): Promise<void> => {
+        // Load the router for module at the path given
+        const moduleRouter: Router = await import(`${__dirname}/../${route.modulePath}`);
+        // Configure overall router
+        this.router.use(route.path, this.middlewares[route.fabricConnection], moduleRouter);
+      })());
     });
+
+    // Wait until all configuration promises are resolved
+    await Promise.all(configPromises);
 
     logger.debug('exiting <<< setup()');
   }
@@ -98,20 +107,20 @@ class FabricRoutes {
   /**
    * Connect the gateway instance
    */
-  async setupGateway() {
+  public async setupGateway(): Promise<void> {
     logger.debug('entering >>> setupGateway()');
 
     try {
-      const org = config.orgName;
-      const user = process.env.FABRIC_ENROLL_ID;
-      const pw = process.env.FABRIC_ENROLL_SECRET;
+      const org: string = config.get('orgName');
+      const user: string = process.env.FABRIC_ENROLL_ID;
+      const pw: string = process.env.FABRIC_ENROLL_SECRET;
       const { serviceDiscovery } = fabricConfig;
 
       // user enroll and import if identity not found in wallet
       const idExists = await walletHelper.identityExists(user);
       if (!idExists) {
         logger.debug(`Enrolling and importing ${user} into wallet`);
-        const enrollInfo = await util.userEnroll(org, user, pw);
+        const enrollInfo: any = await util.userEnroll(org, user, pw);
         await walletHelper.importIdentity(user, enrollInfo.mspid,
           enrollInfo.certificate, enrollInfo.key);
       }
@@ -119,12 +128,12 @@ class FabricRoutes {
       // gateway and contract connection
       logger.debug('Connecting to gateway');
       await this.gateway.connect(ccp, {
+        discovery: { // https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.Gateway.html#~DiscoveryOptions
+          asLocalhost: serviceDiscovery.asLocalhost,
+          enabled: serviceDiscovery.enabled,
+        },
         identity: user,
         wallet: walletHelper.getWallet(),
-        discovery: { // https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.Gateway.html#~DiscoveryOptions
-          enabled: serviceDiscovery.enabled,
-          asLocalhost: serviceDiscovery.asLocalhost,
-        },
       });
       logger.debug('Connected to gateway');
     } catch (err) {
@@ -141,7 +150,7 @@ class FabricRoutes {
    * the gateway and all of the channels and chaincodes specified in this fabric
    * connection are retrieved and stored in a map for use in the route controllers.
    */
-  createMiddlewares() {
+  public createMiddlewares(): void {
     logger.debug('entering >>> createMiddlewares()');
 
     // iterate through connections in config file and create middleware function for each
@@ -149,6 +158,7 @@ class FabricRoutes {
     const connections = fabricConfig.fabricConnections;
     Object.entries(connections).forEach(([conn, networkConfigs]) => {
       logger.debug(`Creating ${conn} middleware`);
+      const configs: any = networkConfigs;
       // create the middleware function to be mounted
       this.middlewares[conn] = async (req, res, next) => {
         logger.debug(`${conn} middleware function to connect to gateway`);
@@ -158,26 +168,27 @@ class FabricRoutes {
           res.locals.gateway = this.gateway;
 
           // get each specified channel/network instance in connection and store in res.locals
-          await Promise.all(networkConfigs.map(async (networkConfig) => {
+          await Promise.all(configs.map(async (networkConfig) => {
             logger.debug(`Getting network: ${networkConfig.channel}`);
             res.locals[networkConfig.channel] = {};
             const network = await this.gateway.getNetwork(networkConfig.channel);
             res.locals[networkConfig.channel].network = network;
 
             // get each specified chaincode/contract instance in channel and store in res.locals
-            await Promise.all(Object.entries(networkConfig.chaincodes).map(async (chaincode) => {
-              const chaincodeName = chaincode[0];
+            await Promise.all(Object.entries(networkConfig.chaincodes).map(async (chaincode: [string, string[]]) => {
+              const chaincodeName: string = chaincode[0];
+              const smartContracts: string[] = chaincode[1];
               logger.debug(`Getting chaincode: ${chaincodeName}`);
-              if (chaincode[1].length === 0) { // if the chaincode contains no array of contracts
+              if (smartContracts.length === 0) { // if the chaincode array contains no contracts
                 const contract = await network.getContract(chaincodeName);
                 res.locals[networkConfig.channel][chaincodeName] = contract;
               } else {
                 res.locals[networkConfig.channel][chaincodeName] = {};
-                chaincode[1].forEach(async (smartContract) => {
+                for (const smartContract of smartContracts) {
                   logger.debug(`Getting contract: ${smartContract}`);
-                  const contract = await network.getContract(chaincode[0], smartContract);
+                  const contract = await network.getContract(chaincodeName, smartContract);
                   res.locals[networkConfig.channel][chaincodeName][smartContract] = contract;
-                });
+                }
               }
             }));
           }));
@@ -186,9 +197,9 @@ class FabricRoutes {
         } catch (err) {
           logger.error(err.message);
           const jsonRes = {
+            message: `${err.message}`,
             statusCode: 500,
             success: false,
-            message: `${err.message}`,
           };
           util.sendResponse(res, jsonRes);
         }
@@ -200,5 +211,3 @@ class FabricRoutes {
     logger.debug('exiting <<< createMiddlewares()');
   }
 }
-
-module.exports.FabricRoutes = FabricRoutes;

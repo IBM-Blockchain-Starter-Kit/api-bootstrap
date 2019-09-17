@@ -14,91 +14,83 @@
  *  limitations under the License.
  */
 
-const Promise = require('bluebird');
-const sinon = require('sinon');
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-const jwt = require('jsonwebtoken');
-
-const auth = require('../../server/helpers/auth');
-
-const { expect } = chai;
-const should = chai.should();
-chai.use(chaiAsPromised);
+// tslint:disable-next-line
+Promise = require('bluebird');
+import * as jwt from 'jsonwebtoken';
+import * as auth from '../../server/helpers/auth';
 
 describe('helpers - auth', () => {
-  let sandbox, next, res, req, token, whitelist;
-
-  beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    next = sandbox.spy();
-    res = sandbox.spy();
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
+  let next;
+  let res;
+  let req: { headers: { authorization: string; } | { authorization: string; } | { authorization: string; } | { authorization: string; } | {} | { authorization: string; }; };
+  let token: string;
+  let whitelist: string[];
 
   describe('#filter', () => {
-    it('should fail if client is not in whitelist', () => {
+    test('should fail if client is not in whitelist', () => {
       whitelist = ['client1'];
       token = jwt.sign({ aud: 'client2' }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
       res = {
         json: (response) => {}
       };
-
-      sandbox.stub(res);
+      const resSpy = jest.spyOn(res, 'json');
       auth.filter(whitelist)(req, res, next);
 
-      sinon.assert.calledWith(res.json, {error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)'});
+      expect(resSpy).toBeCalledWith({error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)'});
     });
 
-    it('should find client (array) in whitelist and call next middleware', () => {
+    test('should find client (array) in whitelist and call next middleware', () => {
       whitelist = ['client1'];
       token = jwt.sign({ aud: ['client1'] }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
+      next = jest.fn();
 
       auth.filter(whitelist)(req, res, next);
 
-      expect(next.calledWithExactly()).to.equal(true);
+      expect(next).toBeCalled();
     });
 
-    it('should find client (string) in whitelist and call next middleware', () => {
+    test('should find client (string) in whitelist and call next middleware', () => {
       whitelist = ['client1'];
       token = jwt.sign({ aud: 'client1' }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
+      next = jest.fn();
 
       auth.filter(whitelist)(req, res, next);
 
-      expect(next.calledWithExactly()).to.equal(true);
+      expect(next).toBeCalled();
     });
   });
 
   describe('#getAccessToken', () => {
-    it('should fail with malformed auth header', () => {
+    test('should fail with malformed auth header', () => {
       token = jwt.sign({ aud: 'client1' }, 'secret');
       req = { headers: { authorization: `${token}` } };
+      next = jest.fn();
 
+      const spyGetAccessToken = jest.spyOn(auth, 'getAccessToken');
       auth.getAccessToken(req, next);
-      expect(next.calledOnce).to.equal(true);
-      sinon.assert.calledWith(next, sinon.match.instanceOf(Error));
+      expect(next).toBeCalled();
+      expect(spyGetAccessToken).toThrowError(Error);
     });
 
-    it('should fail with no auth header', () => {
+    test('should fail with no auth header', () => {
       req = { headers: { } };
+      next = jest.fn();
 
+      const spyGetAccessToken = jest.spyOn(auth, 'getAccessToken');
       auth.getAccessToken(req, next);
-      expect(next.calledOnce).to.equal(true);
-      sinon.assert.calledWith(next, sinon.match.instanceOf(Error));
+      expect(next).toBeCalled();
+      expect(spyGetAccessToken).toThrowError(Error);
     });
 
-    it('should get token successfully', () => {
+    test('should get token successfully', () => {
       token = jwt.sign({ aud: 'client1' }, 'secret');
       req = { headers: { authorization: `Bearer ${token}` } };
 
       const accessToken = auth.getAccessToken(req, next);
-      expect(accessToken).to.equal(token);
+      expect(accessToken).toBe(token);
     });
   });
 });

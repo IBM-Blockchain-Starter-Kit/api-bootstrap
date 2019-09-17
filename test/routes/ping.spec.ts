@@ -14,28 +14,26 @@
  *  limitations under the License.
  */
 
-const express = require('express');
-const request = require('supertest');
-const proxyquire = require('proxyquire').noPreserveCache();
+import * as express from 'express';
+import * as request from 'supertest';
 
-describe('routes - securedPing', () => {
+describe('routes - ping', () => {
 
   // mock route handler since it requires a call out to blockchain network
-  const FakeSecuredCtrl = {
-    getSecured: (req, res) => {
+  const FakePingCtrl = {
+    default: (req, res) => {
       res.statusCode = 200;
       res.json({success: true, result: 'Success'});
-    }
+    },
   };
 
-  const securedPing = proxyquire('../../server/routes/securedPing', {
-    '../controllers/securedPing': FakeSecuredCtrl
-  });
+  jest.mock('../../server/controllers/ping', () => (FakePingCtrl));
+  const ping = require('../../server/routes/ping');
 
-  it('should add securedPing route successfully', async() => {
+  test('should add ping route successfully', async () => {
     // test actual router with supertest server
     const app = express();
-    app.use(securedPing);
+    app.use(ping);
     await request(app)
       .get('/')
       .expect(200, {success: true, result: 'Success'});

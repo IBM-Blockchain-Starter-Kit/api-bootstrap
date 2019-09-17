@@ -14,23 +14,22 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
-const { FileSystemWallet, X509WalletMixin } = require('fabric-network');
+import * as config from 'config';
+import { FileSystemWallet, X509WalletMixin } from 'fabric-network';
+import { getLogger } from 'log4js';
 
-const fsWallet = new FileSystemWallet(config.fsWalletPath);
-const logger = log4js.getLogger('helpers - wallet');
-logger.level = config.logLevel;
+const fsWallet = new FileSystemWallet(config.get('fsWalletPath'));
 
 /**
- * Wallet object
+ * Set up logging
  */
-const wallet = {};
+const logger = getLogger('helpers - wallet');
+logger.level = config.get('logLevel');
 
 /**
  * Return FileSystemWallet object
  */
-wallet.getWallet = () => {
+export const getWallet = () => {
   logger.debug('entering >>> getWallet()');
   return fsWallet;
 };
@@ -39,7 +38,7 @@ wallet.getWallet = () => {
  *
  * @param {string} id - label of id in wallet
  */
-wallet.identityExists = async (id) => {
+export const identityExists = async (id) => {
   logger.debug('entering >>> identityExists()');
   const exists = await fsWallet.exists(id);
   logger.debug(`${id} exists in wallet: ${exists}`);
@@ -53,7 +52,7 @@ wallet.identityExists = async (id) => {
  * @param {string} cert - cert from enrolling user
  * @param {string} key - key from enrolling user
  */
-wallet.importIdentity = async (id, org, cert, key) => {
+export const importIdentity = async (id, org, cert, key) => {
   logger.debug('entering >>> importIdentity()');
   try {
     logger.debug(`Importing ${id} into wallet`);
@@ -63,5 +62,3 @@ wallet.importIdentity = async (id, org, cert, key) => {
     throw new Error(err);
   }
 };
-
-module.exports = wallet;

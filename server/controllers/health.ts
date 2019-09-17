@@ -13,26 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+import * as config from 'config';
+import { getLogger } from 'log4js';
 
-const express = require('express');
-const log4js = require('log4js');
-const config = require('config');
+import * as util from '../helpers/util';
 
-const healthCtrl = require('../controllers/health');
+const logger = getLogger('controllers - health');
+logger.level = config.get('logLevel');
 
-const router = express.Router();
+const getHealth = (req, res) => {
+  logger.debug('entering >>> getHealth()');
 
-/**
- * Set up logging
- */
-const logger = log4js.getLogger('routes - health');
-logger.level = config.logLevel;
+  const jsonRes = {
+    message: 'Server is up!',
+    status: 'UP',
+    statusCode: 200,
+    success: true,
+  };
 
-logger.debug('setting up /health route');
+  logger.debug('exiting <<< getHealth()');
+  util.sendResponse(res, jsonRes);
+};
 
-/**
- * Add routes
- */
-router.get('/', healthCtrl.getHealth);
-
-module.exports = router;
+export { getHealth as default };

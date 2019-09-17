@@ -13,3 +13,6 @@ coverage/**
 
 # fabric-network
 **/WALLETS/**
+
+#artifacts
+dist/**

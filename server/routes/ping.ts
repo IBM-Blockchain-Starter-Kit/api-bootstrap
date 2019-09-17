@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 IBM All Rights Reserved.
+ * Copyright 2018 IBM Corp. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,25 @@
  *  limitations under the License.
  */
 
-const express = require('express');
-const request = require('supertest');
+import * as config from 'config';
+import * as express from 'express';
+import { getLogger } from 'log4js';
 
-const health = require('../../server/routes/health');
+import * as pingCtrl from '../controllers/ping';
 
-describe('routes - health', () => {
+const router = express.Router();
 
-  it('should add health route successfully', async() => {
-    // test actual router with supertest server
-    const app = express();
-    app.use(health);
-    await request(app)
-      .get('/')
-      .expect(200, { success: true, message: 'Server is up!', status: 'UP' });
-  });
-});
+/**
+ * Set up logging
+ */
+const logger = getLogger('routes - ping');
+logger.level = config.get('logLevel');
+
+logger.debug('setting up /ping route');
+
+/**
+ * Add routes
+ */
+router.get('/', pingCtrl.default);
+
+module.exports = router;

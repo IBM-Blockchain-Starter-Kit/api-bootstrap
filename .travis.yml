@@ -4,4 +4,7 @@ node_js:
 
 script:
   - echo Testing rest api project
+  - npm run lint
   - npm run test
+  - npm run build
+  

@@ -14,20 +14,15 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
+import * as config from 'config';
+import { getLogger } from 'log4js';
 
-const util = require('../helpers/util');
+import * as util from '../helpers/util';
 
-const logger = log4js.getLogger('controllers - ping');
-logger.level = config.logLevel;
+const logger = getLogger('controllers - ping');
+logger.level = config.get('logLevel');
 
-/**
- * Controller object
- */
-const ping = {};
-
-ping.pingCC = async (req, res) => {
+const pingCC = async (req, res) => {
   logger.debug('entering >>> pingCC()');
 
   let jsonRes;
@@ -46,15 +41,15 @@ ping.pingCC = async (req, res) => {
     // const queryResponse = await contract.evaluateTransaction('Health');
 
     jsonRes = {
+      result: invokeResponse.toString(),
       statusCode: 200,
       success: true,
-      result: invokeResponse.toString(),
     };
   } catch (err) {
     jsonRes = {
+      message: `${err.message}`,
       statusCode: 500,
       success: false,
-      message: `${err.message}`,
     };
   }
 
@@ -62,4 +57,4 @@ ping.pingCC = async (req, res) => {
   util.sendResponse(res, jsonRes);
 };
 
-module.exports = ping;
+export { pingCC as default };

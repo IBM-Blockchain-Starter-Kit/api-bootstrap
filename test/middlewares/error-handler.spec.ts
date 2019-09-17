@@ -14,32 +14,34 @@
  *  limitations under the License.
  */
 
-const express = require('express');
-const request = require('supertest');
+import * as express from 'express';
+import * as request from 'supertest';
 
-const errorHandler = require('../../server/middlewares/error-handler');
+import * as errorHandler from '../../server/middlewares/error-handler';
 
 describe('middleware - error-handler', () => {
+
 
   // set up fake router with route that returns error
   const router = express.Router();
   router.get('/error', (req, res) => {
-    throw new Error('error in route');
+     throw new Error('error in route');
   });
 
   const app = express();
+
   app.use(router);
   app.use(errorHandler.catchNotFound);
   app.use(errorHandler.handleError);
 
-  it('should catch not found', async() => {
+  test('should catch not found', async () => {
     // test actual router with supertest server
-    await request(app)
-      .get('/doesnotexist')
-      .expect(404, {success: false, message: '404: Page not found'});
+   await request(app)
+   .get('/doesnotexist')
+   .expect(404, {success: false, message: '404: Page not found'});
   });
 
-  it('should catch thrown error', async() => {
+  test('should catch thrown error', async () => {
     await request(app)
       .get('/error')
       .expect(500, {success: false, message: 'error in route'});

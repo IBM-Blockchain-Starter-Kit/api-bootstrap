@@ -13,47 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-const jwt = require('jsonwebtoken');
-const log4js = require('log4js');
-const config = require('config');
+import * as config from 'config';
+import * as jwt from 'jsonwebtoken';
+import { getLogger } from 'log4js';
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('helpers - auth');
-logger.level = config.logLevel;
+const logger = getLogger('helpers - auth');
+logger.level = config.get('logLevel');
 
-
-logger.debug('importing up app id config');
-
-/**
- * auth object
- */
-const auth = {};
-
-/**
-* filter audience, or list of client ID's, that can access this
-*/
-auth.filter = whitelist => (req, res, next) => {
-  const accessTokenString = auth.getAccessToken(req, next);
-  const accessTokenPayload = jwt.decode(accessTokenString);
-
-  const audience = auth.getAudience(accessTokenPayload);
-
-  if (whitelist.includes(audience)) {
-    logger.debug('client is in whitelist, proceed');
-    next();
-  } else {
-    logger.debug('token does not have the appropriate access rights (aud)');
-    res.statusCode = 401;
-    res.json({ error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)' });
-  }
-};
+logger.debug('importing app id config');
 
 /**
  * Takes the token and determines what version to return formatted audience
  */
-auth.getAudience = (token) => {
+export const getAudience = (token) => {
   logger.info(`token aud: ${token.aud}`);
   let audience;
   if (Array.isArray(token.aud)) {
@@ -70,7 +45,7 @@ auth.getAudience = (token) => {
 /**
  * Helper to grab auth header from request
  */
-auth.getAccessToken = (req, next) => {
+export const getAccessToken = (req, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     logger.debug('Authorization header not found');
@@ -86,4 +61,23 @@ auth.getAccessToken = (req, next) => {
   return authHeaderComponents[1];
 };
 
-module.exports = auth;
+/**
+ * Filter audience, or list of client ID's, that can access this
+ * @param whitelist list of client
+ */
+// tslint:disable-next-line: arrow-parens
+export const filter = whitelist => (req, res, next) => {
+  const accessTokenString = getAccessToken(req, next);
+  const accessTokenPayload = jwt.decode(accessTokenString);
+
+  const audience = getAudience(accessTokenPayload);
+
+  if (whitelist.includes(audience)) {
+    logger.debug('client is in whitelist, proceed');
+    next();
+  } else {
+    logger.debug('token does not have the appropriate access rights (aud)');
+    res.statusCode = 401;
+    res.json({ error: 'invalid_grant', message: 'This token does not have the appropriate access rights (aud)' });
+  }
+};

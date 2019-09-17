@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "outDir": "../dist",
+        "target": "es2017",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "declaration": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
+        "inlineSources": true,
+        "sourceMap": true
+    },
+    "exclude": [
+        ".vscode",
+        "dist",
+        "node_modules",
+        "./WALLETS/*",
+        "test"
+    ],
+    "include": [
+        "server"
+      ]
+}

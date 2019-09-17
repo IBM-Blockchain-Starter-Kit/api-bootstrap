@@ -21,7 +21,7 @@ This repository provides the scaffolding code for a Fabric client application th
 
 - In *server/config/default.json*, you will need to update the `orgName` field to your org. Ensure that the *FABRIC_ENROLL_ID* and *FABRIC_ENROLL_SECRET* environment variables are set with a user that has been registered to that org. **Hint:** For instructions on how to register an application user/identity on the IBM Blockchain Platform, see [here](https://cloud.ibm.com/docs/services/blockchain/howto?topic=blockchain-ibp-console-app#ibp-console-app-identities).
 
-- *server/controllers/ping.js* also has a line to retrieve the contract instance set in the fabric-routes middleware. You should update the line to `const contract = res.locals.<channel name>.<chaincode name>` (see [Fabric routes custom middleware](docs/fabric-routes.md) for details). Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
+- *server/controllers/ping.ts* also has a line to retrieve the contract instance set in the fabric-routes middleware. You should update the line to `const contract = res.locals.<channel name>.<chaincode name>` (see [Fabric routes custom middleware](docs/fabric-routes.md) for details). Then there are two calls out to the chaincode. There are two calls for demonstrative purposes. The first is to invoke a transaction that will actually be endorsed and committed to the ledger (submitTransaction). The second is to do a simple query to the ledger (evaluateTransaction). You can find more information for those two calls [here](https://fabric-sdk-node.github.io/Contract.html).
 <br>There is a change required to call out to your specific chaincode: Update `Health` in `const queryResponse = await contract.evaluateTransaction('Health');` to whatever your chaincode function name is, and add any additional parameters needed.
 
 After making those changes, you can `GET http://localhost:3000/ping` to see the result.
@@ -41,12 +41,12 @@ Navigate to the Swagger UI at: http://localhost:3000/api-docs/
 $ npm run test
 ```
 
-The [mocha framework](https://mochajs.org/) along with the [chai library](http://www.chaijs.com/) is used for testing in this project. [nyc (istanbul)](https://github.com/istanbuljs/nyc) is used to display test coverage. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
+The [Jest framework](https://jestjs.io/) is used for testing in this project. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
 
 ## Under the covers
 You should have a good understanding of how a Hyperledger Fabric network and its SDK to interact with it works, but there are some high level concepts outlined here to understand the flow.
 
-A *FileSystemWallet* is used to manage identities for interacting with the network. More information can be found in the [Hyperledger Fabric SDK for node.js doc](https://fabric-sdk-node.github.io/FileSystemWallet.html). Look in *server/helpers/wallet.js* for some wallet helper functions.
+A *FileSystemWallet* is used to manage identities for interacting with the network. More information can be found in the [Hyperledger Fabric SDK for node.js doc](https://fabric-sdk-node.github.io/FileSystemWallet.html). Look in *server/helpers/wallet.ts* for some wallet helper functions.
 
 A gateway to talk to the network is established with the [*Gateway*](https://fabric-sdk-node.github.io/Gateway.html) class, by passing the common connection profile, a specified identity, and the wallet that contains that identity.
 ```
@@ -84,79 +84,74 @@ This app is built using Node.js and the [express.js framework](https://expressjs
 
 To start the server in development mode, run `npm run dev`. This will start the server with [nodemon](https://github.com/remy/nodemon), which automatically restarts the node app when you make file changes. It simplifies testing when making changes and adding functionality.
 
-The server is configured and started from the *server/server.js* file. Routers that contain all the routes of your app are added in the *routes* directory. The corresponding controllers/handlers (the logic performed when those apis are called) of those routes are found in the *controllers* directory. When adding a new route to the api, you will first create a new router (or add to an existing router) in the *routes* directory, and also include it in *routes/index.js*. Then you will add the logic function in the *controllers* directory. For example, if I wanted to add a new `/ping` route, you would create a *routes/ping.js* file. The file's contents would look like this:
+The server is configured and started from the *server/server.ts* file. Routers that contain all the routes of your app are added in the *routes* directory. The corresponding controllers/handlers (the logic performed when those apis are called) of those routes are found in the *controllers* directory. When adding a new route to the api, you will first create a new router (or add to an existing router) in the *routes* directory, and also include it in *routes/index.ts*. Then you will add the logic function in the *controllers* directory. For example, if I wanted to add a new `/ping` route, you would create a *routes/ping.ts* file. The file's contents would look like this:
 
 ```
-const express = require('express');
-const log4js = require('log4js');
-const config = require('config');
+import * as config from 'config';
+import * as express from 'express';
+import { getLogger } from 'log4js';
 
 // controller logic for this route
-const pingCtrl = require('../controllers/ping');
+import * as pingCtrl from '../controllers/ping';
 
-const router = express.Router(); // create new router
+const router = express.Router();
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('routes - ping');
-logger.level = config.logLevel;
+const logger = getLogger('routes - ping');
+logger.level = config.get('logLevel');
 
 logger.debug('setting up /ping route');
 
 /**
  * Add routes
  */
-router.get('/', ping.pingCC); // specify path and controller function for this route
+router.get('/', pingCtrl.default); // specify path and controller function for this route
 
 module.exports = router; // export router
 ```
 
-Routes are registered to the server by taking the exported router in *routes/index.js*, which basically takes all of the routers in the directory and combines them to pass to the express.js app. At this point, we've created the new router, but it won't be registered with the express app. To do that, we need to open *routes/index.js* and add the following lines:
+Routes are registered to the server by taking the exported router in *routes/index.ts*, which basically takes all of the routers in the directory and combines them to pass to the express app. At this point, we've created the new router, but it won't be registered with the express app. To do that, we either need to add the route information in *config/fabric-connections.json* file or open *routes/index.ts* and add the following lines:
 
 ```
-const ping = require('./ping');
+import ping = require('./ping');
 router.use('/ping', ping);
 ```
 
-Now all we need to add is the logic. Create a *controllers/ping.js* file. Remember our function name needs to match what we specified when adding the route to the router. The file's contents would look something like this:
+Now all we need to add is the logic. Create a *controllers/ping.ts* file. Remember our function name needs to match what we specified when adding the route to the router. The file's contents would look something like this:
 
 ```
-const log4js = require('log4js');
-const config = require('config');
+import * as config from 'config';
+import { getLogger } from 'log4js';
 
-const util = require('../helpers/util');
+import * as util from '../helpers/util';
 
-const logger = log4js.getLogger('controllers - ping');
-logger.level = config.logLevel;
+const logger = getLogger('controllers - ping');
+logger.level = config.get('logLevel');
 
-/**
- * Controller object
- */
-const ping = {};
+const pingCC = async (req, res) => {
+  logger.debug('entering >>> pingCC()');
 
-ping.pingCC = (req, res) => {
-  logger.debug('inside pingCC()...');
-  
   // ping chaincode
-
   const jsonRes = {
     statusCode: 200,
     success: true,
     message: 'Pinged chaincode successfully!',
   };
 
+  logger.debug('exiting <<< pingCC()');
   util.sendResponse(res, jsonRes);
 };
 
-module.exports = ping;
+export { pingCC as default };
 ```
 
 That's it, you now have a new route in your server! Remember it's important to keep your *swagger.yaml* up to date when you add new endpoints or make changes to existing ones.
 
-The *middlewares* directory contains any middleware that is used in the app, such as error handling in *error-handler.js*.
+The *middlewares* directory contains any middleware that is used in the app, such as error handling in *error-handler.ts*.
 
-The *helpers* directory contains any helper functions used in the app, such as a send response helper in *util.js* to send a request response back.
+The *helpers* directory contains any helper functions used in the app, such as a send response helper in *util.ts* to send a request response back.
 
 For full API reference and documentation, start the server and navigate to http://localhost:3000/api-docs/.  Also, please see:
 

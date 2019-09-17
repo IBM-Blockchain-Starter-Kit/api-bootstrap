@@ -14,27 +14,22 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const createError = require('http-errors');
-const config = require('config');
+import * as config from 'config';
+import * as createError from 'http-errors';
+import { getLogger } from 'log4js';
 
-const util = require('../helpers/util');
+import * as util from '../helpers/util';
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('middlewares - error-handler');
-logger.level = config.logLevel;
-
-/**
- * Error Handler object
- */
-const errorHandler = {};
+const logger = getLogger('middlewares - error-handler');
+logger.level = config.get('logLevel');
 
 /**
  * Catch 404 Error and forward to error handler function
  */
-errorHandler.catchNotFound = (req, res, next) => {
+export const catchNotFound = (req, res, next) => {
   logger.debug('entering >>> catchNotFound()');
   next(createError(404, '404: Page not found'));
 };
@@ -42,14 +37,12 @@ errorHandler.catchNotFound = (req, res, next) => {
 /**
  * Error handler function
  */
-errorHandler.handleError = (err, req, res, next) => {
+export const handleError = (err, req, res, next) => {
   logger.debug('entering >>> handleError()');
   const jsonRes = {
+    message: err.message,
     statusCode: err.status || 500,
     success: false,
-    message: err.message,
   };
   util.sendResponse(res, jsonRes);
 };
-
-module.exports = errorHandler;

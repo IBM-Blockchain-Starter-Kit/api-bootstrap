@@ -14,19 +14,14 @@
  *  limitations under the License.
  */
 
-const log4js = require('log4js');
-const config = require('config');
-const util = require('../helpers/util');
+import * as config from 'config';
+import { getLogger } from 'log4js';
+import * as util from '../helpers/util';
 
-const logger = log4js.getLogger('controllers - securedPing');
-logger.level = config.logLevel;
+const logger = getLogger('controllers - securedPing');
+logger.level = config.get('logLevel');
 
-/**
- * Controller object
- */
-const securedPing = {};
-
-securedPing.getSecured = async (req, res) => {
+const getSecured = async (req, res) => {
   logger.debug('inside getSecured()...');
 
   let jsonRes;
@@ -41,16 +36,16 @@ securedPing.getSecured = async (req, res) => {
     const invokeResponse = await contract.submitTransaction('Health');
 
     jsonRes = {
-      statusCode: 200,
-      success: true,
       message: 'Inside protected route!',
       result: invokeResponse.toString(),
+      statusCode: 200,
+      success: true,
     };
   } catch (err) {
     jsonRes = {
+      message: `${err.message}`,
       statusCode: 500,
       success: false,
-      message: `${err.message}`,
     };
   }
 
@@ -58,4 +53,4 @@ securedPing.getSecured = async (req, res) => {
   util.sendResponse(res, jsonRes);
 };
 
-module.exports = securedPing;
+export { getSecured as default };

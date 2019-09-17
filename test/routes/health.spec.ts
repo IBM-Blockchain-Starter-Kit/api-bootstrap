@@ -14,30 +14,20 @@
  *  limitations under the License.
  */
 
-const express = require('express');
-const request = require('supertest');
-const proxyquire = require('proxyquire').noPreserveCache();
+import * as express from 'express';
+import * as request from 'supertest';
 
-describe('routes - ping', () => {
+// tslint:disable-next-line: no-var-requires
+const health = require('../../server/routes/health');
 
-  // mock route handler since it requires a call out to blockchain network
-  const FakePingCtrl = {
-    pingCC: (req, res) => {
-      res.statusCode = 200;
-      res.json({success: true, result: 'Success'});
-    }
-  };
-  
-  const ping = proxyquire('../../server/routes/ping', {
-    '../controllers/ping': FakePingCtrl
-  });
+describe('routes - health', () => {
 
-  it('should add ping route successfully', async() => {
+  test('should add health route successfully', async () => {
     // test actual router with supertest server
     const app = express();
-    app.use(ping);
+    app.use(health);
     await request(app)
       .get('/')
-      .expect(200, {success: true, result: 'Success'});
+      .expect(200, { success: true, message: 'Server is up!', status: 'UP' });
   });
 });

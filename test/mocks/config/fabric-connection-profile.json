@@ -1,22 +1,22 @@
 {
-  "name": "channel1",
-  "description": "Network on IBP v2",
-  "version": "1.0.0",
-  "client": {
-      "organization": "org1"
-  },
-  "organizations": {
-      "org1": {
-          "mspid": "org1msp",
-          "certificateAuthorities": [
-              "0.0.0.0:00000"
-          ]
-      }
-  },
-  "certificateAuthorities": {
-      "0.0.0.0:00000": {
-          "url": "https://0.0.0.0:00000",
-          "caName": "ca"
-      }
+    "name": "channel1",
+    "description": "Network on IBP v2",
+    "version": "1.0.0",
+    "client": {
+        "organization": "org1"
+    },
+    "organizations": {
+        "org1": {
+            "mspid": "org1msp",
+            "certificateAuthorities": [
+                "0.0.0.0:00000"
+            ]
+        }
+    },
+    "certificateAuthorities": {
+        "0.0.0.0:00000": {
+            "url": "https://0.0.0.0:00000",
+            "caName": "ca"
+        }
+    }
   }
-}

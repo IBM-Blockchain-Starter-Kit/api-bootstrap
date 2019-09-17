@@ -13,24 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-const express = require('express');
-const log4js = require('log4js');
-const config = require('config');
+import * as config from 'config';
+import * as express from 'express';
+import { getLogger } from 'log4js';
 
-const secured = require('../controllers/securedPing');
+import * as secured from '../controllers/securedPing';
 
 const router = express.Router();
 
 /**
  * Set up logging
  */
-const logger = log4js.getLogger('routes - securedPing');
-logger.level = config.logLevel;
+const logger = getLogger('routes - securedPing');
+logger.level = config.get('logLevel');
 
 /**
  * Add protected route
  */
 
-router.get('/', secured.getSecured);
+router.get('/', secured.default);
 
 module.exports = router;
