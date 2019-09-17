@@ -64,8 +64,9 @@ const network = await gateway.getNetwork(config.channelName);
 
 Then make a call to get the chaincode with a [*getContract*](https://fabric-sdk-node.github.io/Network.html#getContract__anchor) call.
 ```
-const contract = await network.getContract(config.chaincodeName);
+const contract = await network.getContract(config.chaincodeName, config.chaincodeName.contractName);
 ```
+> `contractName` is optional parameter (if you don't have multiple contracts).
 
 Once you have the contract object, you can start invoking and querying the chaincode!
 ```
@@ -152,7 +153,7 @@ The *middlewares* directory contains any middleware that is used in the app, suc
 
 The *helpers* directory contains any helper functions used in the app, such as a send response helper in *util.ts* to send a request response back.
 
-For full API Reference and Documentation, start the server and navigate to http://localhost:3000/api-docs/.  Also, please see:
+For full API reference and documentation, start the server and navigate to http://localhost:3000/api-docs/.  Also, please see:
 
 * [Fabric routes custom middleware](docs/fabric-routes.md)
 * [Securing the endpoints](docs/security.md)
