@@ -120,11 +120,7 @@ export default class FabricRoutes {
       const idExists = await walletHelper.identityExists(user);
       if (!idExists) {
         logger.debug(`Enrolling and importing ${user} into wallet`);
-<<<<<<< HEAD:server/middlewares/fabric-routes.ts
         const enrollInfo: any = await util.userEnroll(org, user, pw);
-=======
-        const enrollInfo = await util.userEnroll(org, user, pw);
->>>>>>> master:server/middlewares/fabric-routes.js
         await walletHelper.importIdentity(user, enrollInfo.mspid,
           enrollInfo.certificate, enrollInfo.key);
       }
@@ -179,35 +175,20 @@ export default class FabricRoutes {
             res.locals[networkConfig.channel].network = network;
 
             // get each specified chaincode/contract instance in channel and store in res.locals
-<<<<<<< HEAD:server/middlewares/fabric-routes.ts
             await Promise.all(Object.entries(networkConfig.chaincodes).map(async (chaincode: [string, string[]]) => {
               const chaincodeName: string = chaincode[0];
               const smartContracts: string[] = chaincode[1];
               logger.debug(`Getting chaincode: ${chaincodeName}`);
               if (smartContracts.length === 0) { // if the chaincode array contains no contracts
-=======
-            await Promise.all(Object.entries(networkConfig.chaincodes).map(async (chaincode) => {
-              const chaincodeName = chaincode[0];
-              logger.debug(`Getting chaincode: ${chaincodeName}`);
-              if (chaincode[1].length === 0) { // if the chaincode contains no array of contracts
->>>>>>> master:server/middlewares/fabric-routes.js
                 const contract = await network.getContract(chaincodeName);
                 res.locals[networkConfig.channel][chaincodeName] = contract;
               } else {
                 res.locals[networkConfig.channel][chaincodeName] = {};
-<<<<<<< HEAD:server/middlewares/fabric-routes.ts
                 for (const smartContract of smartContracts) {
                   logger.debug(`Getting contract: ${smartContract}`);
                   const contract = await network.getContract(chaincodeName, smartContract);
                   res.locals[networkConfig.channel][chaincodeName][smartContract] = contract;
                 }
-=======
-                chaincode[1].forEach(async (smartContract) => {
-                  logger.debug(`Getting contract: ${smartContract}`);
-                  const contract = await network.getContract(chaincode[0], smartContract);
-                  res.locals[networkConfig.channel][chaincodeName][smartContract] = contract;
-                });
->>>>>>> master:server/middlewares/fabric-routes.js
               }
             }));
           }));
