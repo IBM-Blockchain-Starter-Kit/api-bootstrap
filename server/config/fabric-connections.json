@@ -29,6 +29,11 @@
           "<clientId>"
         ]
       }
+    },
+    {
+      "path": "/data",
+      "fabricConnection": "conn1",
+      "modulePath": "routes/data"
     }
   ]
 }
