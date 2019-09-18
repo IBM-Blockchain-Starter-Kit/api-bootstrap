@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^16.1.1",
+    "body-parser": "^1.18.3",
     "config": "^2.0.1",
     "express": "~4.16.0",
     "fabric-ca-client": "1.4.0",
