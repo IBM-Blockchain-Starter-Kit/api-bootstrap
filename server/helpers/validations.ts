@@ -33,8 +33,9 @@ const dataKeys = {
     emailValue: Joi.string().email({ minDomainSegments: 2 }).required().label('emailValue'),
 };
 
-export function addData(req, res, next): any {
-    const schema = Joi.object().keys({
+export async function addData(req, res, next): Promise<any> {
+
+    const schema = Joi.object({
         id: dataKeys.id,
         stringValue: dataKeys.stringValue,
         numValue: dataKeys.numValue,
@@ -44,15 +45,13 @@ export function addData(req, res, next): any {
         convert: true,
       });
 
-    // eslint-disable-next-line consistent-return
-    Joi.validate(req.body, schema, (err, value) => {
-        if (err) {
-          logger.error(err.message);
-          res.status(400).send(err.message);
-        } else {
-          req.body = value;
-          next();
-        }
-      });
+    try {
+      const value = await schema.validateAsync(req.body);
+      req.body = value;
+      next();
+    } catch (err) {
+      logger.error(err.message);
+      res.status(400).send(err.message);
+    }
 
 }

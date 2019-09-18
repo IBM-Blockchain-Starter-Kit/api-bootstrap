@@ -31,15 +31,6 @@ describe('routes - data', () => {
   jest.mock('../../server/controllers/data', () => (FakeDataCtrl));
   const data = require('../../server/routes/data');
 
-  test('should add ping route successfully', async () => {
-    // test actual router with supertest server
-    const app = express();
-    app.use(data);
-    await request(app)
-      .post('/')
-      .expect(200, {success: true, result: 'Success'});
-  });
-
   test('should post data route successfully', async () => {
     // test actual router with supertest server
     const app = express();
