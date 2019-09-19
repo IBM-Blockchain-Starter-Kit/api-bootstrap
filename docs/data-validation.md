@@ -1,6 +1,6 @@
 # Data Validation
 
-In this application, we demonstrate an example of data validation to verify a request body for an endpoint.  <b>For blockchain applications, the developer should make sure to place the business logic and rules in the chaincode itself</b>.  This validation logic is added here as an example in case that there is a need to perform some validation up-front before reaching the chaincode. Other cases include if validation cannot be performed on the chaincode side, such as when using an external blockchain storage service (i.e. BDS). 
+In this application, we demonstrate an example of data validation to verify a request body for an endpoint.  <b>For blockchain applications, the developer should make sure to place the business logic and rules in the chaincode itself</b>.  This validation logic is added here as an example in case that there is a need to perform some validation up-front before reaching the chaincode. Other cases include if validation cannot be performed on the chaincode side, such as when using Blockchain Document Store (BDS). 
 
 This api-bootstrap provides validation on a data schema for a `POST` endpoint. This is done by creating middleware which validates the request body, to ensure that the required fields are provided with correct data format, before passing the request to a controller function.  This validation makes use of the [@hapi/joi](https://www.npmjs.com/package/@hapi/joi) npm package which provides simple syntax to create requirements for the data fields and objects.
 
