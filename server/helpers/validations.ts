@@ -25,25 +25,19 @@ import { getLogger } from 'log4js';
 const logger = getLogger('helpers - util');
 logger.level = config.get('logLevel');
 
-const dataKeys = {
-    id: Joi.string().trim().max(100).required().label('id'),
-    stringValue: Joi.string().trim().required().label('stringValue'),
-    numValue: Joi.number().required().label('numValue'),
-    dateValue: Joi.date().required().label('dateValue'),
-    emailValue: Joi.string().email({ minDomainSegments: 2 }).required().label('emailValue'),
-};
 
+/**
+ * addData validation
+ */
 export async function addData(req, res, next): Promise<any> {
 
     const schema = Joi.object({
-        id: dataKeys.id,
-        stringValue: dataKeys.stringValue,
-        numValue: dataKeys.numValue,
-        dateValue: dataKeys.dateValue,
-        emailValue: dataKeys.emailValue,
-      }, {
-        convert: true,
-      });
+      id: Joi.string().trim().max(100).required().label('id'),
+      stringValue: Joi.string().trim().required().label('stringValue'),
+      numValue: Joi.number().required().label('numValue'),
+      dateValue: Joi.date().required().label('dateValue'),
+      emailValue: Joi.string().email({ minDomainSegments: 2 }).required().label('emailValue'),
+    });
 
     try {
       const value = await schema.validateAsync(req.body);
