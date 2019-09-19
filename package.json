@@ -11,6 +11,7 @@
     "test": "FABRIC_ENROLL_ID=test FABRIC_ENROLL_SECRET=testpw NODE_CONFIG_DIR=./test/mocks/config jest --i --verbose --collectCoverage --forceExit"
   },
   "dependencies": {
+    "@blockchainlabs/ibm-certificate-manager-wallet": "0.0.3",
     "@hapi/joi": "^16.1.1",
     "body-parser": "^1.18.3",
     "config": "^2.0.1",
@@ -19,6 +20,7 @@
     "fabric-client": "1.4.0",
     "fabric-network": "1.4.0",
     "http-errors": "~1.6.2",
+    "ibm-cloud-env": "^0.2.6",
     "ibmcloud-appid": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^5.0.0",

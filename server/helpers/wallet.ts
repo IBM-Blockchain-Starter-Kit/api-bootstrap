@@ -18,7 +18,20 @@ import * as config from 'config';
 import { FileSystemWallet, X509WalletMixin } from 'fabric-network';
 import { getLogger } from 'log4js';
 
-const fsWallet = new FileSystemWallet(config.get('fsWalletPath'));
+import { CertificateManagerWallet } from '@blockchainlabs/ibm-certificate-manager-wallet';
+import * as IBMCloudEnv from 'ibm-cloud-env';
+
+IBMCloudEnv.init('/server/config/mappings.json');
+const certManagerCredentials = IBMCloudEnv.getDictionary('cert-manager-credentials');
+console.log(certManagerCredentials);
+
+let fsWallet;
+
+if (config.get('cmWalletEnabled')) {
+  fsWallet = new CertificateManagerWallet(certManagerCredentials);
+} else {
+  fsWallet = new FileSystemWallet(config.get('fsWalletPath'));
+}
 
 /**
  * Set up logging

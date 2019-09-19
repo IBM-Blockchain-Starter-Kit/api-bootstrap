@@ -16,3 +16,6 @@ coverage/**
 
 #artifacts
 dist/**
+
+# Certificate Manager credentials
+**/cert-manager-credentials.json

@@ -1,0 +1,8 @@
+{
+    "cert-manager-credentials": {
+        "searchPatterns": [
+            "env:CERTIFICATE_MANAGER_CREDENTIALS",
+            "file:/server/config/cert-manager-credentials.json"
+        ]
+    }
+}
