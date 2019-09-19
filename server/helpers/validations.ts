@@ -25,7 +25,6 @@ import { getLogger } from 'log4js';
 const logger = getLogger('helpers - util');
 logger.level = config.get('logLevel');
 
-
 /**
  * addData validation
  */
