@@ -116,6 +116,9 @@ export default class FabricRoutes {
       const pw: string = process.env.FABRIC_ENROLL_SECRET;
       const { serviceDiscovery } = fabricConfig;
 
+      // initialize the wallet
+      walletHelper.initWallet(config.get('walletType'));
+
       // user enroll and import if identity not found in wallet
       const idExists = await walletHelper.identityExists(user);
       if (!idExists) {
