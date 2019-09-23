@@ -41,13 +41,17 @@ logger.level = config.get('logLevel');
  */
 export const initWallet = (walletType) => {
   logger.debug('entering >>> initWallet()');
-
+  // check if correct wallet type in config
+  const supportedWallets: string[] = config.get('supportedWallets');
+  if (!(supportedWallets.includes(walletType))) {
+    throw new Error ('Incorrect activeWallet in config');
+  }
+  // initialize based on wallet type
+  if (walletType === FILESYSTEM_WALLET) {
+    wallet = new FileSystemWallet(config.get('fsWalletPath'));
+  }
   if (walletType === CERTIFICATE_MANAGER_WALLET) {
     wallet = new CertificateManagerWallet(certManagerCredentials);
-  } else if (walletType === FILESYSTEM_WALLET) {
-    wallet = new FileSystemWallet(config.get('fsWalletPath'));
-  } else {
-    throw new Error ('Incorrect walletType in config');
   }
   logger.debug('exiting <<< initWallet()');
 };
@@ -85,6 +89,21 @@ export const importIdentity = async (id, org, cert, key) => {
     await wallet.import(id, X509WalletMixin.createIdentity(org, cert, key));
   } catch (err) {
     logger.debug(`Error importing ${id} into wallet: ${err}`);
+    throw new Error(err);
+  }
+};
+
+/**
+ *
+ * @param {string} id - label of id deleting from wallet
+ */
+export const deleteIdentity = async (id) => {
+  logger.debug('entering >>> deleteIdentity()');
+  try {
+    logger.debug(`Deleting ${id} into wallet`);
+    await wallet.delete(id);
+  } catch (err) {
+    logger.debug(`Error deleting ${id} from wallet: ${err}`);
     throw new Error(err);
   }
 };

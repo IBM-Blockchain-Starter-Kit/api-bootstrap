@@ -117,7 +117,7 @@ export default class FabricRoutes {
       const { serviceDiscovery } = fabricConfig;
 
       // initialize the wallet
-      walletHelper.initWallet(config.get('walletType'));
+      walletHelper.initWallet(config.get('activeWallet'));
 
       // user enroll and import if identity not found in wallet
       const idExists = await walletHelper.identityExists(user);

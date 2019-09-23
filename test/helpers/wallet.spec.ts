@@ -31,23 +31,36 @@ const CERTIFICATE_MANAGER_WALLET = 'CertificateManagerWallet';
 
 describe('helpers - wallet', () => {
 
-    beforeAll(() => {
+    beforeAll(async () => {
+        // check if correct wallet type in config
+        const supportedWallets: string[] = config.get('supportedWallets');
+        if (!(supportedWallets.includes(config.get('activeWallet')))) {
+            throw new Error ('Incorrect activeWallet in config');
+        }
+
         // delete test wallet before starting for file system wallet
-        if (config.get('walletType') === FILESYSTEM_WALLET) {
+        if (config.get('activeWallet') === FILESYSTEM_WALLET) {
             rimraf.sync(config.get('fsWalletPath'));
         }
     });
-    afterAll(() => {
+    afterAll(async () => {
         // delete test wallet after tests for file system wallet
-        if (config.get('walletType') === FILESYSTEM_WALLET) {
+        if (config.get('activeWallet') === FILESYSTEM_WALLET) {
             rimraf.sync(config.get('fsWalletPath'));
+        }
+
+        // delete test user after tests for certifacte manager wallet
+        if (config.get('activeWallet') === CERTIFICATE_MANAGER_WALLET) {
+            if (await walletHelper.identityExists('testuser1')) {
+                await walletHelper.deleteIdentity('testuser1');
+            }
         }
     });
 
     let wallet;
 
     beforeEach(() => {
-        walletHelper.initWallet(config.get('walletType'));
+        walletHelper.initWallet(config.get('activeWallet'));
         wallet = walletHelper.getWallet();
     });
 
@@ -55,18 +68,17 @@ describe('helpers - wallet', () => {
         test('should fail for incorrect type of wallet', () => {
             expect(() => {
                 walletHelper.initWallet('IncorrectWalletType');
-            }).toThrow(new Error('Incorrect walletType in config'));
+            }).toThrow(new Error('Incorrect activeWallet in config'));
         });
     });
 
     describe('#getWallet', () => {
         test('should get correct type of wallet', () => {
-            if (config.get('walletType') === FILESYSTEM_WALLET) {
+            if (config.get('activeWallet') === FILESYSTEM_WALLET) {
                 expect(wallet).toBeInstanceOf(FileSystemWallet);
-            } else if (config.get('walletType') === CERTIFICATE_MANAGER_WALLET) {
+            }
+            if (config.get('activeWallet') === CERTIFICATE_MANAGER_WALLET) {
                 expect(wallet).toBeInstanceOf(CertificateManagerWallet);
-            } else {
-                throw new Error ('Incorrect walletType in config');
             }
         });
     });
@@ -90,6 +102,29 @@ describe('helpers - wallet', () => {
         test('should return false if identity does not exist in wallet', async () => {
             const result = await walletHelper.identityExists('testuser2');
             expect(result).toBe(false);
+        });
+    });
+
+    describe('#deleteIdentity', () => {
+        test('should handle error during delete', async () => {
+            // let wallet;
+            (wallet.delete) = jest.fn(() => {
+                return Promise.reject(new Error('error deleting identity'));
+            });
+            try {
+                await walletHelper.deleteIdentity('testuser1');
+            } catch (e) {
+                expect(e.message).toMatch('error deleting identity');
+            }
+        });
+
+        test('should delete identity properly', async () => {
+            expect(await walletHelper.importIdentity('testuser2', 'org1', cert, key));
+            const result = await walletHelper.identityExists('testuser2');
+            expect(result).toBe(true);
+            await walletHelper.deleteIdentity('testuser2');
+            const resultFalse = await walletHelper.identityExists('testuser2');
+            expect(resultFalse).toBe(false);
         });
     });
 });

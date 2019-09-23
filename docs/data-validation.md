@@ -1,8 +1,8 @@
 # Data Validation
 
-In this application, we demonstratrate an example of data validation to verify a request body for an endpoint.  <b>For blockchain applications, the developer should make sure to place the business logic and rules in the chaincode itself</b>.  This validation logic is added here as an example in case that there is a need to perform some validation up-front before reaching the chaincode. Other cases includes if validation cannot be performed on the chaincode side, such as when using an external blockchain storage service (i.e. BDS). 
+In this application, we demonstrate an example of data validation to verify a request body for an endpoint.  <b>For blockchain applications, the developer should make sure to place the business logic and rules in the chaincode itself</b>.  This validation logic is added here as an example in case that there is a need to perform some validation up-front before reaching the chaincode. Other cases include if validation cannot be performed on the chaincode side, such as when using an external blockchain storage service (i.e. BDS). 
 
-This api-bootstrap provides validation on a data schema for a `POST` endpoint. This is done by creating middleware which validates the request body, to ensure that the required fields are provided with correct data format, before passing the request to a controller function.  This validation makes use of the [@hapi/joi](https://www.npmjs.com/package/@hapi/joi) npm package which provides simple syntax to create requriements for the data fields and objects.
+This api-bootstrap provides validation on a data schema for a `POST` endpoint. This is done by creating middleware which validates the request body, to ensure that the required fields are provided with correct data format, before passing the request to a controller function.  This validation makes use of the [@hapi/joi](https://www.npmjs.com/package/@hapi/joi) npm package which provides simple syntax to create requirements for the data fields and objects.
 
 This api-bootstrap contains an example route `/data` that leverages the data validation middleware.  This route details are provided in the `public/swagger.yaml` which presents the endpoint on the swagger api when the app is launched. The request body prompted by the endpoint looks like:
 ```
@@ -15,7 +15,7 @@ This api-bootstrap contains an example route `/data` that leverages the data val
 }
 ```
 
-When the `POST /data` endpoint is exectued, this data schema is routed through the `server/routes/data.ts` file.  The router provides the schema validation middleware and the controller functioon to land on once validatied:
+When the `POST /data` endpoint is executed, this data schema is routed through the `server/routes/data.ts` file.  The router provides the schema validation middleware and the controller function to land on once validated:
 ```
 router.post('/', schemaValidations.addData, dataCtrl.default);
 ```
