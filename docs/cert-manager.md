@@ -1,6 +1,6 @@
 # Using Certificate Manager as Wallet
 
-This api-bootstrap provides option to setup the Hyperledger Fabric [wallet](https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/wallet.html) using the [Certificate Manager](https://cloud.ibm.com/docs/services/certificate-manager?topic=certificate-manager-about-certificate-manager) service on IBM Cloud.  The Certificate Manager services allows developers to store and manage SSL/TLS certificates and associcated private keys. This makes it a great candidate to use for storing user identities for the blockcahin application users, who will need certificate with private key to connect to a blockchain network.  This api-bootstap makes use of the npm library [@blockchainlabs/ibm-certificate-manager-wallet](https://www.npmjs.com/package/@blockchainlabs/ibm-certificate-manager-wallet) to setup the Certifcate Manager service for use as Hyperledger Fabric wallet. 
+This api-bootstrap provides option to setup the Hyperledger Fabric [wallet](https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/wallet.html) using the [Certificate Manager](https://cloud.ibm.com/docs/services/certificate-manager?topic=certificate-manager-about-certificate-manager) service on IBM Cloud.  The Certificate Manager services allows developers to store and manage SSL/TLS certificates and associated  private keys. This makes it a great candidate to use for storing user identities for the blockchain application users, who will need certificate with private key to connect to a blockchain network.  This api-bootstap makes use of the npm library [@blockchainlabs/ibm-certificate-manager-wallet](https://www.npmjs.com/package/@blockchainlabs/ibm-certificate-manager-wallet) to setup the Certificate Manager service for use as Hyperledger Fabric wallet. 
 
 ## Create the Certificate Manager service
 
@@ -35,7 +35,7 @@ Once your service is created in IBM Cloud, you will need to add the credentials 
     1. Go to the *Access policies* tab and click *Assign Access*.
     1. Select *Assign access to resources*.
     1. Select *Certificate Manager* from the drop down list.
-    1. Select the corresponding IBM Certificate Manager instance and assign the following access roles: `Manager`,`Writer` and `Reader`. For more information on assigning access policies, please refer to [Managing service access roles](https://console.bluemix.net/docs/services/certificate-manager/access-management.html#managing-service-access-roles).
+    1. Select the corresponding IBM Certificate Manager instance and assign the following access roles: `Manager`, `Writer` and `Reader`. For more information on assigning access policies, please refer to [Managing service access roles](https://console.bluemix.net/docs/services/certificate-manager/access-management.html#managing-service-access-roles).
 
 6. Ensure `cert-manager-credentials.json` is added to the `.gitignore` as it should not be checked in the Git repository.
 
@@ -61,6 +61,6 @@ This methodology allows to read the `cert-manager-credentials` as environment va
 
 ## Update config
 
-Once the certificate manager service is setup and the credentials are provided to this app, the application can be configured to use the Certificate Manager service by updating the `server/config/default.json` file. This config json contains the `supportedWallets` field which presents the currently supported options to use as the wallet.  This options will have to be provided in the `activeWallet` field in the same config json.  To use the Certifcate Manager service, you need to update the `activeWallet` field to `CertificateManagerWallet`.  
+Once the certificate manager service is setup and the credentials are provided to this app, the application can be configured to use the Certificate Manager service by updating the `server/config/default.json` file. This config json contains the `supportedWallets` field which presents the currently supported options to use as the wallet.  This option will have to be provided in the `activeWallet` field in the same config json.  To use the Certifcate Manager service, you need to update the `activeWallet` field to `CertificateManagerWallet`.  
 
 ** Note: once you are using the `CertificateManagerWallet` option, the following field `fsWalletPath` is ignored.  This is required when setting the `activeWallet` field to `FileSystemWallet`
