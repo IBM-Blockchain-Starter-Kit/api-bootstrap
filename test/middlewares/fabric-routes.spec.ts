@@ -33,8 +33,8 @@ jest.mock('../../server/config/fabric-connections.json', () => (fabricConfig));
 import FabricRoutes from '../../server/middlewares/fabric-routes';
 
 // fake cert and key for enrollment
-const cert = fs.readFileSync(`${__dirname}/../mocks/cert`, 'utf8');
-const key = fs.readFileSync(`${__dirname}/../mocks/key`, 'utf8');
+const cert = fs.readFileSync(`${__dirname}/../mocks/testuser1.pem`, 'utf8');
+const key = fs.readFileSync(`${__dirname}/../mocks/testuser1.key`, 'utf8');
 const orgName: string = config.get('orgName');
 const { mspid } = ccp.organizations[orgName];
 
