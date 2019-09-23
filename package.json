@@ -44,7 +44,6 @@
     "@types/swagger-ui-express": "^3.0.1",
     "@types/yamljs": "^0.2.30",
     "bluebird": "3.5.4",
-    "grpc": "^1.23.3",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
     "source-map-support": "^0.5.12",
