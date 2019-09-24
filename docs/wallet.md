@@ -1,13 +1,12 @@
 # Wallet settings
 
-The Hyperledger Fabric [wallet](https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/wallet.html) requires a storage for certificates and private key to store user identities.  They can use file system as wallet or external databases as storage for storing user identities.  A file system wallet is preferable during development of the blockchain application while an external storage would suit a production environment.  This bootstrap provides two options which can be configured within the application:
-* File system wallet
+A [wallet](https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/wallet.html) serves as the storage for public certificates and their corresponding private keys. The file system and external databases are examples of storages that can function as wallets for storing user identities (i.e. certificates and private keys). While a file system wallet is convenient for a quick prototype of a blockchain application, an external storage is appropriate for other development efforts. The api-bootstrap codebase provides two configurable wallet options:
+
+* File system
 * IBM Certificate Manager
 
 ## Configure wallet
 
-The default setting for this application is to use file system as wallet.  The wallet type can be configured through the `server/config/default.json` file.  This config json contains the `supportedWallets` field which presents the currently supported options to use as the wallet.  The wallet type option will have to be provided in the `activeWallet` field in the same config json.  To use the file system as wallet, you would need to set the `activeWallet` field to `FileSystemWallet` and then set `fsWalletPath` field to the file path location.  This will start storing and managing user identities in that defined file path.  
+The default setting for the api-bootstrap application is to use the file system as the wallet. The wallet type is configured in the [`server/config/default.json`](../server/config/default.json) file. The `supportedWallets` field in this configuration file states the currently supported wallet type options. In this same configuration file, the `activeWallet` field specifies which wallet option the application should use. For instance to use the file system as the wallet, you should set the `activeWallet` field to `FileSystemWallet` and then also set the `fsWalletPath` field to the desired folder path location. Done this, user identities will be stored and managed in that folder.  
 
-To use the IBM Certifcate Manager service, you would need to update the `activeWallet` field to `CertificateManagerWallet`. Once you are using the `CertificateManagerWallet` option, the following field `fsWalletPath` is ignored. 
-Please see this document for creating and setting up the IBM Certificate Manager to use as wallet for this application:
-* [Using IBM Certificate Manager as wallet](docs/cert-manager.md)
+To use the IBM Certificate Manager service as the wallet, you should update the `activeWallet` field to `CertificateManagerWallet` (please note that when using IBM Certificate Manager as the wallet, the `fsWalletPath` field is ignored). For further details on creating and setting up the IBM Certificate Manager as the wallet, please see [Using IBM Certificate Manager as wallet](cert-manager.md).
