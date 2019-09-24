@@ -158,4 +158,4 @@ For full API reference and documentation, start the server and navigate to http:
 * [Fabric routes custom middleware](docs/fabric-routes.md)
 * [Securing the endpoints](docs/security.md)
 * [Data validation](docs/data-validation.md)
-* [Using IBM Certificate Manager as Wallet](docs/cert-manager.md)
+* [Wallet settings](docs/wallet.md)

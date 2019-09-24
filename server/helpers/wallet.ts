@@ -21,11 +21,11 @@ import { getLogger } from 'log4js';
 // tslint:disable-next-line: no-var-requires
 const CertificateManagerWallet = require('@blockchainlabs/ibm-certificate-manager-wallet');
 
-IBMCloudEnv.init('/server/config/mappings.json');
-const certManagerCredentials = IBMCloudEnv.getDictionary('cert-manager-credentials');
-
-const CERTIFICATE_MANAGER_WALLET = 'CertificateManagerWallet';
-const FILESYSTEM_WALLET = 'FileSystemWallet';
+// wallet types
+enum WalletTypes {
+  CertificateManager = 'CertificateManagerWallet',
+  FileSystemWallet = 'FileSystemWallet',
+}
 
 let wallet;
 
@@ -47,10 +47,12 @@ export const initWallet = (walletType) => {
     throw new Error ('Incorrect activeWallet in config');
   }
   // initialize based on wallet type
-  if (walletType === FILESYSTEM_WALLET) {
+  if (walletType === WalletTypes.FileSystemWallet) {
     wallet = new FileSystemWallet(config.get('fsWalletPath'));
   }
-  if (walletType === CERTIFICATE_MANAGER_WALLET) {
+  if (walletType === WalletTypes.CertificateManager) {
+    IBMCloudEnv.init('/server/config/mappings.json');
+    const certManagerCredentials = IBMCloudEnv.getDictionary('cert-manager-credentials');
     wallet = new CertificateManagerWallet(certManagerCredentials);
   }
   logger.debug('exiting <<< initWallet()');
