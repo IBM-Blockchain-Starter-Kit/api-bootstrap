@@ -14,29 +14,22 @@
  *  limitations under the License.
  */
 
-import * as config from 'config';
 import * as express from 'express';
 import { Gateway } from 'fabric-network';
-import * as fs from 'fs';
-import * as rimraf from 'rimraf';
 import * as request from 'supertest';
 // tslint:disable-next-line
 Promise = require('bluebird');
+
 import * as util from '../../server/helpers/util';
+import * as walletHelper from '../../server/helpers/wallet';
+jest.mock('../../server/helpers/wallet');
 
 import * as ccp from '../mocks/config/fabric-connection-profile.json';
 import * as fabricConfig from '../mocks/config/fabric-connections.json';
-
 jest.mock('../../server/config/fabric-connection-profile.json', () => (ccp));
 jest.mock('../../server/config/fabric-connections.json', () => (fabricConfig));
 
 import FabricRoutes from '../../server/middlewares/fabric-routes';
-
-// fake cert and key for enrollment
-const cert = fs.readFileSync(`${__dirname}/../mocks/testuser1.pem`, 'utf8');
-const key = fs.readFileSync(`${__dirname}/../mocks/testuser1.key`, 'utf8');
-const orgName: string = config.get('orgName');
-const { mspid } = ccp.organizations[orgName];
 
 describe('middleware - fabric-routes', () => {
   let fabricRoutes;
@@ -44,16 +37,17 @@ describe('middleware - fabric-routes', () => {
   let fakeUtilReset;
 
   beforeAll(() => {
-    // delete test wallet before starting
-    rimraf.sync(config.get('fsWalletPath'));
-  });
-  afterAll(() => {
-    // delete test wallet after tests
-    rimraf.sync(config.get('fsWalletPath'));
+    // mock walletHelper functions
+    (walletHelper.initWallet as any) = jest.fn(() => true);
+    (walletHelper.identityExists as any) = jest.fn()
+    .mockReturnValueOnce(true)
+    .mockReturnValue(false);
+    (walletHelper.importIdentity as any) = jest.fn(() => true);
+    (walletHelper.getWallet as any) = jest.fn(() => true);
   });
 
   beforeEach(() => {
-    (util.userEnroll as any) = jest.fn(() => Promise.resolve({ certificate: cert, key, mspid }));
+    (util.userEnroll as any) = jest.fn(() => true );
     fakeUtilReset = jest.fn();
     router = express.Router();
     fabricRoutes = new FabricRoutes(router);

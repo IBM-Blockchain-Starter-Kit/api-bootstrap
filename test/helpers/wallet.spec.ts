@@ -14,55 +14,19 @@
  *  limitations under the License.
  */
 
-import * as config from 'config';
-import { FileSystemWallet } from 'fabric-network';
-import * as fs from 'fs';
-import * as rimraf from 'rimraf';
+import * as walletHelper from '../../server/helpers/wallet';
 
 // tslint:disable-next-line: no-var-requires
 const CertificateManagerWallet = require('@blockchainlabs/ibm-certificate-manager-wallet');
-import * as walletHelper from '../../server/helpers/wallet';
-
-const cert = fs.readFileSync(`${__dirname}/../mocks/testuser1.pem`, 'utf8');
-const key = fs.readFileSync(`${__dirname}/../mocks/testuser1.key`, 'utf8');
-
-const FILESYSTEM_WALLET = 'FileSystemWallet';
-const CERTIFICATE_MANAGER_WALLET = 'CertificateManagerWallet';
+jest.mock('@blockchainlabs/ibm-certificate-manager-wallet');
+import * as IBMCloudEnv from 'ibm-cloud-env';
+jest.mock('ibm-cloud-env');
+import { FileSystemWallet } from 'fabric-network';
+jest.mock('fabric-network');
 
 describe('helpers - wallet', () => {
 
-    beforeAll(async () => {
-        // check if correct wallet type in config
-        const supportedWallets: string[] = config.get('supportedWallets');
-        if (!(supportedWallets.includes(config.get('activeWallet')))) {
-            throw new Error ('Incorrect activeWallet in config');
-        }
-
-        // delete test wallet before starting for file system wallet
-        if (config.get('activeWallet') === FILESYSTEM_WALLET) {
-            rimraf.sync(config.get('fsWalletPath'));
-        }
-    });
-    afterAll(async () => {
-        // delete test wallet after tests for file system wallet
-        if (config.get('activeWallet') === FILESYSTEM_WALLET) {
-            rimraf.sync(config.get('fsWalletPath'));
-        }
-
-        // delete test user after tests for certifacte manager wallet
-        if (config.get('activeWallet') === CERTIFICATE_MANAGER_WALLET) {
-            if (await walletHelper.identityExists('testuser1')) {
-                await walletHelper.deleteIdentity('testuser1');
-            }
-        }
-    });
-
     let wallet;
-
-    beforeEach(() => {
-        walletHelper.initWallet(config.get('activeWallet'));
-        wallet = walletHelper.getWallet();
-    });
 
     describe('#initWallet', () => {
         test('should fail for incorrect type of wallet', () => {
@@ -73,58 +37,87 @@ describe('helpers - wallet', () => {
     });
 
     describe('#getWallet', () => {
-        test('should get correct type of wallet', () => {
-            if (config.get('activeWallet') === FILESYSTEM_WALLET) {
-                expect(wallet).toBeInstanceOf(FileSystemWallet);
-            }
-            if (config.get('activeWallet') === CERTIFICATE_MANAGER_WALLET) {
-                expect(wallet).toBeInstanceOf(CertificateManagerWallet);
-            }
+        test('should get wallet type of FileSystemWallet', () => {
+            walletHelper.initWallet('FileSystemWallet');
+            wallet = walletHelper.getWallet();
+            expect(wallet).toBeInstanceOf(FileSystemWallet);
+        });
+
+        test('should get wallet type of CertificateManagerWallet', () => {
+            (IBMCloudEnv.init as any) = jest.fn(() => true);
+            (IBMCloudEnv.getDictionary as any) = jest.fn(() => true);
+            walletHelper.initWallet('CertificateManagerWallet');
+            wallet = walletHelper.getWallet();
+            expect(wallet).toBeInstanceOf(CertificateManagerWallet);
         });
     });
 
-    describe('#importIdentity', () => {
-        test('should handle wallet import error - invalid cert and key', async () => {
-            return expect(walletHelper.importIdentity('testuser1', 'org1', 'cert', 'key')).rejects.toThrow(Error);
+    describe('wallet features', () => {
+
+        beforeEach(() => {
+            wallet = walletHelper.getWallet();
         });
 
-        test('should import identity successfully', async () => {
-            expect(await walletHelper.importIdentity('testuser1', 'org1', cert, key));
-        });
-    });
+        describe('#importIdentity', () => {
 
-    describe('#identityExists', () => {
-        test('should return true if identity exists in wallet', async () => {
-            const result = await walletHelper.identityExists('testuser1');
-            expect(result).toBe(true);
-        });
-
-        test('should return false if identity does not exist in wallet', async () => {
-            const result = await walletHelper.identityExists('testuser2');
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('#deleteIdentity', () => {
-        test('should handle error during delete', async () => {
-            // let wallet;
-            (wallet.delete) = jest.fn(() => {
-                return Promise.reject(new Error('error deleting identity'));
+            test('should handle wallet import error - invalid cert and key', async () => {
+                wallet.import = jest.fn().mockImplementation(async () => {
+                    return Promise.reject(new Error('error with import'));
+                });
+                try {
+                    await walletHelper.importIdentity('testuser', 'org1', 'cert', 'key');
+                } catch (e) {
+                    expect(e.message).toMatch('error with import');
+                }
             });
-            try {
-                await walletHelper.deleteIdentity('testuser1');
-            } catch (e) {
-                expect(e.message).toMatch('error deleting identity');
-            }
+
+            test('should import identity successfully', async () => {
+                wallet.import = jest.fn().mockImplementation(async () => {
+                    return('success');
+                });
+                await walletHelper.importIdentity('testuser', 'org1', 'cert', 'key');
+                expect(wallet.import.mock.calls.length).toBe(1);
+            });
         });
 
-        test('should delete identity properly', async () => {
-            expect(await walletHelper.importIdentity('testuser2', 'org1', cert, key));
-            const result = await walletHelper.identityExists('testuser2');
-            expect(result).toBe(true);
-            await walletHelper.deleteIdentity('testuser2');
-            const resultFalse = await walletHelper.identityExists('testuser2');
-            expect(resultFalse).toBe(false);
+        describe('#identityExists', () => {
+            test('should return true if identity exists in wallet', async () => {
+                wallet.exists = jest.fn().mockImplementation(async () => {
+                    return(true);
+                });
+                const result = await walletHelper.identityExists('testuser');
+                expect(result).toBe(true);
+            });
+
+            test('should return false if identity does not exist in wallet', async () => {
+                wallet.exists = jest.fn().mockImplementation(async () => {
+                    return(false);
+                });
+                const result = await walletHelper.identityExists('testuser');
+                expect(result).toBe(false);
+            });
+
+        });
+
+        describe('#deleteIdentity', () => {
+            test('should handle error during delete', async () => {
+                wallet.delete = jest.fn().mockImplementation(async () => {
+                    return Promise.reject(new Error('error deleting identity'));
+                });
+                try {
+                    await walletHelper.deleteIdentity('testuser');
+                } catch (e) {
+                    expect(e.message).toMatch('error deleting identity');
+                }
+            });
+
+            test('should delete identity properly', async () => {
+                wallet.delete = jest.fn().mockImplementation(async () => {
+                    return('success');
+                });
+                await walletHelper.deleteIdentity('testuser');
+                expect(wallet.delete.mock.calls.length).toBe(1);
+            });
         });
     });
 });
