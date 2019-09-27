@@ -13,7 +13,7 @@
     1.  Rename the directory from `app-name` under the **./chart** directory to the correct name of the application.
     2.  Edit the `Chart.yaml` file under `chart\<app-name>` and update the value of the `name` field to the application name (as specified in step 1).
     3.  Edit the `values.yaml` file under `chart\<app-name>` and update the value of the `repository` field accordingly (update domain, namespace and application name).
-    4.  [Set up Ingress](ingress.md)
+    4.  [Set up Ingress](ingress.md).
 
 *  Running as a Cloud Foundry application:    
     1. Update the `name` field in `manifest.yml` file to reflect the correct **name** of the application that will be deployed.
