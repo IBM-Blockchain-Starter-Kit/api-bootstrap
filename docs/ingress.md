@@ -1,10 +1,10 @@
 # Set up Ingress
 
-This bootstrap provides an Ingress template to configure an `https` url for the application deployed on kubernetes. This can be expanded to expose multiple apps in your Kubernetes cluster.  The Ingress resource is present here `misc/https-enablement`.
+This bootstrap provides an Ingress template to configure an `https` url for the application deployed on Kubernetes. This can be expanded to expose multiple apps in your Kubernetes cluster.  The Ingress resource is present here `misc/https-enablement`.
 
-## Update Ingress yaml metadata
+## Update Ingress metadata
 
-*  On the Ingress yaml file, provide a `name` for your ingress resource, replacing the <<ingress-resource-name>>
+*  On the Ingress YAML file, provide a `name` for your ingress resource, replacing the <<ingress-resource-name>>
 *  Note that under `annotations`, the `ingress.bluemix.net/redirect-to-https` field is set to `"True"`.  This provides the `https` enablement to the application;s url.
 
 ## Update <domain> and <tls_secret_name>
@@ -24,11 +24,11 @@ The `<domain>` mentioned in the Ingress resource could be the `<subdomain>`, or 
 
 ## Apply the Ingress resource
 
-Once your Ingress yaml file is ready, you can apply it to your cluster with the following command:
+Once your Ingress YAML file is ready, you can apply it to your cluster with the following command:
 ```
 kubectl apply -f <ingress-app-name.yaml> -n <namespace>
 ```
-Replace `<ingress-app-name.yaml>` with your Ingress yaml file and `<namespace>` with the namespace on the Kubernetes cluster where your application is deployed. 
+Replace `<ingress-app-name.yaml>` with your Ingress YAML file and `<namespace>` with the namespace on the Kubernetes cluster where your application is deployed. 
 
 
 ## Additional Resource
