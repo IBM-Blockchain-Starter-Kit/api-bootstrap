@@ -19,7 +19,7 @@ Ingress Subdomain:      <subdomain>
 Ingress Secret:         <tls_secret_name>
 ```
 
-The `<domain>` mentioned in the Ingress resource could be the `<subdomain>`, or can be appended by a custom addition to the beginning of the `<subdomain>` followed by a period `.`.
+The `<domain>` mentioned in the Ingress resource could be the `<subdomain>`, or can be appended by a custom addition to the beginning of the `<subdomain>` followed by a period.
 
 ### 3. Add service
 
