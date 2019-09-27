@@ -7,7 +7,7 @@ This bootstrap provides an Ingress template to configure an `https` url for the 
 *  On the Ingress YAML file, provide a `name` for your ingress resource, replacing the <ingress-resource-name>.
 *  Note that under `annotations`, the `ingress.bluemix.net/redirect-to-https` field is set to `"True"`.  This provides the `https` enablement to the application's url.
 
-### 2. `<subdomain>` and `<tls_secret_name>`
+### 2. Get `<subdomain>` and `<tls_secret_name>`
 
 After your cluster is setup, you can run the following command to get the `<subdomain>` and `<tls_secret_name>`:
 ```
