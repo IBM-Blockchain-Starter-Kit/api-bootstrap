@@ -101,7 +101,7 @@ This defines your PV and PVC for deployment of the application.
 
 ## 4. Verify PVC and File Storage
 
-Once you have deployed the application to Kubernetes using the Helm charts with the PVC addition, verify that the PVC and PV resources have been created and the persistent File Storage directory persists even after the pod has been removed.
+Once you have deployed the application to Kubernetes using the Helm charts with the PVC addition, verify that the PVC and PV resources have been created and the persistent file storage path persists even after the pod has been removed.
 
 To verify whether the PVC is created, use the following command:
 ```
@@ -113,7 +113,7 @@ To verify that the PV is successfully mounted:
 kubectl describe deployment <deployment_name>
 ```
 
-You can verify the File Storage, by updaing the data in your `<mount path>`.  Next, delete the pod with the application, which will trigger Kubernetes to create a new pod with the application.  If the persistent volume for the path is operational, then you should still see the updated data in that `<mount path>` as compared to being reset without the persistent volume.
+You can verify the file storage, by updaing the data in your `<mount path>`.  Next, delete the pod with the application, which will trigger Kubernetes to create a new pod with the application.  If the persistent volume for the path is operational, then you should still see the updated data in that `<mount path>` as compared to being reset without the persistent volume.
 
 
 ## References

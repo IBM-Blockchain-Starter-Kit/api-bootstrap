@@ -15,7 +15,7 @@
     3.  Edit the `values.yaml` file under `chart\<app-name>` and update the value of the `repository` field accordingly (update domain, namespace and application name).
     4.  [Set up Ingress](ingress.md).
     
-If your application requires a persistent file storage, see here: [Set up Persistent Volume Claim for file storage](persistent-volume.md).
+If your application requires a persistent file storage, see here: [Set up Persistent Volume Claim for file storage](persistent-storage.md).
 
 *  Running as a Cloud Foundry application:    
     1. Update the `name` field in `manifest.yml` file to reflect the correct **name** of the application that will be deployed.
