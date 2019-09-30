@@ -31,10 +31,9 @@ Update these fields as the following:
 * `<billing type>`:  The frequency for which your storage bill is calculated, either `monthly` or `hourly`.
 * `<region>`:  The region where you want to provision your file storage.
 * `<zone>`:  The zone where you want to provision your file storage.
-* `<access modes>`:  Should be one of the following options: `ReadWriteMany`, `ReadOnlyMany`, `ReadWriteOnce`.
+* `<access modes>`:  This should be one of the following options: `ReadWriteMany`, `ReadOnlyMany`, `ReadWriteOnce`.
 * `<storage>`:  The size of the file storage, in gigabytes (Gi).
-* `<storage class name>`:  The name of the volume to mount to your pod. You can choose to use one of the [IBM-provided storage classes](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_storageclass_reference) or [create your own storage class](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_custom_storageclass).
-
+* `<storage class name>`:  The name of the volume to mount to your pod. You can choose to use one of the [IBM-provided storage classes](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_storageclass_reference) or [create your own storage class](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_custom_storageclass). This creates an instance of IBM Cloud File Storage to be used by the Kubernetes PV.
 
 Here is an example from an actual MVP:
 ```
@@ -114,7 +113,6 @@ kubectl describe deployment <deployment_name>
 ```
 
 You can verify the file storage, by updaing the data in your `<mount path>`.  Next, delete the pod with the application, which will trigger Kubernetes to create a new pod with the application.  If the persistent volume for the path is operational, then you should still see the updated data in that `<mount path>` as compared to being reset without the persistent volume.
-
 
 ## References
 * [Planning highly available persistent storage](https://cloud.ibm.com/docs/containers?topic=containers-storage_planning#choose_storage_solution)
