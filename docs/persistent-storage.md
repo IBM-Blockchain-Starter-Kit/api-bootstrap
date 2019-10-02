@@ -103,7 +103,7 @@ To verify that the PV is successfully mounted:
 kubectl describe deployment <deployment_name>
 ```
 
-You can verify the file storage, by updaing the data in your `<mount path>`. Next, delete the application's pod (using either the Kubernetes console or CLI), this will trigger Kubernetes to create a new pod for this application. If the persistent volume for the path is operational, then you should still see the updated data in that `<mount path>` as compared to being reset without the persistent volume.
+You can verify the file storage, by updaing the data in your `<mount path>` by adding or removing a file. Next, delete the application's pod (using either the Kubernetes console or CLI), this will trigger Kubernetes to create a new pod for this application. If the persistent volume for the path is operational, then you should still see the updated data in that `<mount path>` as compared to being reset without the persistent volume.
 
 ## References
 * [Planning highly available persistent storage](https://cloud.ibm.com/docs/containers?topic=containers-storage_planning#choose_storage_solution)
