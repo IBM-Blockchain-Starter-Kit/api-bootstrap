@@ -24,22 +24,13 @@ pvc:
     storageClassName: <storage class name>
 ```
 
-Update these fields as the following:
-* `<volume name>`:  The name of the volume to mount to your pod.
-* `<pvc name>`:  The name of the PVC resource.
-* `<mount path>`:  The absolute path of the directory to persist as file storage.
-* `<billing type>`:  The frequency for which your storage bill is calculated, either `monthly` or `hourly`.
-* `<region>`:  The region where you want to provision your file storage.
-* `<zone>`:  The zone where you want to provision your file storage.
-* `<access modes>`:  This should be one of the following options: `ReadWriteMany`, `ReadOnlyMany`, `ReadWriteOnce`.
-* `<storage>`:  The size of the file storage, in gigabytes (Gi).
-* `<storage class name>`:  The name of the volume to mount to your pod. You can choose to use one of the [IBM-provided storage classes](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_storageclass_reference) or [create your own storage class](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_custom_storageclass). This creates an instance of IBM Cloud File Storage to be used by the Kubernetes PV.
+See the fields definitions defined here in this [documentation for IBM Cloud](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#add_file). Make sure the `mountPath` is directed to the absolute path of the directory to persist as file storage. This path includes the prefix as defined by the `WORKDIR` in the `Dockerfile`. As the current `Dockerfile` in this api-bootstrap has a `WORKDIR` set to `/app`, so any `mountPath` defined here should have a `/app` prefix defined here.
 
-Here is an example from an actual MVP:
+Here is an example::
 ```
 pvc:
-  volName: social-platform-static-data
-  pvcName: social-platform-pvc
+  volName: sample-app-static-data
+  pvcName: sample-app-pvc
   mountPath: "/app/data"
   labels:
     billingType: "monthly"
@@ -112,7 +103,7 @@ To verify that the PV is successfully mounted:
 kubectl describe deployment <deployment_name>
 ```
 
-You can verify the file storage, by updaing the data in your `<mount path>`.  Next, delete the pod with the application, which will trigger Kubernetes to create a new pod with the application.  If the persistent volume for the path is operational, then you should still see the updated data in that `<mount path>` as compared to being reset without the persistent volume.
+You can verify the file storage, by updaing the data in your `<mount path>`. Next, delete the application's pod (using either the Kubernetes console or CLI), this will trigger Kubernetes to create a new pod for this application. If the persistent volume for the path is operational, then you should still see the updated data in that `<mount path>` as compared to being reset without the persistent volume.
 
 ## References
 * [Planning highly available persistent storage](https://cloud.ibm.com/docs/containers?topic=containers-storage_planning#choose_storage_solution)
