@@ -24,7 +24,7 @@ pvc:
     storageClassName: <storage class name>
 ```
 
-See the fields definitions defined here in this [documentation for IBM Cloud](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#add_file). Make sure the mountPath is directed to the absolute path of the data directory intended to be persisted in the file storage. This path includes the prefix as defined by the `WORKDIR` in the `Dockerfile`. As the current `Dockerfile` in this api-bootstrap has a `WORKDIR` set to `/app`, so any `mountPath` defined here should have a `/app` prefix defined here.
+See the fields definitions defined here in this [documentation for IBM Cloud](https://cloud.ibm.com/docs/containers?topic=containers-file_storage#add_file). Make sure the `mountPath` is directed to the absolute path of the data directory intended to be persisted in the file storage. This path includes the prefix as defined by the `WORKDIR` in the `Dockerfile`. As the current `Dockerfile` in this api-bootstrap has a `WORKDIR` set to `/app`, so any `mountPath` defined here should have a `/app` prefix defined here.
 
 Here is an example::
 ```
