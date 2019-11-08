@@ -29,6 +29,7 @@ After making those changes, you can `GET http://localhost:3000/ping` to see the 
 ## Running the server
 ```
 $ npm install
+$ npm run build
 $ npm start
 ```
 
