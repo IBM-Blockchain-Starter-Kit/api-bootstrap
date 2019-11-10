@@ -2,10 +2,13 @@
   "logLevel": "DEBUG",
   "host": "localhost",
   "port": "3000",
-  "supportedWallets": ["FileSystemWallet", "CertificateManagerWallet"],
+  "supportedWallets": [
+    "FileSystemWallet",
+    "CertificateManagerWallet"
+  ],
   "activeWallet": "FileSystemWallet",
   "fsWalletPath": "./WALLETS/wallet",
-  "orgName": "org1",
+  "orgName": "Org1MSP",
   "appid": {
     "oauthServerUrl": "<oauthServerUrl>"
   }

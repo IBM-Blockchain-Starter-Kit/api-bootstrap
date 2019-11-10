@@ -51,7 +51,7 @@ export const initWallet = (walletType) => {
     wallet = new FileSystemWallet(config.get('fsWalletPath'));
   }
   if (walletType === WalletTypes.CertificateManager) {
-    IBMCloudEnv.init('/server/config/mappings.json');
+    IBMCloudEnv.init('/server/config/cert-manager-mappings.json');
     const certManagerCredentials = IBMCloudEnv.getDictionary('cert-manager-credentials');
     wallet = new CertificateManagerWallet(certManagerCredentials);
   }

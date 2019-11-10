@@ -29,6 +29,8 @@ import * as walletHelper from '../helpers/wallet';
 import * as ccp from '../config/fabric-connection-profile.json'; // common connection profile;
 import * as fabricConfig from '../config/fabric-connections.json'; // fabric connections configuration
 
+import * as IBMCloudEnv from 'ibm-cloud-env';
+
 /**
  * Set up logging
  */
@@ -112,8 +114,9 @@ export default class FabricRoutes {
 
     try {
       const org: string = config.get('orgName');
-      const user: string = process.env.FABRIC_ENROLL_ID;
-      const pw: string = process.env.FABRIC_ENROLL_SECRET;
+      IBMCloudEnv.init('/server/config/mappings.json');
+      const user: string = IBMCloudEnv.getString('fabric-enroll-id');
+      const pw: string = IBMCloudEnv.getString('fabric-enroll-secret');
       const { serviceDiscovery } = fabricConfig;
 
       // initialize the wallet

@@ -40,7 +40,7 @@ Once your service is created on the IBM Cloud, you should provide its credential
 
 6. Ensure `cert-manager-credentials.json` is added to the `.gitignore` as it should not be checked in the Git repository.
 
-These steps will set up the application to use the Certificate Manger credentials when running the application locally. This api-bootstrap application also provides an option to read the Certificate Manager credentials as an environment variable. The `mappings.json` in the `server/config` directory states where the credentials for the Certificate Manger service should be read from:
+These steps will set up the application to use the Certificate Manger credentials when running the application locally. This api-bootstrap application also provides an option to read the Certificate Manager credentials as an environment variable. The `cert-manager-mappings.json` in the `server/config` directory states where the credentials for the Certificate Manger service should be read from:
 
 ```
 {
@@ -56,7 +56,7 @@ These steps will set up the application to use the Certificate Manger credential
 As reference, these credentials are read in the `server/helpers/wallet.ts` file as:
 
 ```
-IBMCloudEnv.init('/server/config/mappings.json');
+IBMCloudEnv.init('/server/config/cert-manager-mappings.json');
 const certManagerCredentials = IBMCloudEnv.getDictionary('cert-manager-credentials');
 ```
 
