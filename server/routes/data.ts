@@ -26,10 +26,10 @@ const router = express.Router();
 /**
  * Set up logging
  */
-const logger = getLogger('routes - ping');
+const logger = getLogger('routes - data');
 logger.level = config.get('logLevel');
 
-logger.debug('setting up /ping route');
+logger.debug('setting up /data route');
 
 /**
  * Add routes
