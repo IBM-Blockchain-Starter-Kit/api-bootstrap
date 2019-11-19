@@ -21,11 +21,11 @@ import { getLogger } from 'log4js';
 
 import * as util from '../helpers/util';
 
-const logger = getLogger('controllers - securedPing');
+const logger = getLogger('controllers - getMyAsset');
 logger.level = config.get('logLevel');
 
-const getSecured = async (req: express.Request, res: express.Response) => {
-  logger.debug('inside getSecured()...');
+const getMyAsset = async (req: express.Request, res: express.Response) => {
+  logger.debug('entering >>> getMyAsset()');
 
   let jsonRes;
   try {
@@ -34,12 +34,13 @@ const getSecured = async (req: express.Request, res: express.Response) => {
     // Get contract instance retrieved in fabric-routes middleware
     const contract: Contract = res.locals.defaultchannel.mycontract;
 
-    // Invoke transaction
-    // Create transaction proposal for endorsement and sendTransaction to orderer
-    const invokeResponse = await contract.submitTransaction('ping');
+    // Query ledger
+    const key = req.params.assetId;
+    logger.debug('key: ' + key);
+    const invokeResponse = await contract.evaluateTransaction('getMyAsset', key);
 
     jsonRes = {
-      result: invokeResponse.toString(),
+      result: JSON.parse(invokeResponse.toString()),
       statusCode: 200,
       success: true,
     };
@@ -51,8 +52,8 @@ const getSecured = async (req: express.Request, res: express.Response) => {
     };
   }
 
-  logger.debug('exiting <<< getSecured()');
+  logger.debug('exiting <<< getMyAsset()');
   util.sendResponse(res, jsonRes);
 };
 
-export { getSecured as default };
+export { getMyAsset as default };

@@ -18,23 +18,27 @@ import * as config from 'config';
 import * as express from 'express';
 import { getLogger } from 'log4js';
 
-import * as util from '../helpers/util';
+import * as createMyAssetCtrl from '../controllers/createMyAsset';
+import * as deleteMyAssetCtrl from '../controllers/deleteMyAsset';
+import * as getMyAssetCtrl from '../controllers/getMyAsset';
+import * as updateMyAssetCtrl from '../controllers/updateMyAsset';
 
-const logger = getLogger('controllers - health');
+const router = express.Router({mergeParams: true});
+
+/**
+ * Set up logging
+ */
+const logger = getLogger('routes - myAsset');
 logger.level = config.get('logLevel');
 
-const getHealth = (req: express.Request, res: express.Response) => {
-  logger.debug('entering >>> getHealth()');
+logger.debug('setting up /myAsset routes');
 
-  const jsonRes = {
-    message: 'Server is up!',
-    status: 'UP',
-    statusCode: 200,
-    success: true,
-  };
+/**
+ * Add routes
+ */
+router.post('/', createMyAssetCtrl.default);
+router.get('/', getMyAssetCtrl.default);
+router.put('/', updateMyAssetCtrl.default);
+router.delete('/', deleteMyAssetCtrl.default);
 
-  logger.debug('exiting <<< getHealth()');
-  util.sendResponse(res, jsonRes);
-};
-
-export { getHealth as default };
+module.exports = router;

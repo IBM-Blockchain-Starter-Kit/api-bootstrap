@@ -15,6 +15,7 @@
  */
 
 import * as config from 'config';
+import * as express from 'express';
 import { getLogger } from 'log4js';
 
 import * as util from '../helpers/util';
@@ -22,7 +23,7 @@ import * as util from '../helpers/util';
 const logger = getLogger('controllers - data');
 logger.level = config.get('logLevel');
 
-const dataCtrl = async (req, res) => {
+const dataCtrl = async (req: express.Request, res: express.Response) => {
   logger.debug('entering >>> dataCtrl()');
 
   let jsonRes;

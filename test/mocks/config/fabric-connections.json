@@ -8,11 +8,13 @@
       {
         "channel": "defaultchannel",
         "chaincodes": {
-          "pingcc": [],
-          "chaincode2": ["smartcontract"]
+          "mycontract": [],
+          "chaincode2": [
+            "smartcontract"
+          ]
         }
       }
-    ]    
+    ]
   },
   "routes": [
     {

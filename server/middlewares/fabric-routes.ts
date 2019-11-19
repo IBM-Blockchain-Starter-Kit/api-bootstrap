@@ -56,7 +56,7 @@ export default class FabricRoutes {
 
   public router: Router;
 
-  constructor(router) {
+  constructor(router: Router) {
     this.router = router;
     this.middlewares = {};
     this.gateway = new Gateway();
@@ -81,7 +81,7 @@ export default class FabricRoutes {
     fabricConfig.routes.forEach((route) => {
       logger.debug(`${route.path}: ${route.fabricConnection} => route controller`);
 
-      // if route is protected, add authentication middleware to each protected method
+      // If route is protected, add authentication middleware to each protected method
       if (route.protected && route.protected.enabled) {
         logger.debug(`${route.path} => add auth`);
         passport.use(new APIStrategy({ oauthServerUrl: config.get('appid.oauthServerUrl') })); // to change passport strategy, modify this line

@@ -40,14 +40,14 @@ describe('middleware - fabric-routes', () => {
     // mock walletHelper functions
     (walletHelper.initWallet as any) = jest.fn(() => true);
     (walletHelper.identityExists as any) = jest.fn()
-    .mockReturnValueOnce(true)
-    .mockReturnValue(false);
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false);
     (walletHelper.importIdentity as any) = jest.fn(() => true);
     (walletHelper.getWallet as any) = jest.fn(() => true);
   });
 
   beforeEach(() => {
-    (util.userEnroll as any) = jest.fn(() => true );
+    (util.userEnroll as any) = jest.fn(() => true);
     fakeUtilReset = jest.fn();
     router = express.Router();
     fabricRoutes = new FabricRoutes(router);
@@ -104,7 +104,7 @@ describe('middleware - fabric-routes', () => {
     // stub Gateway calls
     const fakePingCC = jest.fn(() => Promise.resolve('successfully pinged chaincode'));
     const fakeGetContract = jest.fn(() => Promise.resolve({
-      submitTransaction: fakePingCC,
+      submitTransaction: fakePingCC
     }));
     const connect = jest.spyOn(Gateway.prototype, 'connect' as any);
     (Gateway.prototype.getNetwork as any) = jest.fn(() => Promise.resolve({
@@ -117,7 +117,8 @@ describe('middleware - fabric-routes', () => {
     expect(connect.mock.calls[0][0]).toBe(ccp);
     expect(connect.mock.calls[0][1]).toMatchObject({
       identity: process.env.FABRIC_ENROLL_ID,
-      discovery: { asLocalhost: fabricConfig.serviceDiscovery.asLocalhost, enabled: fabricConfig.serviceDiscovery.enabled }});
+      discovery: { asLocalhost: fabricConfig.serviceDiscovery.asLocalhost, enabled: fabricConfig.serviceDiscovery.enabled }
+    });
 
     const app = express();
     app.use(router);
@@ -146,7 +147,8 @@ describe('middleware - fabric-routes', () => {
     expect(connect.mock.calls[0][0]).toBe(ccp);
     expect(connect.mock.calls[0][1]).toMatchObject({
       identity: process.env.FABRIC_ENROLL_ID,
-      discovery: { asLocalhost: fabricConfig.serviceDiscovery.asLocalhost, enabled: fabricConfig.serviceDiscovery.enabled }});
+      discovery: { asLocalhost: fabricConfig.serviceDiscovery.asLocalhost, enabled: fabricConfig.serviceDiscovery.enabled }
+    });
 
     const app = express();
     app.use(router);

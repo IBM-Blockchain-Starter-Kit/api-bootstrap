@@ -16,14 +16,14 @@
 
 // tslint:disable-next-line
 Promise = require('bluebird');
-import * as util from '../../server/helpers/util';
-
-// fake util send response call
-const FakeUtil = {
-    sendResponse: (res, jsonRes) => { },
-};
 
 describe('controllers - securedPing', () => {
+
+    // fake util send response call
+    const FakeUtil = {
+        sendResponse: (res, jsonRes) => { },
+    };
+
     let res: any;
     // tslint:disable-next-line: prefer-const
     let req: any;
@@ -42,15 +42,15 @@ describe('controllers - securedPing', () => {
 
     test('should successfully invoke transaction Health', async () => {
         const fakePingCC = jest.fn(() => Promise.resolve('successfully pinged chaincode'));
-        res = { locals: { defaultchannel: { pingcc: { submitTransaction: fakePingCC } } } };
+        res = { locals: { defaultchannel: { mycontract: { submitTransaction: fakePingCC } } } };
         await securedPingCtrl.default(req, res);
 
-        expect(FakeUtil.sendResponse).toBeCalledWith(res, { statusCode: 200, success: true, message: 'Inside protected route!', result: 'successfully pinged chaincode' });
+        expect(FakeUtil.sendResponse).toBeCalledWith(res, { statusCode: 200, success: true, result: 'successfully pinged chaincode' });
     });
 
     test('should catch Health tx error and return error', async () => {
         const fakePingCC = jest.fn(() => Promise.reject(new Error('error in Health chaincode')));
-        res = { locals: { defaultchannel: { pingcc: { submitTransaction: fakePingCC } } } };
+        res = { locals: { defaultchannel: { mycontract: { submitTransaction: fakePingCC } } } };
         await securedPingCtrl.default(req, res);
 
         expect(FakeUtil.sendResponse).toBeCalledWith(res, { statusCode: 500, success: false, message: 'error in Health chaincode' });

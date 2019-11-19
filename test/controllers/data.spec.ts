@@ -15,23 +15,22 @@
  */
 // tslint:disable-next-line
 Promise = require('bluebird');
-import { getLogger } from 'log4js';
-
-// fake util send response call
-const FakeUtil = {
-  // tslint:disable-next-line: no-empty
-  sendResponse: (res, jsonRes) => { },
-}; 
 
 describe('controllers - data', () => {
 
-  jest.mock('../../server/helpers/util', () => (FakeUtil));
-  const dataCtrl = require('../../server/controllers/data');
+  // fake util send response call
+  const FakeUtil = {
+    // tslint:disable-next-line: no-empty
+    sendResponse: (res, jsonRes) => { },
+  };
 
   let res: any;
   // tslint:disable-next-line: prefer-const
   let req: any;
   let spy: jest.SpyInstance<void, [any, any]>;
+
+  jest.mock('../../server/helpers/util', () => (FakeUtil));
+  const dataCtrl = require('../../server/controllers/data');
 
   beforeEach(() => {
     spy = jest.spyOn(FakeUtil, 'sendResponse');

@@ -5,6 +5,7 @@ In this application, we demonstrate an example of data validation to verify a re
 This api-bootstrap provides validation on a data schema for a `POST` endpoint. This is done by creating middleware which validates the request body, to ensure that the required fields are provided with correct data format, before passing the request to a controller function.  This validation makes use of the [@hapi/joi](https://www.npmjs.com/package/@hapi/joi) npm package which provides simple syntax to create requirements for the data fields and objects.
 
 This api-bootstrap contains an example route `/data` that leverages the data validation middleware.  This route details are provided in the `public/swagger.yaml` which presents the endpoint on the swagger api when the app is launched. The request body prompted by the endpoint looks like:
+
 ```
 {
   "id": "string",
@@ -15,12 +16,14 @@ This api-bootstrap contains an example route `/data` that leverages the data val
 }
 ```
 
-When the `POST /data` endpoint is executed, this data schema is routed through the `server/routes/data.ts` file.  The router provides the schema validation middleware and the controller function to land on once validated:
+When the `POST /data` endpoint is executed, this data schema is routed through the `server/routes/data.ts` file. The router provides the schema validation middleware and the controller function to land on once validated:
+
 ```
 router.post('/', schemaValidations.addData, dataCtrl.default);
 ```
 
-This `schemaValidations.addData` calls the validation for this call in the `server/helpers/validation.ts` module.  Here the schema for the req.body object is defined as thus:
+This `schemaValidations.addData` calls the validation for this call in the `server/helpers/validation.ts` module. Here the schema for the req.body object is defined as thus:
+
 ```
 const schema = Joi.object({
     id: Joi.string().trim().max(100).required().label('id'),

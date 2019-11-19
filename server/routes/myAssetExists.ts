@@ -18,23 +18,21 @@ import * as config from 'config';
 import * as express from 'express';
 import { getLogger } from 'log4js';
 
-import * as util from '../helpers/util';
+import * as myAssetExistsCtrl from '../controllers/myAssetExists';
 
-const logger = getLogger('controllers - health');
+const router = express.Router({mergeParams: true});
+
+/**
+ * Set up logging
+ */
+const logger = getLogger('routes - myAssetExists');
 logger.level = config.get('logLevel');
 
-const getHealth = (req: express.Request, res: express.Response) => {
-  logger.debug('entering >>> getHealth()');
+logger.debug('setting up /myAssetExists route');
 
-  const jsonRes = {
-    message: 'Server is up!',
-    status: 'UP',
-    statusCode: 200,
-    success: true,
-  };
+/**
+ * Add routes
+ */
+router.get('/', myAssetExistsCtrl.default);
 
-  logger.debug('exiting <<< getHealth()');
-  util.sendResponse(res, jsonRes);
-};
-
-export { getHealth as default };
+module.exports = router;

@@ -8,22 +8,11 @@ servers:
   - url: http://localhost:3000
   
 paths:
-  /:
-    get:
-      description: Hello world path
-      responses:
-        200:
-          description: Hello World
-          content:
-            text:
-              example: 
-                text: "Hello World!"
-
   /health:
     get:
-      operationId: getHealth
+      operationId: health
       tags:
-        - Health
+        - health
       description: Get health status of app 
       responses:
         200:
@@ -33,13 +22,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
               example: 
-                application/json: { "success": "true", "message": "Server is up!", "status": "UP" }
+                application/json: { "success": true, "message": "Server is up!", "status": "UP" }
 
   /ping:
     get:
-      operationId: pingCC
+      operationId: ping
       tags:
-        - Ping
+        - ping
       description: Ping blockchain network
       responses:
         200:
@@ -48,13 +37,126 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseBody'
-            
+  
+  '/myAsset/{assetId}':
+    get:
+      operationId: getMyAsset
+      tags:
+        - getMyAsset
+      description: Get asset from blockchain
+      parameters:
+        - name: assetId
+          in: path
+          schema:
+            type: string
+          description: Asset ID
+          required: true
+      responses:
+        200:
+          description: Asset response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetResponse'
+    post:
+      operationId: createMyAsset
+      tags:
+        - createMyAsset
+      description: Create asset on the blockchain ledger
+      parameters:
+        - name: assetId
+          in: path
+          schema:
+            type: string
+          description: Asset ID
+          required: true
+      requestBody:
+        description: Create asset form
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssetForm'
+      responses:
+        200:
+          description: Asset creation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetResponse'
+    put:
+      operationId: putMyAsset
+      tags:
+        - putMyAsset
+      description: Update asset on the blockchain ledger
+      parameters:
+        - name: assetId
+          in: path
+          schema:
+            type: string
+          description: Asset ID
+          required: true
+      requestBody:
+        description: Update asset form
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssetForm'
+      responses:
+        200:
+          description: Asset update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetResponse'
+    delete:
+      operationId: deleteMyAsset
+      tags:
+        - deleteMyAsset
+      description: Delete asset from the blockchain ledger
+      parameters:
+        - name: assetId
+          in: path
+          schema:
+            type: string
+          description: Asset ID
+          required: true
+      responses:
+        200:
+          description: Asset deletion response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetDeletionResponse'
+          
+  '/myAssetExists/{assetId}':
+    get:
+      operationId: myAssetExists
+      tags:
+        - myAssetExists
+      description: Determine if asset exists on the blockchain ledger
+      parameters:
+        - name: assetId
+          in: path
+          schema:
+            type: string
+          description: Asset ID
+          required: true
+      responses:
+        200:
+          description: Asset exists response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetExistsResponse'
+  
   /securedPing:
     get:
-      operationId: getSecured
+      operationId: securedPing
       tags:
-        - Secured
-      description: Get status of app after authenticating
+        - securedPing
+      description: Ping blockchain network (authentication required)
       security: #this is not at root level in yaml because only this route is secured/needs auth token
       - BearerAuth: []
       responses:
@@ -63,8 +165,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SecuredResponse'
-                
+                $ref: '#/components/schemas/SecuredPingResponse'   
   /data:
     post:
       operationId: postData
@@ -109,14 +210,46 @@ components:
               type: boolean
             message: 
               type: string
+            status:
+              type: string
               
-    SecuredResponse:
+    SecuredPingResponse:
       allOf:  
         - $ref: '#/components/schemas/ResponseBody'
         - type: object
           properties:
             status:
               type: string
+
+    AssetResponse:
+      properties:
+        result:
+          type: object
+          properties:
+            value:
+              type: string
+        success:
+          type: boolean
+
+    AssetDeletionResponse:
+      properties:
+        result:
+          type: string
+        success:
+          type: boolean
+
+    AssetForm:
+      properties:
+        value:
+          type: string
+    
+    AssetExistsResponse:
+      properties:
+        result:
+          type: boolean
+        success:
+          type: boolean
+
     Data:
       properties:
         id:

@@ -8,7 +8,7 @@
       {
         "channel": "defaultchannel",
         "chaincodes": {
-          "pingcc": []
+          "mycontract": []
         }
       }
     ]
@@ -18,6 +18,16 @@
       "path": "/ping",
       "fabricConnection": "conn1",
       "modulePath": "routes/ping"
+    },
+    {
+      "path": "/myAsset/:assetId",
+      "fabricConnection": "conn1",
+      "modulePath": "routes/myAsset"
+    },
+    {
+      "path": "/myAssetExists/:assetId",
+      "fabricConnection": "conn1",
+      "modulePath": "routes/myAssetExists"
     },
     {
       "path": "/securedPing",

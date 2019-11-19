@@ -27,17 +27,19 @@ This repository provides the scaffolding code for a Fabric client application th
 After making those changes, you can `GET http://localhost:3000/ping` to see the result.
 
 ## Running the server
+
 ```
 $ npm install
 $ npm run build
 $ npm start
 ```
 
-Navigate to http://localhost:3000/health/ to ensure server is up and running
+Navigate to http://localhost:3000/health/ to ensure server is up and running.
 
-Navigate to the Swagger UI at: http://localhost:3000/api-docs/
+Finally, navigate to the Swagger UI at http://localhost:3000/api-docs/.
 
 ## Running tests
+
 ```
 $ npm run test
 ```
@@ -45,11 +47,13 @@ $ npm run test
 The [Jest framework](https://jestjs.io/) is used for testing in this project. All test files are found in the *test* directory. Ensure you update and add tests as you make changes to the app. Always aim for 100% test coverage. There are, of course, other test options that can be used. [Postman](http://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) is another popular choice.
 
 ## Under the covers
+
 You should have a good understanding of how a Hyperledger Fabric network and its SDK to interact with it works, but there are some high level concepts outlined here to understand the flow.
 
 A *FileSystemWallet* is used to manage identities for interacting with the network. More information can be found in the [Hyperledger Fabric SDK for node.js doc](https://fabric-sdk-node.github.io/FileSystemWallet.html). Look in *server/helpers/wallet.ts* for some wallet helper functions.
 
 A gateway to talk to the network is established with the [*Gateway*](https://fabric-sdk-node.github.io/Gateway.html) class, by passing the common connection profile, a specified identity, and the wallet that contains that identity.
+
 ```
 // gateway and contract connection
 await gateway.connect(ccp, {
@@ -59,17 +63,20 @@ await gateway.connect(ccp, {
 ```
 
 Once the gateway is established, you connect to the channel by a [*getNetwork*](https://fabric-sdk-node.github.io/Gateway.html#getNetwork__anchor) call to the gateway.
+
 ```
 const network = await gateway.getNetwork(config.channelName);
 ```
 
 Then make a call to get the chaincode with a [*getContract*](https://fabric-sdk-node.github.io/Network.html#getContract__anchor) call.
+
 ```
 const contract = await network.getContract(config.chaincodeName, config.chaincodeName.contractName);
 ```
 > `contractName` is optional parameter (if you don't have multiple contracts).
 
 Once you have the contract object, you can start invoking and querying the chaincode!
+
 ```
 // invoke transaction
 const invokeResponse = await contract.submitTransaction('Health');

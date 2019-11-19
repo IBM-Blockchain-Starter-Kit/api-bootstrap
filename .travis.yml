@@ -3,8 +3,8 @@ node_js:
   - "8.16.1"
 
 script:
-  - echo Testing rest api project
+  - echo Testing api-bootstrap
   - npm run lint
-  - npm run test
   - npm run build
+  - npm run test 
   

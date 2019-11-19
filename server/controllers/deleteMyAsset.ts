@@ -21,11 +21,11 @@ import { getLogger } from 'log4js';
 
 import * as util from '../helpers/util';
 
-const logger = getLogger('controllers - securedPing');
+const logger = getLogger('controllers - deleteMyAsset');
 logger.level = config.get('logLevel');
 
-const getSecured = async (req: express.Request, res: express.Response) => {
-  logger.debug('inside getSecured()...');
+const deleteMyAsset = async (req: express.Request, res: express.Response) => {
+  logger.debug('entering >>> createMyAsset()');
 
   let jsonRes;
   try {
@@ -36,7 +36,9 @@ const getSecured = async (req: express.Request, res: express.Response) => {
 
     // Invoke transaction
     // Create transaction proposal for endorsement and sendTransaction to orderer
-    const invokeResponse = await contract.submitTransaction('ping');
+    const key = req.params.assetId;
+    logger.debug('key: ' + key);
+    const invokeResponse = await contract.submitTransaction('deleteMyAsset', key);
 
     jsonRes = {
       result: invokeResponse.toString(),
@@ -51,8 +53,8 @@ const getSecured = async (req: express.Request, res: express.Response) => {
     };
   }
 
-  logger.debug('exiting <<< getSecured()');
+  logger.debug('exiting <<< deleteMyAsset()');
   util.sendResponse(res, jsonRes);
 };
 
-export { getSecured as default };
+export { deleteMyAsset as default };

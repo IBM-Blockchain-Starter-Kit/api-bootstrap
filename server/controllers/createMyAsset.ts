@@ -21,11 +21,11 @@ import { getLogger } from 'log4js';
 
 import * as util from '../helpers/util';
 
-const logger = getLogger('controllers - securedPing');
+const logger = getLogger('controllers - createMyAsset');
 logger.level = config.get('logLevel');
 
-const getSecured = async (req: express.Request, res: express.Response) => {
-  logger.debug('inside getSecured()...');
+const createMyAsset = async (req: express.Request, res: express.Response) => {
+  logger.debug('entering >>> createMyAsset()');
 
   let jsonRes;
   try {
@@ -36,10 +36,14 @@ const getSecured = async (req: express.Request, res: express.Response) => {
 
     // Invoke transaction
     // Create transaction proposal for endorsement and sendTransaction to orderer
-    const invokeResponse = await contract.submitTransaction('ping');
+    const key = req.params.assetId;
+    const value = req.body.value;
+    logger.debug('key: ' + key);
+    logger.debug('value: ' + value);
+    const invokeResponse = await contract.submitTransaction('createMyAsset', key, value);
 
     jsonRes = {
-      result: invokeResponse.toString(),
+      result: JSON.parse(invokeResponse.toString()),
       statusCode: 200,
       success: true,
     };
@@ -51,8 +55,8 @@ const getSecured = async (req: express.Request, res: express.Response) => {
     };
   }
 
-  logger.debug('exiting <<< getSecured()');
+  logger.debug('exiting <<< createMyAsset()');
   util.sendResponse(res, jsonRes);
 };
 
-export { getSecured as default };
+export { createMyAsset as default };
