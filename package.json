@@ -14,7 +14,7 @@
     "@blockchainlabs/ibm-certificate-manager-wallet": "0.0.3",
     "@hapi/joi": "^16.1.1",
     "body-parser": "^1.18.3",
-    "config": "^2.0.1",
+    "config": "^3.3.8",
     "express": "~4.16.0",
     "fabric-ca-client": "1.4.0",
     "fabric-client": "1.4.0",
